@@ -2,15 +2,20 @@
 
 ## Meeting notes: 14. März 2025
 
-**1. WordCloud**
-1.1 Stopwords filtern
-1.2 Mehrsprachigkeit ggf. beachten
+**A. WordCloud**
+1. Stopwords filtern
+2. Mehrsprachigkeit ggf. beachten
 
-**2. Visualizations:**
-2.1 Fünfte Grafik mit Matrix nicht möglich
+**B. Visualizations:**
+2. Fünfte Grafik mit Matrix nicht möglich
 
-**3. Weitere mgl. Fragen & Grafiken:**
-3.1 Verteilung von NaNs in Beschreibung pro Product Type
-3.2 Gibt es fehlende Bilder?
-3.3 Verteilung von Auflösung?
-3.4 Wahrscheinlichkeit, dass fehlende Textinhalten (s. o.) zu fehlenden Bildern bzw. niedrig-auflösenden Grafiken führen?
+**C. Weitere mgl. Fragen & Grafiken:**
+1. Verteilung von NaNs in Beschreibung pro Product Type
+2. Gibt es fehlende Bilder?
+3. Verteilung von Auflösung?
+4. Wahrscheinlichkeit, dass fehlende Textinhalten (s. o.) zu fehlenden Bildern bzw. niedrig-auflösenden Grafiken führen?
+
+**D. Verschiedenes**
+1. (GitHub Projects)[https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects] Projektmanagement à la Kanban mit GANTT-Charts
+2. (GitHub Codespace)[https://github.com/features/codespaces]: Programmierumgebung
+3. (Formattierung Markdown)[http://markdownguide.org/]
