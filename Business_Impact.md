@@ -1,6 +1,6 @@
 # Busieness Impact
 
-Improving the ability to classify products into their correct product type codes using multimodal data (text and images) can provide significant benefits to an e-commerce business. Below are the key processes, KPIs, and bottom-line effects that can be positively impacted:
+Improving the ability to classify products into their correct product type codes using multimodal data (text and images) can provide significant benefits to an e-commerce platform. Below are the key processes, KPIs, and bottom-line effects that can be positively impacted:
 
 ***
 
