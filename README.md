@@ -19,3 +19,8 @@
 1. (GitHub Projects)[https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects] Projektmanagement à la Kanban mit GANTT-Charts
 2. (GitHub Codespace)[https://github.com/features/codespaces]: Programmierumgebung
 3. (Formattierung Markdown)[http://markdownguide.org/]
+
+**E. Tasks**
+1. Thomas: Wordclouds
+2. Robert: Distribution of Product Type Codes: Count plot for product type, Distribution of Title Lengths
+3. Peter: Sample images from different product types, Missing titles, Resolution
