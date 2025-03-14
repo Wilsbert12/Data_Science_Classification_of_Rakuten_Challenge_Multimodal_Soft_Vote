@@ -79,7 +79,7 @@ Improving the ability to classify products into their correct product type codes
  
 ***
 
-Overall Effect on the Bottom Line
+## Overall Effect on the Bottom Line
 
 - Revenue Growth: Improved product discoverability, personalized recommendations, and targeted marketing lead to higher sales.
 - Cost Reduction: Automation reduces operational costs, and better inventory management minimizes losses.
