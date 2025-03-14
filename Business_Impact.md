@@ -12,7 +12,7 @@ Improving the ability to classify products into their correct product type codes
 - KPIs Improved:
   - Time-to-market: Reduced time required to list new products.
   - Error rate in categorization: Fewer misclassified products.
-  - Effect on Bottom Line:
+- Effect on Bottom Line:
   - Faster product listing leads to quicker sales opportunities.
   - Improved customer satisfaction due to better product discovery.
 
