@@ -1,4 +1,4 @@
-# Busieness Impact of improving the ability to classify products using Machine Learning Algorithms
+# Busieness Impact of improving the ability to classify products using Advanced Machine Learning Algorithms
 
 Improving the ability to classify products into their correct product type codes using multimodal data (text and images) can provide significant benefits to an e-commerce platform. Below are the key processes, KPIs, and bottom-line effects that potentially can be positively impacted:
 
