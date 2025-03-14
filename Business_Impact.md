@@ -28,7 +28,7 @@ Improving the ability to classify products into their correct product type codes
 
 ***
 
-2. Enhanced Search and Navigation
+**2. Enhanced Search and Navigation**
 - Processes Improved:
   - Better product categorization improves search engine optimization (SEO) and internal search functionality.
   - Easier navigation for customers through well-structured categories.
@@ -41,7 +41,7 @@ Improving the ability to classify products into their correct product type codes
 
 ***
 
-3. Personalized Recommendations
+**3. Personalized Recommendations**
 - Processes Improved:
   - Accurate categorization enables better product recommendations based on user preferences and browsing history.
   - Improved cross-selling and upselling opportunities.
@@ -53,7 +53,7 @@ Improving the ability to classify products into their correct product type codes
  
 ***
 
-4. Inventory Management
+**4. Inventory Management**
 - Processes Improved:
   - Accurate categorization helps in better inventory tracking and demand forecasting.
   - Easier identification of slow-moving or overstocked items.
@@ -65,7 +65,7 @@ Improving the ability to classify products into their correct product type codes
  
  ***
 
-6. Marketing and Campaign Targeting
+**6. Marketing and Campaign Targeting**
 - Processes Improved:
   - Better categorization enables more targeted marketing campaigns.
   - Easier segmentation of products for promotions and discounts.
@@ -77,7 +77,7 @@ Improving the ability to classify products into their correct product type codes
 
 ***
 
-7. Scalability and Operational Efficiency
+**7. Scalability and Operational Efficiency**
 - Processes Improved:
   - Automation of product classification reduces dependency on manual labor.
   - Scales easily as the product catalog grows.
