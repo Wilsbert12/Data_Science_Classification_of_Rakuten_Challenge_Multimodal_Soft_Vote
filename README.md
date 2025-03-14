@@ -16,9 +16,9 @@
 4. Wahrscheinlichkeit, dass fehlende Textinhalten (s. o.) zu fehlenden Bildern bzw. niedrig-auflösenden Grafiken führen?
 
 **D. Verschiedenes**
-1. (GitHub Projects)[https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects] Projektmanagement à la Kanban mit GANTT-Charts
-2. (GitHub Codespace)[https://github.com/features/codespaces]: Programmierumgebung
-3. (Formattierung Markdown)[http://markdownguide.org/]
+1. [GitHub Pro](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects): Projektmanagement à la Kanban mit GANTT-Charts
+2. [GitHub Codespace](https://github.com/features/codespaces): Programmierumgebung
+3. [Formattierung Markdown](http://markdownguide.org/)
 
 **E. Tasks**
 1. Thomas: Wordclouds
