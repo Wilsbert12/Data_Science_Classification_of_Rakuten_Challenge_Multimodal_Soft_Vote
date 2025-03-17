@@ -1,4 +1,4 @@
-# Busieness Impact of improving the ability to classify products using Advanced Machine Learning Algorithms
+# Business Impact of improving the ability to classify products using Advanced Machine Learning Algorithms
 
 ## Introduction
 
