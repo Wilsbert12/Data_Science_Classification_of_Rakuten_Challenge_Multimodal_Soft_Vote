@@ -5,7 +5,7 @@
 **A. To-Dos // Preprocessing**
 1. **DataFrame:** Detect languages e.g. FRA, ENG, GER, etc. in designation and description with _[langdetect](https://pypi.org/project/langdetect/)_
 2. **DataFrame:** Are there mixed languages in designation and description, e.g. FRA & ENG, FRA & GER, etc.
-3. **DataFrame:** Merge product type with product type names if possible.
+3. **DataFrame:** Merge product type with product type names if possible with [Liste des catégories (categorymap)](https://global.fr.shopping.rakuten.com/developpeur/liste-des-categories-categorymap/)
 4. **DataFrame:** Are there duplicate items, e.g. product id, designation, description?
 5. **DataFrame:** Add TF-IDF (Term Frequency-Inverse Document Frequency) as proxy for text quality.
 6. **DataFrame:** Are there short _(meaningless)_ text (designations or descriptions)?
