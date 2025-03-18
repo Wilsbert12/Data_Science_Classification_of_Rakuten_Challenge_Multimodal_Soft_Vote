@@ -7,11 +7,15 @@
 2. **DataFrame:** Are there mixed languages in designation and description, e.g. FRA & ENG, FRA & GER, etc.
 3. **DataFrame:** Merge product type with product type names if possible.
 4. **DataFrame:** Are there duplicate items, e.g. product id, designation, description?
-5. **DataFrame:** Are there short _(meaningless)_ text (designations or descriptions)?
-6. **DataFrame:** Are there long texts due to keyword spamming meaning duplicated, repetitive text?
-7. **DataFrame:** Are there formatting errors in the text (dod), e.g. &uuml; à?
-8. **Images:** Sizes, resolution, ratios, blank images (borders).
-9. **Plot:** Visualize NaNs per product type.
+5. **DataFrame:** Add TF-IDF (Term Frequency-Inverse Document Frequency) as proxy for text quality.
+6. **DataFrame:** Are there short _(meaningless)_ text (designations or descriptions)?
+7. **DataFrame:** Are there long texts due to keyword spamming meaning duplicated, repetitive text?
+8. **DataFrame:** Are there formatting errors and html in the text (dod), e.g. &uuml; à?
+
+**B. Backlog**
+- **Images:** Sizes, resolution, ratios, blank images (borders).
+- **Plot:** Visualize NaNs per product type.
+- **Research:** Reduce vector size of text.
 
 ## Meeting notes: 14. März 2025
 
