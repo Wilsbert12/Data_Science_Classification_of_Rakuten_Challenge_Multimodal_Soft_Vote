@@ -1,5 +1,18 @@
 # feb25_bds_classification-of-rakuten-e-commerce-products
 
+## Meeting notes: 18. März
+
+**A. To-Dos // Preprocessing**
+1. **DataFrame:** Detect languages e.g. FRA, ENG, GER, etc. in designation and description with _[langdetect](https://pypi.org/project/langdetect/)_
+2. **DataFrame:** Are there mixed languages in designation and description, e.g. FRA & ENG, FRA & GER, etc.
+3. **DataFrame:** Merge product type with product type names if possible.
+4. **DataFrame:** Are there duplicate items, e.g. product id, designation, description?
+5. **DataFrame:** Are there short _(meaningless)_ text (designations or descriptions)?
+6. **DataFrame:** Are there long texts due to keyword spamming meaning duplicated, repetitive text?
+7. **DataFrame:** Are there formatting errors in the text (dod), e.g. &uuml; à?
+8. **Images:** Sizes, resolution, ratios, blank images (borders).
+9. **Plot:** Visualize NaNs per product type.
+
 ## Meeting notes: 14. März 2025
 
 **A. WordCloud**
