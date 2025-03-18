@@ -17,6 +17,9 @@
 - **Plot:** Visualize NaNs per product type.
 - **Research:** Reduce vector size of text.
 
+**C. Verschiedenes**
+- [Normalform von Datenbanken](https://www.tinohempel.de/info/info/datenbank/normalisierung.htm)
+
 ## Meeting notes: 14. März 2025
 
 **A. WordCloud**
