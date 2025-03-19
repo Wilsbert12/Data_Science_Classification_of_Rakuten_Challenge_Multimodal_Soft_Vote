@@ -10,7 +10,7 @@
 5. **DataFrame:** Add TF-IDF (Term Frequency-Inverse Document Frequency) as proxy for text quality.
 6. **DataFrame:** Are there short _(meaningless)_ text (designations or descriptions)?
 7. **DataFrame:** Are there long texts due to keyword spamming meaning duplicated, repetitive text?
-8. **DataFrame:** Are there formatting errors and html in the text (dod), e.g. &uuml; à?
+8. **DataFrame:** Are there formatting errors and html in the text, e.g. '&uuml;' or à?
 
 **B. Backlog**
 - **Images:** Sizes, resolution, ratios, blank images (borders).
