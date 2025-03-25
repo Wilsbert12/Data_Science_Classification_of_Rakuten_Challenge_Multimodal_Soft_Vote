@@ -1,6 +1,21 @@
 # feb25_bds_classification-of-rakuten-e-commerce-products
 
-## Meeting notes: 18. März
+## Meeting notes: March 25th
+1. **DataFrame:** Emphasis on using _[langdetect](https://pypi.org/project/langdetect/)_ to get probability of language
+2. **DataFrame:** Merge _designation_ and _description_ in additional text field
+3. **Images:**
+   1. Delete blank space
+   2. Normalize ratio of images
+   3. Goal for next week: Set bounding box
+4. **Approach:**
+  1. Choose one language
+  2. Translate other languages via _DeepL_'s API
+  3. TF-IDF: Define importance of word (or sentence)
+  4. Apply text mining techniques only after, e.g. lemmatization
+  5. Define threshold for designation and description via mean, median, etc. to exclude text, which is too long (@RW, @TB: Did I miss anything important?)
+  6. Goal is to Word2Vec (CBOW, skip-gram), BERT and Meta's alternative (?)
+
+## Meeting notes: March 18th
 
 **A. To-Dos // Preprocessing**
 1. **DataFrame:** Detect languages e.g. FRA, ENG, GER, etc. in designation and description with _[langdetect](https://pypi.org/project/langdetect/)_
@@ -20,7 +35,8 @@
 **C. Verschiedenes**
 - [Normalform von Datenbanken](https://www.tinohempel.de/info/info/datenbank/normalisierung.htm)
 
-## Meeting notes: 14. März 2025
+
+## Meeting notes: March 18th
 
 **A. WordCloud**
 1. Stopwords filtern
