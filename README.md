@@ -22,16 +22,15 @@
 ## Additional Notes from Yaniv:
 1. Continue your work on the preprocessing tasks on the images and the text as :
       1. Delete HTML tags and special caracters on the text. Pay attention to some outliers.
-      - 
-      - Merge description and designation columns to remove missing values
-      - For the translation, we can try to do everything in english thanks to the DeepL API.
-      - For the images, we can work on the ratio of the images as the size of the bouding box around the image. You should find something arount 20% of images below a ratio of 0.8.
-      - These images will be zoomed if it's possible.
-- I liked the data viz you have presented but I can propose to do some others about :
-      - Class distribution
-      - images by category, notice that they are oddly made
-      - Occurrence of words by category
-      - Word cloud (module 131 Text Mining) on each category or on the whole column designation+description
+      2. Merge description and designation columns to remove missing values
+      3. For the translation, we can try to do everything in english thanks to the DeepL API.
+      4. For the images, we can work on the ratio of the images as the size of the bouding box around the image. You should find something arount 20% of images below a ratio of 0.8.
+2. These images will be zoomed if it's possible.
+   1. I liked the data viz you have presented but I can propose to do some others about :
+   2. Class distribution
+   3. images by category, notice that they are oddly made
+   4. Occurrence of words by category
+   5. Word cloud (module 131 Text Mining) on each category or on the whole column designation+description
 
 ## Meeting notes: March 18th
 
