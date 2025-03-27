@@ -1,5 +1,12 @@
 # feb25_bds_classification-of-rakuten-e-commerce-products
 
+## Meeting notes: March 27th
+1. *Preprocessing // General:* Create PY file for proprecessing
+2. *Preprocessing // DataFrame:* Add boolean column for description_available
+3. *Preprocessing // DataFrame:* Rename column names according to standards
+4. *Preprocessing // Images:* Delete white background, create images with same ratio
+5. *DataViz:* Create separate Notebook vor Data Visualization
+
 ## Meeting notes: March 25th
 1. **DataFrame:** Emphasis on using _[langdetect](https://pypi.org/project/langdetect/)_ to get probability of language
 2. **DataFrame:** Merge _designation_ and _description_ in additional text field
