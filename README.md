@@ -22,6 +22,7 @@
 ## Additional Notes from Yaniv:
 - Continue your work on the preprocessing tasks on the images and the text as :
       - Delete HTML tags and special caracters on the text. Pay attention to some outliers.
+      - 
       - Merge description and designation columns to remove missing values
       - For the translation, we can try to do everything in english thanks to the DeepL API.
       - For the images, we can work on the ratio of the images as the size of the bouding box around the image. You should find something arount 20% of images below a ratio of 0.8.
