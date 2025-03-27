@@ -20,8 +20,8 @@
   6. Goal is to Word2Vec (CBOW, skip-gram), BERT and Meta's alternative (?)
 
 ## Additional Notes from Yaniv:
-- Continue your work on the preprocessing tasks on the images and the text as :
-      - Delete HTML tags and special caracters on the text. Pay attention to some outliers.
+1. Continue your work on the preprocessing tasks on the images and the text as :
+      1. Delete HTML tags and special caracters on the text. Pay attention to some outliers.
       - 
       - Merge description and designation columns to remove missing values
       - For the translation, we can try to do everything in english thanks to the DeepL API.
