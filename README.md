@@ -19,6 +19,18 @@
   5. Define threshold for designation and description via mean, median, etc. to exclude text, which is too long (@RW, @TB: Did I miss anything important?)
   6. Goal is to Word2Vec (CBOW, skip-gram), BERT and Meta's alternative (?)
 
+## Additional Notes from Yaniv:
+- Continue your work on the preprocessing tasks on the images and the text as :
+      - Delete HTML tags and special caracters on the text. Pay attention to some outliers.
+      - Merge description and designation columns to remove missing values
+      - For the translation, we can try to do everything in english thanks to the DeepL API.
+      - For the images, we can work on the ratio of the images as the size of the bouding box around the image. You should find something arount 20% of images below a ratio of 0.8.
+      - These images will be zoomed if it's possible.
+- I liked the data viz you have presented but I can propose to do some others about :
+      - Class distribution
+      - images by category, notice that they are oddly made
+      - Occurrence of words by category
+      - Word cloud (module 131 Text Mining) on each category or on the whole column designation+description
 
 ## Meeting notes: March 18th
 
