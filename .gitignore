@@ -1,2 +1,9 @@
-# Ignore a specific directory
+# Ignore directories containing images
 /images/
+/Images/
+
+# Ignore images JPG/JPEG files regardless of location
+*.jpg
+*.jpeg
+*.JPG
+*.JPEG
