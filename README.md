@@ -1,5 +1,16 @@
 # feb25_bds_classification-of-rakuten-e-commerce-products
 
+## Meeting notes: April 2nd
+1. *GitHub // General understanding & bug fixing*
+2. *Presentation of Thomas' progress* on language
+4. *Hybrid solution of over- und undersampling* after having defined a threshold
+   1. Undersampling: Filter, e.g. best text, length of text, keyword frequency
+   2. Oversampling: Generate new text using [ChatGPT API](https://openai.com/api/)
+5. *Categories:*
+   1. See each product type category as individual category
+   2. Transform categories similar to date in car insurance example
+6. *Processing of Images* with cv2
+
 ## Meeting notes: March 27th
 1. *Preprocessing // General:* Create PY file for proprecessing
 2. *Preprocessing // DataFrame:* Add boolean column for description_available
