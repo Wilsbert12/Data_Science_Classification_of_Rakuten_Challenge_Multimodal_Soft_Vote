@@ -1,5 +1,18 @@
 # feb25_bds_classification-of-rakuten-e-commerce-products
 
+## Meeting notes: April 3rd
+1. [Step 2] // Preprocessing and feature engineering #7
+   1. Do not substitute accents
+   2. Do not convert everything to lowercase (yet)
+   3. Set flag if...
+      1. ... description is missing
+      2. ... string is all upper case
+      3. ... if text contains encoding error
+      4. ... if title and description are identical
+   8. Do not merge strings if title and description are 95% identical checking:
+      1. Lower case vs upper case
+      2. Multiple spaces
+
 ## Meeting notes: April 2nd
 1. *GitHub // General understanding & bug fixing*
 2. *Presentation of Thomas' progress* on language
