@@ -3,7 +3,7 @@
 ## Meeting Notes: April 8th
 
 **Peter**
-Merged text:
+1. Merged text:
 	[ ] Length
 	[] Number of words
 2. Cleaned string variables: [] Similarity function
