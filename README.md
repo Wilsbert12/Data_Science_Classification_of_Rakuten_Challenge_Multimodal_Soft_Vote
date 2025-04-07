@@ -4,8 +4,8 @@
 
 **Peter**
 Merged text:
-[ ] Length
-[] Number of words
+	[ ] Length
+	[] Number of words
 2. Cleaned string variables: [] Similarity function
 
 
