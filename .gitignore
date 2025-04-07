@@ -8,6 +8,11 @@
 *.JPG
 *.JPEG
 
+# Ignore folder containing byte-compiled, optimized, DLL files
+/__pycache__/
+*.py[cod]
+*$py.class
+
 # Ignore macOS specific Desktop Service Store
 .DS_Store
 **/.DS_Store
