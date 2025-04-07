@@ -2,12 +2,9 @@
 
 ## Meeting Notes: April 8th
 
-**Peter**
-1. Merged text:
-	[ ] Length
-	[] Number of words
+**Peter:**
+1. Merged text: [ ] Length, [] Number of words
 2. Cleaned string variables: [] Similarity function
-
 
 ## Meeting notes: April 3rd
 1. [Step 2] // Preprocessing and feature engineering #7
