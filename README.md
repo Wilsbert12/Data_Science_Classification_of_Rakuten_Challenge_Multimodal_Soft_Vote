@@ -4,23 +4,23 @@
 
 **Peter**
 1. Merged text:
-   2. [] Length
-   3. [] Number of words
+   [] Length
+   [] Number of words
 2. Cleaned string variables: [] Similarity function
 
 
 ## Meeting notes: April 3rd
 1. [Step 2] // Preprocessing and feature engineering #7
-   1. [x] Do not substitute accents
-   2. [x] Do not convert everything to lowercase (yet)
+   [x] 1. Do not substitute accents
+   [x] 2. Do not convert everything to lowercase (yet)
    3. Set flag if...
-      1. ... description is missing [x]
-      2. ... string is all upper case [x]
-      3. ... if text contains encoding error [x]
-      4. ... if title and description are identical [x]
-   8. Do not merge strings if title and description are 95% identical checking:
-      1. Lower case vs upper case [x]
-      2. Multiple spaces [x]
+      [x] 1. ... description is missing
+      [x] 2. ... string is all upper case
+      [x] 3. ... if text contains encoding error
+      [x] 4. ... if title and description are identical
+   8. [] Do not merge strings if title and description are 95% identical checking:
+      1. Lower case vs upper case
+      2. Multiple spaces
 
 ## Meeting notes: April 2nd
 1. *GitHub // General understanding & bug fixing*
