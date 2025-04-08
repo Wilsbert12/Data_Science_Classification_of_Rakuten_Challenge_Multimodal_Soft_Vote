@@ -28,7 +28,7 @@ def text_cleaner(df):
 
     Removes:
     - Leading and trailing spaces 
-    - HTML tags, e.g. <br>, <br />, <b>
+    - HTML tags, e.g. \<br>, \<br />, \<b>
 
     Replaces:
     - Multiple spaces with a single space
@@ -123,7 +123,7 @@ def text_cleaner(df):
             cleaned = html.unescape(cleaned)            # Decode HTML entities and convert to characters
             cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]', '', cleaned)  # Remove control chars
             
-            cleaned = re.sub(r'^\s+|\s+$', '', cleaned)    # Remove leading/trailing spaces
+            cleaned = re.sub(r'^\s+|\s+$', '', cleaned) # Remove leading/trailing spaces
             cleaned = re.sub(r'\s{2,}', ' ', cleaned)   # Replace multiple spaces
             
             
