@@ -2,10 +2,22 @@
 
 ## Meeting Notes: April 8th
 
-**Peter:**
-1. Merged text: [ ] Length, [] Number of words
-2. Cleaned string variables: [] Similarity function
+**Peter's questions**
 
+Flags:
+- [ ] 0,1 instead of True, False
+
+Descriptions:
+- [ ] Drop errors, e.g. "<br>Attention !!! Ce produit est un import [...]"
+
+Merged text:
+- [ ] Length
+- [ ] Number of words
+
+Cleaned string variables
+- [ ] Similarity function
+- [ ] Drop similar descriptions or wait for under- and oversampling?
+---
 ## Meeting notes: April 3rd
 1. [Step 2] // Preprocessing and feature engineering #7
    [x] 1. Do not substitute accents
@@ -19,6 +31,7 @@
       1. Lower case vs upper case
       2. Multiple spaces
 
+---
 ## Meeting notes: April 2nd
 1. *GitHub // General understanding & bug fixing*
 2. *Presentation of Thomas' progress* on language
@@ -30,6 +43,7 @@
    2. Transform categories similar to date in car insurance example
 6. *Processing of Images* with cv2
 
+---
 ## Meeting notes: March 27th
 1. *Preprocessing // General:* Create PY file for proprecessing
 2. *Preprocessing // DataFrame:* Add boolean column for description_available
@@ -37,6 +51,7 @@
 4. *Preprocessing // Images:* Delete white background, create images with same ratio
 5. *DataViz:* Create separate Notebook for Data Visualization
 
+---
 ## Meeting notes: March 25th
 1. **DataFrame:** Emphasis on using _[langdetect](https://pypi.org/project/langdetect/)_ to get probability of language
 2. **DataFrame:** Merge _designation_ and _description_ in additional text field
@@ -68,6 +83,7 @@
    3. Occurrence of words by category
    4. Word cloud (module 131 Text Mining) on each category or on the whole column designation+description
 
+---
 ## Meeting notes: March 18th
 
 **A. To-Dos // Preprocessing**
@@ -88,7 +104,7 @@
 **C. Verschiedenes**
 - [Normalform von Datenbanken](https://www.tinohempel.de/info/info/datenbank/normalisierung.htm)
 
-
+---
 ## Meeting notes: March 18th
 
 **A. WordCloud**
