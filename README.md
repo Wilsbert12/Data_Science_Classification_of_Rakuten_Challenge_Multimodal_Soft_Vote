@@ -5,27 +5,27 @@
 **Peter's questions**
 
 Flags:
-
-[ ] 0,1 instead of True, False
+- [ ] 0,1 instead of True, False
 
 Descriptions:
-
-[ ] Drop errors, e.g. "<br>Attention !!! Ce produit est un import [...]"
+- [ ] Drop errors, e.g. "<br>Attention !!! Ce produit est un import [...]"
 
 Merged text:
-
-[ ] Length
-[ ] Number of words
+- [ ] Length
+- [ ] Number of words
 
 Cleaned string variables
+- [ ] Similarity function
+- [ ] Drop similar descriptions or wait for under- and oversampling?
 
-[ ] Similarity function
-[ ] Drop similar descriptions or wait for under- and oversampling?
+1. TEST nr. 1
+- [ ] No
+- [x] Yes
 
-TEST
-
-[ ] No
-[x] Yes
+1. TEST nr. 2a
+2. Test nr. 2b
+   - [ ] No
+   - [x] Yes
 
 ---
 ## Meeting notes: April 3rd
