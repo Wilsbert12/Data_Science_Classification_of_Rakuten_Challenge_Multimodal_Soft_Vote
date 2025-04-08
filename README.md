@@ -17,16 +17,6 @@ Merged text:
 Cleaned string variables
 - [ ] Similarity function
 - [ ] Drop similar descriptions or wait for under- and oversampling?
-
-1. TEST nr. 1
-- [ ] No
-- [x] Yes
-
-1. TEST nr. 2a
-2. Test nr. 2b
-   - [ ] No
-   - [x] Yes
-
 ---
 ## Meeting notes: April 3rd
 1. [Step 2] // Preprocessing and feature engineering #7
