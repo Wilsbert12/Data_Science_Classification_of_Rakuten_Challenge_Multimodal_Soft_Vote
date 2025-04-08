@@ -13,6 +13,10 @@
 *.py[cod]
 *$py.class
 
+# Ignore cleaned and merged file due to large file size
+*_clean*
+*_merge*
+
 # Ignore macOS specific Desktop Service Store
 .DS_Store
 **/.DS_Store
