@@ -2,6 +2,8 @@ import re
 import pandas as pd
 import html
 
+import numpy as np
+
 """
 Text utility functions for text cleaning and preprocessing.
 
@@ -17,6 +19,12 @@ Planned features:
 These functions are designed to prepare text data for machine learning
 and natural language processing tasks.
 """
+
+def html_cleaner(df):
+    '''requires a df with description column, will remove html markup from description column'''
+    from bs4 import BeautifulSoup
+    df['description'] = df['description'].apply(lambda x: BeautifulSoup(x, "html.parser").get_text() if pd.notna(x) else np.nan)
+
 
 def text_cleaner(df):
     """
@@ -199,6 +207,24 @@ def text_merger(df):
     
     return df_merge
 
+
+def count_matching_words(str1, str2):
+    '''count_matching_words(string1, string2) will return the percentage rounded to 2 decimal places'''
+    words1 = str1.lower().split()  
+    words2 = str2.lower().split()
+    common_words = [word for word in words1 if word in words2]  # Find matching words
+    return round(len(common_words) / len(words2) * 100, 2) if words1 else 0  # Avoid division by zero
+
+
+def clean_description(str1, str2, cutoff = 95):
+    if pd.notna(str2):  # Check if str2 is not NaN
+            if count_matching_words(str1, str2) > cutoff:
+                return np.nan  # Remove highly similar descriptions
+    return str2  # Keep the original if not highly similar
+
+def remove_duplicate_description_information(df, cutoff=95):
+    '''removes information from description column if the information in description is already in designation'''
+    df['description'] = df.apply(lambda row: clean_description(row['designation'], row['description'], cutoff=cutoff), axis=1)
 
 def hw():
     """Test function to print "Hello, world!".
