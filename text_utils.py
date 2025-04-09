@@ -229,6 +229,24 @@ def remove_duplicate_description_information(df,col1 = 'designation', col2 = 'de
     df[col1] = df.apply(lambda row: clean_description(row[col2], row[col1], cutoff=cutoff), axis=1)
     return df
 
+def text_pre_processing(df):
+    # store information if description is provided
+    df['bool_description'] = df['description'].notnull().astype(int)
+    # call text_cleaner function
+    df = text_cleaner(df)
+    # will continue to use description and designation columns as default
+    if 'description_cleaned' in df.columns:
+        df.description = df.description_cleaned
+    if 'designation_cleaned' in df.columns:
+        df.designation = df.designation_cleaned
+    # remove 'duplicated' descriptions or designations
+    df = remove_duplicate_description_information(df)
+    # merge designation and description to merged_text 
+    df['merged_text'] = df['designation'].fillna('') + df['description'].fillna('')
+    # clean up, remove designation and description columns
+    df.drop(['designation', 'description'], axis = 1, inplace = True)
+    return df
+
 def hw():
     """Test function to print "Hello, world!".
     
