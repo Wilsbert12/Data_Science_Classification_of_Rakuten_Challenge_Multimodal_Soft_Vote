@@ -1,4 +1,9 @@
+import os
+import numpy as np
+import pandas as pd
+
 from PIL import Image
+from PIL.ExifTags import TAGS
 
 """
 Image utility functions for extracting data from images.
@@ -12,12 +17,6 @@ Planned features:
 
 These functions are designed to prepare image data for machine learning.
 """
-
-from PIL import Image
-from PIL.ExifTags import TAGS
-import os
-import numpy as np
-import pandas as pd
 
 def image_data_extractor(df, base_path='./images/image_train/'):
     """
