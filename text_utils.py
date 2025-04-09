@@ -169,15 +169,15 @@ def text_merger(df):
     # Process each row
     for idx, row in df_merge.iterrows():
         # Check for empty columns
-        if 'designation' not in row or pd.isna(row['designation']):
+        if 'designation_cleaned' not in row or pd.isna(row['designation_cleaned']):
             df_merge.at[idx, 'designation_empty'] = True
             
-        if 'description' not in row or pd.isna(row['description']):
+        if 'description_cleaned' not in row or pd.isna(row['description_cleaned']):
             df_merge.at[idx, 'description_empty'] = True
         
-        # Get designation and description and handle missing values
-        designation = str(row['designation']) if 'designation' in row and not pd.isna(row['designation']) else ''
-        description = str(row['description']) if 'description' in row and not pd.isna(row['description']) else ''
+        # Get cleaned designation and cleaned description and handle missing values
+        designation = str(row['designation_cleaned']) if 'designation_cleaned' in row and not pd.isna(row['designation_cleaned']) else ''
+        description = str(row['description_cleaned']) if 'description_cleaned' in row and not pd.isna(row['description_cleaned']) else ''
         
         # Check if original columns are identical – if both are non-empty
         if designation and description and designation == description:
@@ -195,7 +195,7 @@ def text_merger(df):
         elif df_merge.at[idx, 'identical_original']:
             df_merge.at[idx, 'text_merged'] = designation
         else:
-            df_merge.at[idx, 'text_merged'] = designation + '|' + description
+            df_merge.at[idx, 'text_merged'] = designation + ' // ' + description
     
     return df_merge
 
