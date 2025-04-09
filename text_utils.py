@@ -137,7 +137,7 @@ def text_cleaner(df):
             
             # Update the cleaned text column
             df_clean.at[idx, clean_col] = cleaned             
-
+    print(f'cleaned text columns')
     return df_clean
 
 
@@ -213,18 +213,21 @@ def count_matching_words(str1, str2):
     words1 = str1.lower().split()  
     words2 = str2.lower().split()
     common_words = [word for word in words1 if word in words2]  # Find matching words
-    return round(len(common_words) / len(words2) * 100, 2) if words1 else 0  # Avoid division by zero
+    return round(len(common_words) / len(words2) * 100, 2) if words2 else 0  # Avoid division by zero
 
 
 def clean_description(str1, str2, cutoff = 95):
     if pd.notna(str2):  # Check if str2 is not NaN
+        if pd.notna(str1):
             if count_matching_words(str1, str2) > cutoff:
                 return np.nan  # Remove highly similar descriptions
     return str2  # Keep the original if not highly similar
 
-def remove_duplicate_description_information(df, cutoff=95):
-    '''removes information from description column if the information in description is already in designation'''
-    df['description'] = df.apply(lambda row: clean_description(row['designation'], row['description'], cutoff=cutoff), axis=1)
+def remove_duplicate_description_information(df,col1 = 'designation', col2 = 'description', cutoff=95):
+    '''removes information from description and designation column if the information in description is already in designation or if there is more information in description than designation'''
+    df[col2] = df.apply(lambda row: clean_description(row[col1], row[col2], cutoff=cutoff), axis=1)
+    df[col1] = df.apply(lambda row: clean_description(row[col2], row[col1], cutoff=cutoff), axis=1)
+    return df
 
 def hw():
     """Test function to print "Hello, world!".
