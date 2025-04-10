@@ -1,6 +1,7 @@
 import re
 import pandas as pd
-import html
+import numpy as np
+from bs4 import BeautifulSoup
 
 """
 Text utility functions for text cleaning and preprocessing.
@@ -118,18 +119,18 @@ def text_cleaner(df):
             
             # Clean text
             cleaned = text
-            cleaned = re.sub(r'<[^>]+>', ' ', cleaned)  # Remove HTML tags
-            
-            cleaned = html.unescape(cleaned)            # Decode HTML entities and convert to characters
+
+            cleaned = BeautifulSoup(cleaned, "html.parser").get_text() # Remove HTML tags and replace HTML entities
+
             cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]', '', cleaned)  # Remove control chars
             
             cleaned = re.sub(r'^\s+|\s+$', '', cleaned) # Remove leading/trailing spaces
             cleaned = re.sub(r'\s{2,}', ' ', cleaned)   # Replace multiple spaces
-            
-            
+             
             # Update the cleaned text column
             df_clean.at[idx, clean_col] = cleaned             
 
+    # Return cleaned DataFrame
     return df_clean
 
 
@@ -154,6 +155,7 @@ def text_merger(df):
             - identical_original: Flag indicating if original columns are identical
             - identical_cleaned: Flag indicating if cleaned columns are identical
     """
+
     # Create a copy to avoid modifying the original DataFrame
     df_merge = df.copy()
     
@@ -198,6 +200,48 @@ def text_merger(df):
             df_merge.at[idx, 'text_merged'] = designation + ' // ' + description
     
     return df_merge
+
+
+def count_matching_words(str1, str2):
+    '''count_matching_words(string1, string2) will return the percentage rounded to 2 decimal places'''
+    words1 = str1.lower().split()  
+    words2 = str2.lower().split()
+    common_words = [word for word in words1 if word in words2]  # Find matching words
+    return round(len(common_words) / len(words2) * 100, 2) if words2 else 0  # Avoid division by zero
+
+
+def clean_description(str1, str2, cutoff=95):
+    if pd.notna(str2):  # Check if str2 is not NaN
+        if pd.notna(str1):
+            if count_matching_words(str1, str2) > cutoff:
+                return np.nan  # Remove highly similar descriptions
+    return str2  # Keep the original if not highly similar
+
+
+def remove_duplicate_description_information(df, col1='designation', col2='description', cutoff=95):
+    '''removes information from description and designation column if the information in description is already in designation or if there is more information in description than designation'''
+    df[col2] = df.apply(lambda row: clean_description(row[col1], row[col2], cutoff=cutoff), axis=1)
+    df[col1] = df.apply(lambda row: clean_description(row[col2], row[col1], cutoff=cutoff), axis=1)
+    return df
+
+
+def text_pre_processing(df):
+    # store information if description is provided
+    df['bool_description'] = df['description'].notnull().astype(int)
+    # call text_cleaner function
+    df = text_cleaner(df)
+    # will continue to use description and designation columns as default
+    if 'description_cleaned' in df.columns:
+        df.description = df.description_cleaned
+    if 'designation_cleaned' in df.columns:
+        df.designation = df.designation_cleaned
+    # remove 'duplicated' descriptions or designations
+    df = remove_duplicate_description_information(df)
+    # merge designation and description to merged_text 
+    df['merged_text'] = df['designation'].fillna('') + df['description'].fillna('')
+    # clean up, remove designation and description columns
+    df.drop(['designation', 'description'], axis = 1, inplace = True)
+    return df
 
 
 def hw():
