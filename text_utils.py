@@ -26,6 +26,7 @@ and natural language processing tasks.
 """
 
 def text_cleaner(df):
+    #TODO need to remove lines that contain many ??? or other encoding issues
     """
     Clean text in pandas DataFrame by removing unnecessary characters and normalizing spacing.
 
@@ -274,7 +275,7 @@ def text_pre_processing(df):
     # remove 'duplicated' descriptions or designations
     df = remove_duplicate_description_information(df)
     # merge designation and description to merged_text 
-    df['merged_text'] = df['designation'].fillna('') + df['description'].fillna('')
+    df['merged_text'] = df['designation'].fillna('') + ' ' + df['description'].fillna('')
     # clean up, remove designation and description columns
     df.drop(['designation', 'description'], axis = 1, inplace = True)
     return df
