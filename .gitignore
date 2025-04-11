@@ -2,6 +2,7 @@
 /images/
 /Images/
 /language_analysis/
+
 # Ignore JPG/JPEG files regardless of location
 *.jpg
 *.jpeg
@@ -23,3 +24,6 @@
 
 # Ignore .env files to keep KEYs safe
 .env
+
+# Ignore temporary files
+**tmp.*
