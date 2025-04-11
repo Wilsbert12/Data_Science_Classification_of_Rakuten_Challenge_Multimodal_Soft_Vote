@@ -63,21 +63,21 @@ def text_cleaner(df):
     # Create flag columns
     for col in ['designation', 'description']:
         
-        df_clean[f'{col}_org_clean'] = True  # Assume clean until proven dirty
+        df_clean[f'{col}_org_clean'] = 1  # Assume clean until proven dirty
         
-        df_clean[f'{col}_spaces'] = False
-        df_clean[f'{col}_upper'] = False
-        df_clean[f'{col}_lower'] = False
+        df_clean[f'{col}_spaces'] = 0
+        df_clean[f'{col}_upper'] = 0
+        df_clean[f'{col}_lower'] = 0
 
-        df_clean[f'{col}_html_tag'] = False
-        df_clean[f'{col}_html_entity'] = False
+        df_clean[f'{col}_html_tag'] = 0
+        df_clean[f'{col}_html_entity'] = 0
         
-        df_clean[f'{col}_encoding_issue'] = False
-        df_clean[f'{col}_control_chars'] = False
+        df_clean[f'{col}_encoding_issue'] = 0
+        df_clean[f'{col}_control_chars'] = 0
 
-        df_clean[f'{col}_URL'] = False
-        df_clean[f'{col}_error_pattern'] = False
-        df_clean[f'{col}_separator'] = False
+        df_clean[f'{col}_URL'] = 0
+        df_clean[f'{col}_error_pattern'] = 0
+        df_clean[f'{col}_separator'] = 0
 
     # Map original columns to their cleaned counterparts
     col_mapping = {
@@ -95,59 +95,69 @@ def text_cleaner(df):
             
             # Check uppercase
             if text.isupper():
-                df_clean.at[idx, f'{orig_col}_upper'] = True
+                df_clean.at[idx, f'{orig_col}_upper'] = 1
             
             # Check lowercase
             if text.islower():
-                df_clean.at[idx, f'{orig_col}_lower'] = True
+                df_clean.at[idx, f'{orig_col}_lower'] = 1
             
             # Check HTML tags
             if re.search(r'<[^>]+>', text):
-                df_clean.at[idx, f'{orig_col}_html_tag'] = True
-                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+                df_clean.at[idx, f'{orig_col}_html_tag'] = 1
+                df_clean.at[idx, f'{orig_col}_org_clean'] = 0
 
             # Check HTML entities
             if re.search(r'&[a-zA-Z0-9#]+;', text):
-                df_clean.at[idx, f'{orig_col}_html_entity'] = True
-                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+                df_clean.at[idx, f'{orig_col}_html_entity'] = 1
+                df_clean.at[idx, f'{orig_col}_org_clean'] = 0
 
             # Check for potential encoding issues
             if re.search(r'Ã.|\xef\xbf\xbd|�', text):
-                df_clean.at[idx, f'{orig_col}_encoding_issue'] = True
-                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+                df_clean.at[idx, f'{orig_col}_encoding_issue'] = 1
+                df_clean.at[idx, f'{orig_col}_org_clean'] = 0
 
             # Check for control characters (except common whitespace)
             if re.search(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]', text):
-                df_clean.at[idx, f'{orig_col}_control_chars'] = True
-                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+                df_clean.at[idx, f'{orig_col}_control_chars'] = 1
+                df_clean.at[idx, f'{orig_col}_org_clean'] = 0
 
             # Check extra spaces
             if re.search(r'^\s{1,}|\s{1,}$|\s{2,}', text):
-                df_clean.at[idx, f'{orig_col}_spaces'] = True
-                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+                df_clean.at[idx, f'{orig_col}_spaces'] = 1
+                df_clean.at[idx, f'{orig_col}_org_clean'] = 0
 
             # Check for URLs (both http and www)
             if re.search(r'https?://|www\.', text):
-                df_clean.at[idx, f'{orig_col}_URL'] = True
-                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+                df_clean.at[idx, f'{orig_col}_URL'] = 1
+                df_clean.at[idx, f'{orig_col}_org_clean'] = 0
 
             # Check for error patterns: \"", \ ', \', ??
             if re.search(r'\\""|\\ \'|\\\'|\?{2,}', text):
-                df_clean.at[idx, f'{orig_col}_error_pattern'] = True
-                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+                df_clean.at[idx, f'{orig_col}_error_pattern'] = 1
+                df_clean.at[idx, f'{orig_col}_org_clean'] = 0
 
             # Check for separators like //, \\, or ////
             if re.search(r'\s+(?://{2,}|\\{2,})\s+', text):
-                df_clean.at[idx, f'{orig_col}_separators'] = True
-                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+                df_clean.at[idx, f'{orig_col}_separator'] = 1
+                df_clean.at[idx, f'{orig_col}_org_clean'] = 0
 
             
             # Clean text
             cleaned = text
 
-            cleaned = BeautifulSoup(cleaned, "html.parser").get_text(separator=' ') # Replace HTML tags with space and HTML entities with character
+            # Replace HTML tags with space and HTML entities with character
+            cleaned = BeautifulSoup(cleaned, "html.parser").get_text(separator=' ')
 
-            cleaned = re.sub(r'https?://[^\s]+|www\.[^\s]+', ' ', cleaned)  # Remove URLs
+            # Extract text from HTML tags without anchor brackets
+            pattern = r'^p(.*?)p$'
+            match = re.search(pattern, cleaned)
+
+            if match:
+                cleaned = match.group(1)
+
+            # Remove URLs
+            # Peter 11apr2025: Why are AWS URLs not removed?
+            cleaned = re.sub(r'https?://[^\s]+|www\.[^\s]+', ' ', cleaned)  
 
             cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]', ' ', cleaned)  # Remove control chars
 
@@ -196,10 +206,10 @@ def text_merger(df):
     df_merge = df.copy()
     
     # Create flag columns
-    df_merge['designation_empty'] = False
-    df_merge['description_empty'] = False
-    df_merge['identical_original'] = False
-    df_merge['identical_cleaned'] = False
+    df_merge['designation_empty'] = 0
+    df_merge['description_empty'] = 0
+    df_merge['identical_original'] = 0
+    df_merge['identical_cleaned'] = 0
     
     # Create merged text column
     df_merge['text_merged'] = ''
@@ -208,10 +218,10 @@ def text_merger(df):
     for idx, row in df_merge.iterrows():
         # Check for empty columns
         if 'designation_cleaned' not in row or pd.isna(row['designation_cleaned']):
-            df_merge.at[idx, 'designation_empty'] = True
+            df_merge.at[idx, 'designation_empty'] = 1
             
         if 'description_cleaned' not in row or pd.isna(row['description_cleaned']):
-            df_merge.at[idx, 'description_empty'] = True
+            df_merge.at[idx, 'description_empty'] = 1
         
         # Get cleaned designation and cleaned description and handle missing values
         designation = str(row['designation_cleaned']) if 'designation_cleaned' in row and not pd.isna(row['designation_cleaned']) else ''
@@ -219,13 +229,13 @@ def text_merger(df):
         
         # Check if original columns are identical – if both are non-empty
         if designation and description and designation == description:
-            df_merge.at[idx, 'identical_original'] = True
+            df_merge.at[idx, 'identical_original'] = 1
         
         # Check if cleaned columns are identical – if both exist
         if ('designation_cleaned' in row and 'description_cleaned' in row and 
             not pd.isna(row['designation_cleaned']) and not pd.isna(row['description_cleaned'])):
             if row['designation_cleaned'] == row['description_cleaned']:
-                df_merge.at[idx, 'identical_cleaned'] = True
+                df_merge.at[idx, 'identical_cleaned'] = 1
         
         # Create merged text
         if df_merge.at[idx, 'description_empty']:
@@ -276,7 +286,7 @@ def text_pre_processing(df):
     # merge designation and description to merged_text 
     df['merged_text'] = df['designation'].fillna('') + df['description'].fillna('')
     # clean up, remove designation and description columns
-    df.drop(['designation', 'description'], axis = 1, inplace = True)
+    df.drop(['designation', 'description'], axis = 1, inplace = 1)
     return df
 
 
