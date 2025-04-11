@@ -1,7 +1,13 @@
 import re
 import pandas as pd
 import numpy as np
+
 from bs4 import BeautifulSoup
+from bs4 import MarkupResemblesLocatorWarning
+
+# supress warnings from BeautifulSoup parser as we are not using it for parsing HTML
+import warnings
+warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning) 
 
 """
 Text utility functions for text cleaning and preprocessing.
@@ -69,6 +75,10 @@ def text_cleaner(df):
         df_clean[f'{col}_encoding_issue'] = False
         df_clean[f'{col}_control_chars'] = False
 
+        df_clean[f'{col}_URL'] = False
+        df_clean[f'{col}_error_pattern'] = False
+        df_clean[f'{col}_separator'] = False
+
     # Map original columns to their cleaned counterparts
     col_mapping = {
         'designation': 'designation_cleaned',
@@ -115,15 +125,41 @@ def text_cleaner(df):
             if re.search(r'^\s{1,}|\s{1,}$|\s{2,}', text):
                 df_clean.at[idx, f'{orig_col}_spaces'] = True
                 df_clean.at[idx, f'{orig_col}_org_clean'] = False
-            
+
+            # Check for URLs (both http and www)
+            if re.search(r'https?://|www\.', text):
+                df_clean.at[idx, f'{orig_col}_URL'] = True
+                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+
+            # Check for error patterns: \"", \ ', \', ??
+            if re.search(r'\\""|\\ \'|\\\'|\?{2,}', text):
+                df_clean.at[idx, f'{orig_col}_error_pattern'] = True
+                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+
+            # Check for separators like //, \\, or ////
+            if re.search(r'\s+(?://{2,}|\\{2,})\s+', text):
+                df_clean.at[idx, f'{orig_col}_separators'] = True
+                df_clean.at[idx, f'{orig_col}_org_clean'] = False
+
             
             # Clean text
             cleaned = text
 
-            cleaned = BeautifulSoup(cleaned, "html.parser").get_text() # Remove HTML tags and replace HTML entities
+            cleaned = BeautifulSoup(cleaned, "html.parser").get_text(separator=' ') # Replace HTML tags with space and HTML entities with character
 
-            cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]', '', cleaned)  # Remove control chars
-            
+            cleaned = re.sub(r'https?://[^\s]+|www\.[^\s]+', ' ', cleaned)  # Remove URLs
+
+            cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]', ' ', cleaned)  # Remove control chars
+
+            # Error patterns that can be removed
+            cleaned = re.sub(r'\\"', ' ', cleaned)          # Replace escaped quote with space
+            cleaned = re.sub(r'\\ \'', ' \' ', cleaned)     # Normalize escaped apostrophes
+            cleaned = re.sub(r'\\\'', '\'', cleaned)        # Replace escaped apostrophe with apostrophe
+            cleaned = re.sub(r'\?{2,}', ' ', cleaned)       # Replace multiple question marks with space
+            cleaned = re.sub(r'(\S+)\s*(?://{2,}|\\\\+)\s+(\S+)', r'\1 \2', cleaned)  # Fix separator patterns
+
+            # Remove whitespace characters e.g. \n, \r, \t
+            cleaned = re.sub(r'\s+', ' ', cleaned)  # Replace any whitespace sequence with a single space
             cleaned = re.sub(r'^\s+|\s+$', '', cleaned) # Remove leading/trailing spaces
             cleaned = re.sub(r'\s{2,}', ' ', cleaned)   # Replace multiple spaces
              
