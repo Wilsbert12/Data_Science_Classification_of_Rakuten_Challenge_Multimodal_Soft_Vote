@@ -153,7 +153,8 @@ def text_cleaner(df):
 
             cleaned = re.sub(r'https?://[^\s]+|www\.[^\s]+', ' ', cleaned)  # Remove URLs
 
-            cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]', ' ', cleaned)  # Remove control chars
+            cleaned = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]', ' ', cleaned)  # Remove control chars 
+            #TODO found \xa0 in output, will also need to be removed
 
             # Error patterns that can be removed
             cleaned = re.sub(r'\\"', ' ', cleaned)          # Replace escaped quote with space
