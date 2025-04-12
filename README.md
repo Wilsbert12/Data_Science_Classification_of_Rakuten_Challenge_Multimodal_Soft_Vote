@@ -4,30 +4,31 @@
 
 **Peter's questions**
 
-Flags:
-- [ ] 0,1 instead of True, False
+1. Flags:
+   - [x] 0,1 instead of True, False
 
-Descriptions:
-- [ ] Drop errors, e.g. "<br>Attention !!! Ce produit est un import [...]"
+2. Descriptions:
+   - [ ] Drop errors, e.g. "<br>Attention !!! Ce produit est un import [...]"
 
-Merged text:
-- [ ] Length
-- [ ] Number of words
+3. Merged text:
+   - [x] Length
+   - [x] Number of words
 
-Cleaned string variables
-- [ ] Similarity function
-- [ ] Drop similar descriptions or wait for under- and oversampling?
+4. Cleaned string variables
+   - [ ] Similarity function
+   - [ ] Drop similar descriptions or wait for under- and oversampling?
+
 ---
 ## Meeting notes: April 3rd
 1. [Step 2] // Preprocessing and feature engineering #7
-   [x] 1. Do not substitute accents
-   [x] 2. Do not convert everything to lowercase (yet)
+   - [x] 1. Do not substitute accents
+   - [x] 2. Do not convert everything to lowercase (yet)
    3. Set flag if...
-      [x] 1. ... description is missing
-      [x] 2. ... string is all upper case
-      [x] 3. ... if text contains encoding error
-      [x] 4. ... if title and description are identical
-   8. [] Do not merge strings if title and description are 95% identical checking:
+      - [x] 1. ... description is missing
+      - [x] 2. ... string is all upper case
+      - [x] 3. ... if text contains encoding error
+      - [x] 4. ... if title and description are identical
+   8. Do not merge strings if title and description are 95% identical checking:
       1. Lower case vs upper case
       2. Multiple spaces
 
