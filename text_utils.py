@@ -286,7 +286,7 @@ def text_pre_processing(df):
     # merge designation and description to merged_text 
     df['merged_text'] = df['designation'].fillna('') + df['description'].fillna('')
     # clean up, remove designation and description columns
-    df.drop(['designation', 'description'], axis = 1, inplace = 1)
+    df.drop(['designation', 'description'], axis=1, inplace=True)
     return df
 
 
