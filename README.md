@@ -10,11 +10,13 @@
 2. Descriptions:
    - [ ] Drop errors, e.g. "<br>Attention !!! Ce produit est un import [...]"
 
-3. Merged text:
+   >Yaniv's feedback 11apr2025: _'yes you should wait to see if it's a minority class or not. We would delete with ease if it's in a majority class, otherwise we should keep it because we need more datas'_
+
+4. Merged text:
    - [x] Length
    - [x] Number of words
 
-4. Cleaned string variables
+5. Cleaned string variables
    - [ ] Similarity function
    - [ ] Drop similar descriptions or wait for under- and oversampling?
 
