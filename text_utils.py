@@ -283,8 +283,12 @@ def text_pre_processing(df):
         df.designation = df.designation_cleaned
     # remove 'duplicated' descriptions or designations
     df = remove_duplicate_description_information(df)
-    # merge designation and description to merged_text 
-    df['merged_text'] = df['designation'].fillna('') + df['description'].fillna('')
+    # merge designation and description to merged_text, avoiding leading or trailing ' - ' while using it as seperators 
+    df['merged_text'] = np.where(
+    df['designation'].notna() & df['description'].notna(),
+    df['designation'] + ' - ' + df['description'],
+    df['designation'].fillna('') + df['description'].fillna('')
+    )
     # clean up, remove designation and description columns
     df.drop(['designation', 'description'], axis=1, inplace=True)
     return df
