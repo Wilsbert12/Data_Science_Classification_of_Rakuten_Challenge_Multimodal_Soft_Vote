@@ -146,6 +146,11 @@ def text_cleaner(df):
                 df_clean.at[idx, f"{orig_col}_separator"] = 1
                 df_clean.at[idx, f"{orig_col}_org_clean"] = 0
 
+            # Check for parentheses like (), [], {} and quotes like ‹› or « »
+            if re.search(r"[\(\)\[\]\{\}‹›«»]", text):
+                df_clean.at[idx, f"{orig_col}_parentheses"] = 1
+                df_clean.at[idx, f"{orig_col}_org_clean"] = 0
+
             # Clean text
             cleaned = text
 
@@ -169,27 +174,28 @@ def text_cleaner(df):
                 cleaned,
             )
 
-            # Error patterns that can be removed
-            cleaned = re.sub(r'\\"', " ", cleaned)  # Replace escaped quote with space
-            cleaned = re.sub(r"\\ \'", " ' ", cleaned)  # Normalize escaped apostrophes
-            cleaned = re.sub(
-                r"\\\'", "'", cleaned
-            )  # Replace escaped apostrophe with apostrophe
-            cleaned = re.sub(
-                r"\?{2,}", " ", cleaned
-            )  # Replace multiple question marks with space
-            cleaned = re.sub(
-                r"(\S+)\s*(?://{2,}|\\\\+)\s+(\S+)", r"\1 \2", cleaned
-            )  # Fix separator patterns
+            # Error patterns that can be replaced: Escaped quotes and apostrophes
+            cleaned = re.sub(r'\\"', " ", cleaned)
+            cleaned = re.sub(r"\\ \'", " ' ", cleaned)
+            cleaned = re.sub(r"\\\'", "'", cleaned)
+
+            # Replace multiple question marks with space
+            cleaned = re.sub(r"\?{2,}", " ", cleaned)
+
+            # Fix separator patterns
+            cleaned = re.sub(r"(\S+)\s*(?://{2,}|\\\\+)\s+(\S+)", r"\1 \2", cleaned)
 
             # Remove whitespace characters e.g. \n, \r, \t
-            cleaned = re.sub(
-                r"\s+", " ", cleaned
-            )  # Replace any whitespace sequence with a single space
-            cleaned = re.sub(
-                r"^\s+|\s+$", "", cleaned
-            )  # Remove leading/trailing spaces
-            cleaned = re.sub(r"\s{2,}", " ", cleaned)  # Replace multiple spaces
+            cleaned = re.sub(r"\s+", " ", cleaned)
+
+            # Remove parentheses and quotes
+            cleaned = re.sub(r"[\(\)\[\]\{\}‹›«»]", " ", cleaned)
+
+            # Remove leading/trailing spaces
+            cleaned = re.sub(r"^\s+|\s+$", "", cleaned)
+
+            # Replace multiple spaces with a single space
+            cleaned = re.sub(r"\s{2,}", " ", cleaned)
 
             # Update the cleaned text column
             df_clean.at[idx, clean_col] = cleaned
