@@ -81,6 +81,10 @@ def text_cleaner(df):
         df_clean[f"{col}_error_pattern"] = 0
         df_clean[f"{col}_separator"] = 0
 
+        df_clean[f"{col}_parentheses"] = 0
+        df_clean[f"{col}_question_marks"] = 0
+        df_clean[f"{col}_question_mark_char_count"] = 0
+
     # Map original columns to their cleaned counterparts
     col_mapping = {
         "designation": "designation_cleaned",
@@ -151,6 +155,17 @@ def text_cleaner(df):
                 df_clean.at[idx, f"{orig_col}_parentheses"] = 1
                 df_clean.at[idx, f"{orig_col}_org_clean"] = 0
 
+            # Check for multiple normal question marks and inverted question marks like ?? and ¿
+            if re.search(r"(\?{2,}|\¿)", text):
+                df_clean.at[idx, f"{orig_col}_question_marks"] = 1
+                df_clean.at[idx, f"{orig_col}_org_clean"] = 0
+
+                # Count question marks (both normal and inverted)
+                question_mark_count = len(re.findall(r"[\?\¿]", text))
+                df_clean.at[idx, f"{orig_col}_question_mark_char_count"] = (
+                    question_mark_count
+                )
+
             # Clean text
             cleaned = text
 
@@ -179,8 +194,8 @@ def text_cleaner(df):
             cleaned = re.sub(r"\\ \'", " ' ", cleaned)
             cleaned = re.sub(r"\\\'", "'", cleaned)
 
-            # Replace multiple question marks with space
-            cleaned = re.sub(r"\?{2,}", " ", cleaned)
+            # Remove multiple question marks and inverted question marks
+            cleaned = re.sub(r"(\?{2,}|\¿)", " ", cleaned)
 
             # Fix separator patterns
             cleaned = re.sub(r"(\S+)\s*(?://{2,}|\\\\+)\s+(\S+)", r"\1 \2", cleaned)
