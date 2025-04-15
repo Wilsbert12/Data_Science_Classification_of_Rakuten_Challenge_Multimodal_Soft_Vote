@@ -118,8 +118,11 @@ def text_cleaner(df):
                 df_clean.at[idx, f"{orig_col}_encoding_issue"] = 1
                 df_clean.at[idx, f"{orig_col}_org_clean"] = 0
 
-            # Check for control characters (except common whitespace)
-            if re.search(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]", text):
+            # Check for control characters and problematic whitespace
+            if re.search(
+                r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\xa0\u2000-\u200F\u2028-\u202F\u205F\u2060-\u206F\uFEFF]",
+                text,
+            ):
                 df_clean.at[idx, f"{orig_col}_control_chars"] = 1
                 df_clean.at[idx, f"{orig_col}_org_clean"] = 0
 
@@ -129,7 +132,7 @@ def text_cleaner(df):
                 df_clean.at[idx, f"{orig_col}_org_clean"] = 0
 
             # Check for URLs (both http and www)
-            if re.search(r"https?://|www\.", text):
+            if re.search(r"https?://[^\s\"'<>()]+|www\.[^\s\"'<>()]+", text):
                 df_clean.at[idx, f"{orig_col}_URL"] = 1
                 df_clean.at[idx, f"{orig_col}_org_clean"] = 0
 
@@ -159,9 +162,12 @@ def text_cleaner(df):
             # Remove URLs
             cleaned = re.sub(r"https?://[^\s\"'<>()]+", " ", cleaned)
 
+            # Remove control characters and problematic whitespace
             cleaned = re.sub(
-                r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]", " ", cleaned
-            )  # Remove control chars
+                r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\xa0\u2000-\u200F\u2028-\u202F\u205F\u2060-\u206F\uFEFF]",
+                " ",
+                cleaned,
+            )
 
             # Error patterns that can be removed
             cleaned = re.sub(r'\\"', " ", cleaned)  # Replace escaped quote with space
