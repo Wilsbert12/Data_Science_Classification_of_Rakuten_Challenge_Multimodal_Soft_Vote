@@ -6,4 +6,12 @@
   - Rakuten_eCommerce_Products
 - MISC
   - Training_Python_Plotly
-
+- language_analysis
+  - deepL_output_backup.csv
+  - deepL_result.csv
+  - df_lang.csv
+  - df_langdetect.csv
+  - df_localization.csv
+  - gemini_result.json
+  - merged_output.csv
+    
