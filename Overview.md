@@ -35,7 +35,8 @@
 ## File content
 
 - .ipynb_checkpoints
-  - Rakuten_eCommerce_Products \ ???
+  - Rakuten_eCommerce_Products\
+    ???
 - MISC
   - Training_Python_Plotly
 - language_analysis
