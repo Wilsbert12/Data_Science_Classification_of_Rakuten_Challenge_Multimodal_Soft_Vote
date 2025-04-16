@@ -67,7 +67,7 @@
   > 2. Visualisation of dimensionality reduction on product images to a 2d scatterplot (Isomap Algorithm)
 - README.md
   > Md file containing weekly project meeting notes and tasks
-**- Rakuten_eCommerce_Products**
+- **Rakuten_eCommerce_Products**
   > The main file containing 
 - X_test.csv
 - X_train.csv
