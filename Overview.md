@@ -60,9 +60,15 @@
 - Business_Impact.md
   > Detailed description of business impact of project
 - DeepL.ipynb
+  > Importing cleaned text and translating it via DeepL
 - Picture Experiments.ipynb
+  > Experimentation of image represenattion for Data Viz:
+  > 1. Grid of random product pictures
+  > 2. Visualisation of dimensionality reduction on product images to a 2d scatterplot (Isomap Algorithm)
 - README.md
-- Rakuten_eCommerce_Products
+  > Md file containing weekly project meeting notes and tasks
+**- Rakuten_eCommerce_Products**
+  > The main file containing 
 - X_test.csv
 - X_train.csv
 - data_viz.py
