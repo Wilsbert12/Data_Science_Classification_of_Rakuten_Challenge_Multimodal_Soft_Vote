@@ -2,6 +2,6 @@
 
 ## File structure
 
-1. .ipynb_checkpoints
-2.   
+- .ipynb_checkpoints
+  -    Rakuten_eCommerce_Products
 
