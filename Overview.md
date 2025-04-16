@@ -27,3 +27,7 @@
 - frequent_word.json
 - gemini.ipynb
 - image_utils.py
+- language_analysis.ipynb
+- text_utils.py
+- text_utils_test.py
+- y_train.csv
