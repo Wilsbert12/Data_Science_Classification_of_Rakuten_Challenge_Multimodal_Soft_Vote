@@ -14,4 +14,8 @@
   - df_localization.csv
   - gemini_result.json
   - merged_output.csv
-    
+- .gitignore
+- Business_Impact.md
+- DeepL.ipynb
+- Picture Experiments.ipynb
+- README.md    
