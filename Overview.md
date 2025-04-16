@@ -68,15 +68,26 @@
 - README.md
   > Md file containing weekly project meeting notes and tasks
 - **Rakuten_eCommerce_Products**
-  > The main file containing 
+  > **The main file containing most of the code. Most other files are executed and loaded into this file**
 - X_test.csv
+  > Test feature data 
 - X_train.csv
+  > Train feature data
 - data_viz.py
+  > File to remove data Viz execution code from main file. Does only contain wordcloud code so far.
 - df_image.csv
+  > CSV file containing image ids and respective meta data for each image (aspect ration etc.)
 - frequent_word.json
+  > saves the most frequent word per category for the wordcloud. Is created in data_viz.py file.
 - gemini.ipynb
+  > gemini translation???
 - image_utils.py
+  > extracts metadata from images. Planned: Immage Processing, classification
 - language_analysis.ipynb
+  > In depth analysis of languages detected
 - text_utils.py
+  > text cleaning and processing
 - text_utils_test.py
+  > Testing text_utils.py
 - y_train.csv
+  > Training target data
