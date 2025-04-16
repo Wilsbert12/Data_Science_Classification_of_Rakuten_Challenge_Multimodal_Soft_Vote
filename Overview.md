@@ -3,5 +3,6 @@
 ## File structure
 
 - .ipynb_checkpoints
-  -    Rakuten_eCommerce_Products
+  - Rakuten_eCommerce_Products
+- MISC
 
