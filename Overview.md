@@ -36,7 +36,7 @@
 
 - .ipynb_checkpoints
   - Rakuten_eCommerce_Products-checkpoint.ipynb\
-    Main file including links to issues (Github Kanban board)
+    > Main file including links to issues (Github Kanban board)
 - MISC
   - Training_Python_Plotly\
     ??
