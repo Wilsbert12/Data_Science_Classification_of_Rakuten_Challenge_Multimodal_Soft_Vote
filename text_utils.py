@@ -130,9 +130,30 @@ def text_cleaner(df):
     # Create a copy to avoid modifying the original DataFrame
     df_clean = df.copy()
 
-    # Create new columns for cleaned text
+    # Create columns for cleaned text
     df_clean["designation_cleaned"] = ""
     df_clean["description_cleaned"] = ""
+
+    # Create columns for string length
+    designation_len = df_clean["designation"].str.len()
+    description_len = df_clean["description"].str.len()
+
+    df_clean["designation_len"] = designation_len
+    df_clean["description_len"] = description_len
+    df_clean["designation_cleaned_len"] = 0
+    df_clean["description_cleaned_len"] = 0
+
+    df_clean["designation_saved_len"] = 0
+    df_clean["description_saved_len"] = 0
+
+    # Create columns for word count
+    df_clean["designation_word_count"] = df_clean["designation"].str.split().str.len()
+    df_clean["description_word_count"] = df_clean["description"].str.split().str.len()
+    df_clean["designation_cleaned_word_count"] = 0
+    df_clean["description_cleaned_word_count"] = 0
+
+    df_clean["designation_saved_words"] = 0
+    df_clean["description_saved_words"] = 0
 
     # Create flag columns
     for col in ["designation", "description"]:
@@ -295,6 +316,24 @@ def text_cleaner(df):
 
             # Update the cleaned_text text column
             df_clean.at[idx, clean_col] = cleaned_text
+
+    # Update columns for string length
+    designation_cleaned_len = df_clean["designation_cleaned"].str.len()
+    description_cleaned_len = df_clean["description_cleaned"].str.len()
+
+    df_clean["designation_cleaned_len"] = designation_cleaned_len
+    df_clean["description_cleaned_len"] = description_cleaned_len
+
+    df_clean["designation_saved_len"] = designation_len - designation_cleaned_len
+    df_clean["description_saved_len"] = description_len - description_cleaned_len
+
+    # Create columns for word count
+    df_clean["designation_cleaned_word_count"] = (
+        df_clean["designation_cleaned"].str.split().str.len()
+    )
+    df_clean["description_cleaned_word_count"] = (
+        df_clean["description_cleaned"].str.split().str.len()
+    )
 
     # Return cleaned DataFrame
     return df_clean
