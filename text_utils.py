@@ -245,52 +245,56 @@ def text_cleaner(df):
                 df_clean.at[idx, f"{orig_col}_org_clean"] = 0
 
             # Clean text
-            cleaned = text
+            cleaned_text = text
 
             # Replace HTML tags with space and HTML entities with character
-            cleaned = BeautifulSoup(cleaned, "html.parser").get_text(separator=" ")
+            cleaned_text = BeautifulSoup(cleaned_text, "html.parser").get_text(
+                separator=" "
+            )
 
             # Clean malformed HTML tags, e.g. leading and trailing tags without anchor brackets
-            cleaned = clean_malformed_html_tags(cleaned)
+            cleaned_text = clean_malformed_html_tags(cleaned_text)
 
             # Remove URLs
-            cleaned = re.sub(r"https?://[^\s\"'<>()]+", " ", cleaned)
+            cleaned_text = re.sub(r"https?://[^\s\"'<>()]+", " ", cleaned_text)
 
             # Remove control characters and problematic whitespace
-            cleaned = re.sub(
+            cleaned_text = re.sub(
                 r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\xa0\u2000-\u200F\u2028-\u202F\u205F\u2060-\u206F\uFEFF]",
                 " ",
-                cleaned,
+                cleaned_text,
             )
 
             # Error patterns that can be replaced: Escaped quotes and apostrophes
-            cleaned = re.sub(r'\\"', " ", cleaned)
-            cleaned = re.sub(r"\\ \'", " ' ", cleaned)
-            cleaned = re.sub(r"\\\'", "'", cleaned)
+            cleaned_text = re.sub(r'\\"', " ", cleaned_text)
+            cleaned_text = re.sub(r"\\ \'", " ' ", cleaned_text)
+            cleaned_text = re.sub(r"\\\'", "'", cleaned_text)
 
             # Remove multiple question marks and inverted question marks
-            cleaned = re.sub(r"(\?{2,}|\¿(?=[\s\.,;:!?]))", " ", cleaned)
+            cleaned_text = re.sub(r"(\?{2,}|\¿(?=[\s\.,;:!?]))", " ", cleaned_text)
 
             # Remove multiple dashes or hyphens
-            cleaned = re.sub(r"[-]{2,}", "-", cleaned)
+            cleaned_text = re.sub(r"[-]{2,}", "-", cleaned_text)
 
             # Fix separator patterns
-            cleaned = re.sub(r"(\S+)\s*(?://{2,}|\\\\+)\s+(\S+)", r"\1 \2", cleaned)
+            cleaned_text = re.sub(
+                r"(\S+)\s*(?://{2,}|\\\\+)\s+(\S+)", r"\1 \2", cleaned_text
+            )
 
             # Remove whitespace characters e.g. \n, \r, \t
-            cleaned = re.sub(r"\s+", " ", cleaned)
+            cleaned_text = re.sub(r"\s+", " ", cleaned_text)
 
             # Remove parentheses and quotes
-            cleaned = re.sub(r"[\(\)\[\]\{\}‹›«»]", " ", cleaned)
+            cleaned_text = re.sub(r"[\(\)\[\]\{\}‹›«»]", " ", cleaned_text)
 
             # Remove leading/trailing spaces
-            cleaned = re.sub(r"^\s+|\s+$", "", cleaned)
+            cleaned_text = re.sub(r"^\s+|\s+$", "", cleaned_text)
 
             # Replace multiple spaces with a single space
-            cleaned = re.sub(r"\s{2,}", " ", cleaned)
+            cleaned_text = re.sub(r"\s{2,}", " ", cleaned_text)
 
-            # Update the cleaned text column
-            df_clean.at[idx, clean_col] = cleaned
+            # Update the cleaned_text text column
+            df_clean.at[idx, clean_col] = cleaned_text
 
     # Return cleaned DataFrame
     return df_clean
