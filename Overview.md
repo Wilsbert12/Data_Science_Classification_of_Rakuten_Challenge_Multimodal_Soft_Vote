@@ -18,4 +18,9 @@
 - Business_Impact.md
 - DeepL.ipynb
 - Picture Experiments.ipynb
-- README.md    
+- README.md
+- Rakuten_eCommerce_Products
+- X_test.csv
+- X_train.csv
+- data_viz.py
+- df_image.csv
