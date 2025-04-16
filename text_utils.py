@@ -1,11 +1,12 @@
 import re
+
 import pandas as pd
 import numpy as np
 
 from bs4 import BeautifulSoup
 from bs4 import MarkupResemblesLocatorWarning
 
-# supress warnings from BeautifulSoup parser as we are not using it for parsing HTML
+# Supress warnings from BeautifulSoup parser as we are not using it for parsing HTML
 import warnings
 
 warnings.filterwarnings("ignore", category=MarkupResemblesLocatorWarning)
@@ -25,6 +26,77 @@ Planned features:
 These functions are designed to prepare text data for machine learning
 and natural language processing tasks.
 """
+
+
+import re
+
+
+def clean_malformed_html_tags(text):
+    """
+    Removes leading and trailing malformed HTML tags.
+    Handles tag combinations and internal paragraph markers.
+    """
+    # Define common HTML tags to look for
+    html_tags = [
+        "p",
+        "div",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "span",
+        "br",
+        "ul",
+        "li",
+        "a",
+        "img",
+        "table",
+        "tr",
+        "td",
+        "th",
+    ]
+
+    # Generate patterns for tag combinations (up to 2 tags combined)
+    tag_combinations = []
+    for tag1 in html_tags:
+        tag_combinations.append(tag1)
+        for tag2 in html_tags:
+            tag_combinations.append(tag1 + tag2)
+
+    # Create regex pattern for tags and combinations
+    tag_pattern = "|".join(tag_combinations)
+
+    # Step 1: Remove leading tag combinations
+    # Match one or more occurrences of tag-like strings at the beginning
+    leading_pattern = r"^((?:" + tag_pattern + r"){1,2})"
+    cleaned_text = re.sub(leading_pattern, "", text)
+
+    # Step 2: Remove trailing tag combinations
+    # Match one or more occurrences of tag-like strings at the end
+    trailing_pattern = r"((?:" + tag_pattern + r"){1,2})$"
+    cleaned_text = re.sub(trailing_pattern, "", cleaned_text)
+
+    # Step 3: Clean up internal paragraph markers
+    # This preserves paragraph structure while removing tags
+    internal_p_pattern = r"\s*p\s*p\s*"
+    cleaned_text = re.sub(internal_p_pattern, "\n\n", cleaned_text)
+
+    # Step 4: Handle combined tags within the text
+    # Replace tag combinations with appropriate spacing
+    for combo in tag_combinations:
+        if len(combo) > 1:  # Only process combinations, not single tags
+            pattern = r"\s*" + re.escape(combo) + r"\s*"
+            if "p" in combo:  # If it contains 'p', treat it as a paragraph break
+                cleaned_text = re.sub(pattern, "\n\n", cleaned_text)
+            else:  # Otherwise just replace with a space
+                cleaned_text = re.sub(pattern, " ", cleaned_text)
+
+    # Clean up extra whitespace and return
+    cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
+
+    return cleaned_text
 
 
 def text_cleaner(df):
@@ -178,12 +250,8 @@ def text_cleaner(df):
             # Replace HTML tags with space and HTML entities with character
             cleaned = BeautifulSoup(cleaned, "html.parser").get_text(separator=" ")
 
-            # Extract text from HTML tags without anchor brackets
-            pattern = r"^p(.*?)p$"
-            match = re.search(pattern, cleaned)
-
-            if match:
-                cleaned = match.group(1)
+            # Clean malformed HTML tags, e.g. leading and trailing tags without anchor brackets
+            cleaned = clean_malformed_html_tags(cleaned)
 
             # Remove URLs
             cleaned = re.sub(r"https?://[^\s\"'<>()]+", " ", cleaned)
