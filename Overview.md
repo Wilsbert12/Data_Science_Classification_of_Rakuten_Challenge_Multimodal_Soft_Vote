@@ -24,3 +24,6 @@
 - X_train.csv
 - data_viz.py
 - df_image.csv
+- frequent_word.json
+- gemini.ipynb
+- image_utils.py
