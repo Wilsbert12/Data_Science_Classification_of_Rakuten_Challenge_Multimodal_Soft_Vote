@@ -171,3 +171,76 @@ def downsample_image(input_path, output_path, target_size=(299, 299)):
     except Exception as e:
         print(f"Error processing {input_path}: {e}")
         return False
+
+
+def downsample_DataFrame(
+    df,
+    input_folder="./images/image_train/",
+    output_folder="./images/image_train_ds/",
+    target_size=(299, 299),
+    workers=8,
+):
+    """
+    Downsample product images contained in a DataFrame to target_size using parallel processing.
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing 'productid' and 'imageid' columns
+    input_folder : str, optional
+        Directory where images are stored
+        Default is './images/image_train/'
+    output_folder : str, optional
+        Directory where downsampled images will be saved
+        Default is './images/image_train_ds/'
+    target_size : tuple, optional
+        Target size for downsampling, default is (299, 299).
+    workers : int, optional
+        Number of parallel workers for processing, default is 8.
+
+    Returns:
+    --------
+    tuple
+        (total_images, successful_images) counts
+    """
+    # Create output directory if it doesn't exist
+    os.makedirs(output_folder, exist_ok=True)
+
+    file_paths = []
+
+    # Process each row in the input DataFrame
+    for idx, row in df.iterrows():
+        # Extract productid and imageid from the DataFrame
+        # Construct the input and output paths based on your DataFrame structure
+        # Adjust the filename construction based on your actual image naming convention
+        product_id = idx
+        image_id = row["imageid"]
+
+        # Construct the file paths
+        input_path = os.path.join(
+            input_folder, f"image_{image_id}_product_{product_id}.jpg"
+        )
+        output_path = os.path.join(
+            output_folder, f"image_{image_id}_product_{product_id}_ds.jpg"
+        )
+
+        # Only add if the input file exists
+        if os.path.exists(input_path):
+            file_paths.append((input_path, output_path))
+
+    print(f"Found {len(file_paths)} images to process.")
+
+    # Process images in parallel using available CPU cores
+    with ProcessPoolExecutor(max_workers=workers) as executor:
+        tasks = [
+            executor.submit(downsample_image, input_path, output_path, target_size)
+            for input_path, output_path in file_paths
+        ]
+
+        # Show progress
+        successful = 0
+        for future in tqdm(tasks, total=len(tasks), desc="Downsampling images"):
+            if future.result():
+                successful += 1
+    print(f"Successfully processed {successful} of {len(file_paths)} images")
+    return len(file_paths), successful
