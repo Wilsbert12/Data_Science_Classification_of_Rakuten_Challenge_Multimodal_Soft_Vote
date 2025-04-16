@@ -84,6 +84,7 @@ def text_cleaner(df):
         df_clean[f"{col}_parentheses"] = 0
         df_clean[f"{col}_question_marks"] = 0
         df_clean[f"{col}_question_mark_char_count"] = 0
+        df_clean[f"{col}_hyphen"] = 0
 
     # Map original columns to their cleaned counterparts
     col_mapping = {
@@ -156,7 +157,7 @@ def text_cleaner(df):
                 df_clean.at[idx, f"{orig_col}_org_clean"] = 0
 
             # Check for multiple normal question marks and inverted question marks like ?? and ¿
-            if re.search(r"(\?{2,}|\¿)", text):
+            if re.search(r"(\?{2,}|\¿(?=[\s\.,;:!?]))", text):
                 df_clean.at[idx, f"{orig_col}_question_marks"] = 1
                 df_clean.at[idx, f"{orig_col}_org_clean"] = 0
 
@@ -165,6 +166,11 @@ def text_cleaner(df):
                 df_clean.at[idx, f"{orig_col}_question_mark_char_count"] = (
                     question_mark_count
                 )
+
+            # Check for multiple dashes or hyphens
+            if re.search(r"[-]{2,}", text):
+                df_clean.at[idx, f"{orig_col}_hyphen"] = 1
+                df_clean.at[idx, f"{orig_col}_org_clean"] = 0
 
             # Clean text
             cleaned = text
@@ -195,7 +201,10 @@ def text_cleaner(df):
             cleaned = re.sub(r"\\\'", "'", cleaned)
 
             # Remove multiple question marks and inverted question marks
-            cleaned = re.sub(r"(\?{2,}|\¿)", " ", cleaned)
+            cleaned = re.sub(r"(\?{2,}|\¿(?=[\s\.,;:!?]))", " ", cleaned)
+
+            # Remove multiple dashes or hyphens
+            cleaned = re.sub(r"[-]{2,}", " ", cleaned)
 
             # Fix separator patterns
             cleaned = re.sub(r"(\S+)\s*(?://{2,}|\\\\+)\s+(\S+)", r"\1 \2", cleaned)
