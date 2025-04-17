@@ -17,9 +17,9 @@
     3. Transformers: ViT (Vision Transformer), DTR (Meta AI)
  4. **Mandatory task**: Voting classifier which combines the result of text and image models  
  5. **Next steps**: Split work into
-   1. Text classification
-   3. Image preprocessing
-   4. Presentation in Streamlit
+    1. Text classification
+    3. Image preprocessing
+    4. Presentation in Streamlit
 
 
 ## Meeting Notes: April 8th
