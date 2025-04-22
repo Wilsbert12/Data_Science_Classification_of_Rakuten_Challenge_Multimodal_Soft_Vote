@@ -8,7 +8,7 @@ import pandas as pd
 
 from PIL import Image
 from PIL.ExifTags import TAGS
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
 
 """
@@ -483,9 +483,9 @@ def crop_pad_and_resize_image_parallel(
     if n_workers is None:
         n_workers = os.cpu_count()
 
-    # Add suffix _cr to the base path for "crop and resize"
+    # Add suffix _cpr to the base path for "crop, pad and resize"
     input_folder = base_path
-    output_folder = re.sub(r"\/([^\/]*)$", r"_cr/\1", input_folder)
+    output_folder = re.sub(r"\/([^\/]*)$", r"_cpr/\1", input_folder)
 
     # Create output directory if it doesn't exist
     os.makedirs(output_folder, exist_ok=True)
@@ -494,11 +494,11 @@ def crop_pad_and_resize_image_parallel(
     worker_args = []
 
     # Prepare to track type of image processing in the DataFrame
-    columns_cr = ["downscaled", "upscaled", "exclude"]
+    columns_cpr = ["downscaled", "upscaled", "exclude"]
 
-    for c_cr in columns_cr:
-        if c_cr not in df.columns:
-            df[c_cr] = 0
+    for c_cpr in columns_cpr:
+        if c_cpr not in df.columns:
+            df[c_cpr] = 0
 
     # Check if bounding box columns exist in DataFrame
     has_bbox = all(col in df.columns for col in ["bb_x", "bb_y", "bb_w", "bb_h"])
@@ -522,7 +522,7 @@ def crop_pad_and_resize_image_parallel(
         )
 
         output_path = os.path.join(
-            output_folder, f"image_{image_id}_product_{product_id}_cr.jpg"
+            output_folder, f"image_{image_id}_product_{product_id}_cpr.jpg"
         )
 
         # Get bounding box if available
@@ -692,3 +692,179 @@ def hash_parallel(df, base_path="./images/image_train/", hash_size=8, n_workers=
     print(f"Successfully computed hashes for {successful} of {len(tasks)} images")
 
     return df
+
+
+def process_hash_chunk(chunk_data):
+    """
+    Process a chunk of product IDs to find duplicates.
+
+    Parameters:
+    -----------
+    chunk_data : tuple
+        (product_id_chunk, hash_dict, threshold) where:
+        - product_id_chunk is a list of product IDs to process
+        - hash_dict is a dictionary mapping product IDs to hash objects
+        - threshold is the maximum bit difference to consider as duplicate
+
+    Returns:
+    --------
+    tuple
+        (local_duplicates, local_duplicate_flags) where:
+        - local_duplicates is a list of (id1, id2, distance) tuples
+        - local_duplicate_flags is a dict mapping duplicate IDs to 1
+    """
+    product_id_chunk, hash_dict, threshold = chunk_data
+    local_duplicates = []
+    local_duplicate_flags = {}
+
+    # For each product in this chunk
+    for idx in product_id_chunk:
+        hash_obj = hash_dict[idx]
+
+        # Compare against all other products
+        for other_idx, other_hash in hash_dict.items():
+            # Skip self-comparison
+            if idx == other_idx:
+                continue
+
+            # Calculate hash difference
+            distance = hash_obj - other_hash
+
+            # If distance is within threshold, mark as duplicate
+            if distance <= threshold:
+                local_duplicates.append((idx, other_idx, distance))
+                local_duplicate_flags[other_idx] = 1
+
+    return local_duplicates, local_duplicate_flags
+
+
+def find_duplicates_parallel(df, threshold=5, n_workers=None):
+    """
+    Find duplicate images based on perceptual hash similarity in parallel.
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing 'phash' column with perceptual hash values
+    threshold : int, optional
+        Maximum bit difference to consider as duplicate, default is 5
+    n_workers : int, optional
+        Number of worker processes to use. If None, uses all available CPU cores.
+
+    Returns:
+    --------
+    pandas.DataFrame
+        The input DataFrame with an additional 'phash_duplicate' column
+    list
+        List of tuples containing (product_id1, product_id2, distance) for duplicate pairs
+    """
+    # Set number of workers
+    n_workers = os.cpu_count() if n_workers is None else n_workers
+
+    # Create 'phash_duplicate' column if it doesn't exist
+    if "phash_duplicate" not in df.columns:
+        df["phash_duplicate"] = 0
+
+    # Filter out rows without hash values
+    df_with_hash = df.dropna(subset=["phash"]).copy()
+
+    # Convert hash strings to hash objects (do this once)
+    hash_dict = {}
+    for idx, row in df_with_hash.iterrows():
+        hash_dict[idx] = imagehash.hex_to_hash(row["phash"])
+
+    # Get all product IDs with valid hashes
+    all_product_ids = list(hash_dict.keys())
+
+    # Split product IDs into chunks for parallel processing
+    # Use smaller chunks to ensure even distribution of work
+    chunk_size = max(1, len(all_product_ids) // (n_workers * 10))
+    chunks = [
+        all_product_ids[i : i + chunk_size]
+        for i in range(0, len(all_product_ids), chunk_size)
+    ]
+
+    print(
+        f"Processing {len(all_product_ids):,} images in {len(chunks)} chunks using {n_workers} workers"
+    )
+
+    # Prepare chunk data for workers
+    chunk_data = [(chunk, hash_dict, threshold) for chunk in chunks]
+
+    # Process chunks in parallel
+    all_duplicates = []
+    all_duplicate_flags = {}
+
+    with ProcessPoolExecutor(max_workers=n_workers) as executor:
+        # Process results with progress bar
+        results = list(
+            tqdm(
+                executor.map(process_hash_chunk, chunk_data),
+                total=len(chunks),
+                desc="Finding duplicate hashes",
+            )
+        )
+
+        # Merge results
+        for local_duplicates, local_duplicate_flags in results:
+            all_duplicates.extend(local_duplicates)
+            all_duplicate_flags.update(local_duplicate_flags)
+
+    # Update the DataFrame with duplicate flags
+    for idx in all_duplicate_flags:
+        df.loc[idx, "phash_duplicate"] = 1
+
+    # Remove any duplicate pairs (can happen with chunked processing)
+    # We sort the tuple elements to ensure consistent ordering
+    seen_pairs = set()
+    unique_duplicates = []
+
+    for a, b, c in all_duplicates:
+        # Ensure consistent ordering to detect duplicates
+        pair = (min(a, b), max(a, b))
+        if pair not in seen_pairs:
+            seen_pairs.add(pair)
+            unique_duplicates.append((pair[0], pair[1], c))
+
+    print(
+        f"Found {len(unique_duplicates)} unique duplicate pairs with threshold {threshold}"
+    )
+    print(f"Marked {len(all_duplicate_flags)} images as duplicates in the DataFrame")
+
+    return df, unique_duplicates
+
+
+def create_duplicates_dataframe(unique_duplicates):
+    """
+    Convert a list of duplicate image pairs into a structured DataFrame.
+
+    Parameters:
+    -----------
+    unique_duplicates : list
+        List of tuples containing (product_id1, product_id2, distance)
+        where product_id1 and product_id2 are the IDs of similar images
+        and distance is their perceptual hash difference
+
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame with columns for original_id, duplicate_id, and distance
+    """
+    # Create a dictionary with meaningful column names
+    data = {
+        "Original ID": [pair[0] for pair in unique_duplicates],
+        "Duplicate ID": [pair[1] for pair in unique_duplicates],
+        "hash distance": [pair[2] for pair in unique_duplicates],
+    }
+
+    # Create the DataFrame
+    duplicates_df = pd.DataFrame(data)
+
+    # Sort by hash distance (most similar pairs first)
+    duplicates_df = duplicates_df.sort_values("hash distance")
+
+    # Add a similarity percentage column (100% - normalized distance)
+    # Assuming 64-bit hash (hash_size=8), max possible distance is 64
+    duplicates_df["Similarity, pct"] = 100 * (1 - duplicates_df["hash distance"] / 64)
+
+    return duplicates_df
