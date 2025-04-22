@@ -1,5 +1,16 @@
 # feb25_bds_classification-of-rakuten-e-commerce-products
 
+## Meeting Notes: April 22nd
+
+1. **Mandatory task**: Text preprocessing ()
+    1. Save vectorizers in pickle file
+    2. @Wilsbert12: Could you please correct these notes and fill in the gaps?
+    3. Time estimate:
+        1. Not more than 5 hours for this part of project
+        2. Not more than 2 hours for training
+    3. deepL_result.csv: Temporary file we can probably include in .gitignore @thomas-borer
+    4. df_localization.csv: Latest and greatest in terms of localization 
+
 ## Meeting Notes: April 17th
 
 `NOTE: Time left until deadline May 2nd: Two weeks`
