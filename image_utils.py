@@ -1,6 +1,7 @@
 import os
 import cv2
 import re
+import imagehash
 
 import numpy as np
 import pandas as pd
@@ -597,4 +598,97 @@ def crop_pad_and_resize_image_parallel(
     print(f"  - Flagged {excluded} images for potential exclusion due to small size")
 
     # Return the DataFrame with the new columns
+    return df
+
+
+def hash_worker(args):
+    """
+    Worker function to compute perceptual hash for a single image.
+
+    Parameters:
+    -----------
+    args : tuple
+        (product_id, image_id, input_folder, hash_size) tuple
+
+    Returns:
+    --------
+    tuple
+        (product_id, image_id, hash_value) where hash_value is the computed perceptual hash
+    """
+
+    product_id, image_id, input_folder, hash_size = args
+
+    try:
+        # Construct the file path
+        input_path = os.path.join(
+            input_folder, f"image_{image_id}_product_{product_id}.jpg"
+        )
+
+        # Check if file exists
+        if not os.path.exists(input_path):
+            return product_id, image_id, None
+
+        # Open the image and compute perceptual hash
+
+        with Image.open(input_path) as img:
+            # Using perceptual hash as it's best for product images
+            hash_value = str(imagehash.phash(img, hash_size=hash_size))
+
+        return product_id, image_id, hash_value
+
+    except Exception as e:
+        print(f"Error processing product {product_id}, image {image_id}: {e}")
+        return product_id, image_id, None
+
+
+def hash_parallel(df, base_path="./images/image_train/", hash_size=8, n_workers=None):
+    """
+    Compute perceptual hashes for images in DataFrame using parallel processing.
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing 'productid' in index and column for 'imageid'
+    base_path : str, optional
+        Directory where images are stored, default is './images/image_train/'
+    hash_size : int, optional
+        Size of the hash (8 creates a 64-bit hash, 16 creates a 256-bit hash)
+        Default is 8
+    n_workers : int, optional
+        Number of worker processes to use. If None, uses all available CPU cores.
+
+    Returns:
+    --------
+    df : pandas.DataFrame
+        DataFrame with additional column 'phash' for images' perceptual hash values
+    """
+
+    # Set up workers and hash column
+    n_workers = os.cpu_count() if n_workers is None else n_workers
+    if "phash" not in df.columns:
+        df["phash"] = None
+
+    # Create tasks list
+    tasks = [(idx, row["imageid"], base_path, hash_size) for idx, row in df.iterrows()]
+
+    print(
+        f"\033[1mhash_parallel()\033[0m: Computing perceptual hashes for {len(tasks):,} images."
+    )
+
+    # Process hashing in parallel
+    successful = 0
+    with ProcessPoolExecutor(max_workers=n_workers) as executor:
+        # Process with progress bar
+        for product_id, image_id, hash_value in tqdm(
+            executor.map(hash_worker, tasks),
+            total=len(tasks),
+            desc="Computing perceptual hashes",
+        ):
+            # Update DataFrame if hash was computed successfully
+            if hash_value is not None:
+                df.loc[product_id, "phash"] = hash_value
+                successful += 1
+
+    print(f"Successfully computed hashes for {successful} of {len(tasks)} images")
+
     return df
