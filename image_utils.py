@@ -453,7 +453,4 @@ def detect_bounding_box_parallel(df, base_path="./images/image_train/", n_worker
 
     print(f"Successfully processed {successful} of {len(tasks)} images")
 
-    # Save the updated DataFrame
-    df.to_csv("df_image.csv", index=True)
-
     return df
