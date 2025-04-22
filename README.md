@@ -7,7 +7,7 @@ IMPORTANT NOTE: We are running very late. Defense is on the week of the 12th of 
 1. **Traditional ML:**
     - Problem: Long computing times
     - Solution:
-        - Vectorization before pipeline -> save reuse
+        - Vectorization before pipeline -> save & reuse
         - One set of Hyperparameters per vectorization only (do more if time allows)
         - deepl_results ist die falsche Datei als Input -> richtige Datei?
 
