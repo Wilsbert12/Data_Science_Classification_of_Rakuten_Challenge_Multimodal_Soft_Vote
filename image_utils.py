@@ -174,7 +174,7 @@ def downsample_image_worker(input_path, output_path, target_size=(299, 299)):
         return False
 
 
-def worker_wrapper(args):
+def worker_wrapper_ds(args):
     """
     Wrapper function that unpacks arguments for parallel image downsampling tasks.
 
@@ -272,7 +272,7 @@ def downsample_image_parallel(
         # Process results with a progress bar
         results = list(
             tqdm(
-                executor.map(worker_wrapper, worker_args),
+                executor.map(worker_wrapper_ds, worker_args),
                 total=len(worker_args),
                 desc="Downsampling images",
             )
@@ -453,4 +453,295 @@ def detect_bounding_box_parallel(df, base_path="./images/image_train/", n_worker
 
     print(f"Successfully processed {successful} of {len(tasks)} images")
 
+    return df
+
+
+def crop_pad_and_resize_image_worker(
+    input_path, output_path, bbox=None, target_size=(299, 299), min_length=75
+):
+    """
+    Process a single image by cropping to a bounding box and resizing to target size.
+
+    Parameters:
+    -----------
+    input_path : str
+        Path to the input image file.
+    output_path : str
+        Path where the processed image will be saved.
+    bbox : tuple, optional
+        Bounding box coordinates as (x, y, width, height). If None, uses full image.
+    target_size : tuple, optional
+        Target size for resizing, default is (299, 299).
+    min_length : int, optional
+        Minimum acceptable dimension size for quality filtering, default is 75.
+
+    Returns:
+    -------
+    tuple
+        (downscaled_flag, upscaled_flag, exclude_flag, success_flag) where:
+        - downscaled_flag: 1 if image was downscaled, 0 otherwise
+        - upscaled_flag: 1 if image was upscaled, 0 otherwise
+        - exclude_flag: 1 if image should be excluded due to small size, 0 otherwise
+        - success_flag: True if processing succeeded, False otherwise
+    """
+
+    # Set image processing flags to zero
+    downscaled = 0
+    upscaled = 0
+    exclude = 0
+
+    try:
+        # Read the image
+        img = cv2.imread(input_path)
+
+        # Check if the image was loaded successfully
+        if img is None:
+            print(f"Error: Could not read image {input_path}")
+            return downscaled, upscaled, exclude, False
+
+        # Crop to bounding box if provided
+        if bbox and all(v is not None for v in bbox):
+            x, y, w, h = bbox
+            img = img[y : y + h, x : x + w]
+
+        # Get current dimensions
+        h, w = img.shape[:2]
+        min_dim = min(h, w)
+        max_dim = max(h, w)
+        aspect_ratio = w / h if h > 0 else 1
+
+        # Determine if we need to upscale or downscale
+        # We'll use the smallest dimension for comparison since we'll be preserving
+        if min_dim > min(target_size):
+            # Downscaling - use INTER_AREA for better quality
+            interpolation = cv2.INTER_AREA
+            downscaled = 1
+
+        elif min_dim < min(target_size):
+            # Upscaling - use INTER_CUBIC for better quality
+            interpolation = cv2.INTER_CUBIC
+            upscaled = 1
+
+            # Set flag if image's shortest side is smaller than min_length
+            if min_dim < min_length:
+                exclude = 1
+        else:
+            # Edge case: Already the right size in at least one dimension
+            interpolation = cv2.INTER_LINEAR  # Compromise for mixed cases
+
+        # Calculate new dimensions while preserving aspect ratio
+        target_w, target_h = target_size
+
+        # Resize based on the smaller dimension to preserve aspect ratio
+        if w >= h:  # Wider than tall
+            new_w = round(target_h * aspect_ratio)
+            new_h = target_h
+        else:  # Taller than wide
+            new_w = target_w
+            new_h = round(target_w / aspect_ratio)
+
+        # Ensure the longer side doesn't exceed the target size
+        if new_w > target_w:
+            new_w = target_w
+            new_h = round(target_w / aspect_ratio)
+        if new_h > target_h:
+            new_h = target_h
+            new_w = round(target_h * aspect_ratio)
+
+        # Resize the image while maintaining aspect ratio
+        resized_img = cv2.resize(img, (new_w, new_h), interpolation=interpolation)
+
+        # Create a blank white canvas of the target size
+        canvas = np.ones((target_h, target_w, 3), dtype=np.uint8) * 255
+
+        # Calculate positioning to center the image
+        y_offset = (target_h - new_h) // 2
+        x_offset = (target_w - new_w) // 2
+
+        # Place the resized image onto the canvas
+        canvas[y_offset : y_offset + new_h, x_offset : x_offset + new_w] = resized_img
+
+        # Save the processed image
+        cv2.imwrite(output_path, canvas)
+
+        return downscaled, upscaled, exclude, True  # Note: Success flag is True here
+
+    except Exception as e:
+        print(f"Error processing {input_path}: {e}")
+        return downscaled, upscaled, exclude, False
+
+
+def worker_wrapper_cpr(args):
+    """
+    Wrapper function that unpacks arguments for parallel image cropping and resizing tasks.
+
+    Parameters:
+    -----------
+    args : tuple
+        A tuple containing (input_path, output_path, bbox, target_size, min_length)
+
+    Returns:
+    --------
+    tuple
+        (downscale_flag, upscale_flag, exclude_flag, success_flag) from the crop_pad_and_resize_image_worker function
+    """
+    input_path, output_path, bbox, target_size, min_length = args
+    return crop_pad_and_resize_image_worker(
+        input_path, output_path, bbox, target_size, min_length
+    )
+
+
+def crop_pad_and_resize_image_parallel(
+    df,
+    base_path="./images/image_train/",
+    target_size=(299, 299),
+    min_length=75,
+    n_workers=None,
+):
+    """
+    Crop and resize images contained in a DataFrame according to bounding box dimensions.
+    Add columns 'downscaled', 'upscaled' and 'exclude' to DataFrame
+
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing 'productid' in index and columns for 'imageid', 'bb_x', 'bb_y', 'bb_w', 'bb_h'
+    base_path : str, optional
+        Directory where images are stored
+        Default is './images/image_train/'
+    target_size : tuple, optional
+        Target size for resized images
+        Default is (299, 299)
+    min_length : int, optional
+        Minimum acceptable dimension size for quality filtering
+        Default is 75
+    n_workers : int, optional
+        Number of worker processes to use.
+        If None, uses all available CPU cores.
+
+    Returns:
+    --------
+    df : pandas.DataFrame
+        DataFrame with the new 'downscaled', 'upscaled', and 'exclude' columns
+    """
+
+    # Determine number of workers if not specified
+    if n_workers is None:
+        n_workers = os.cpu_count()
+
+    # Add suffix _cr to the base path for "crop and resize"
+    input_folder = base_path
+    output_folder = re.sub(r"\/([^\/]*)$", r"_cr/\1", input_folder)
+
+    # Create output directory if it doesn't exist
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Create a list of tasks for ProcessPoolExecutor
+    worker_args = []
+
+    # Prepare to track type of image processing in the DataFrame
+    columns_cr = ["downscaled", "upscaled", "exclude"]
+
+    for c_cr in columns_cr:
+        if c_cr not in df.columns:
+            df[c_cr] = 0
+
+    # Check if bounding box columns exist in DataFrame
+    has_bbox = all(col in df.columns for col in ["bb_x", "bb_y", "bb_w", "bb_h"])
+
+    # Track images that couldn't be found
+    missing_images = 0
+
+    # Create a mapping from task index to product ID for later reference
+    task_to_product = {}
+
+    # Process each row in the input DataFrame
+    task_idx = 0
+    for idx, row in df.iterrows():
+        # Get productid and imageid from the DataFrame
+        product_id = idx
+        image_id = row["imageid"]
+
+        # Construct the file paths
+        input_path = os.path.join(
+            input_folder, f"image_{image_id}_product_{product_id}.jpg"
+        )
+
+        output_path = os.path.join(
+            output_folder, f"image_{image_id}_product_{product_id}_cr.jpg"
+        )
+
+        # Get bounding box if available
+        bbox = None
+        if has_bbox:
+            bbox = (row.get("bb_x"), row.get("bb_y"), row.get("bb_w"), row.get("bb_h"))
+
+        # Only add if the input file exists
+        if os.path.exists(input_path):
+            worker_args.append((input_path, output_path, bbox, target_size, min_length))
+            task_to_product[task_idx] = product_id
+            task_idx += 1
+        else:
+            missing_images += 1
+
+    print(
+        f"\033[1mcrop_pad_and_resize_image_parallel()\033[0m: Found {len(worker_args):,} images to process."
+    )
+
+    if missing_images > 0:
+        print(
+            f"Warning: {missing_images} images referenced in DataFrame were not found on disk."
+        )
+
+    # Process images in parallel
+    downscale_flags = []
+    upscale_flags = []
+    exclude_flags = []
+    success_flags = []
+
+    with ProcessPoolExecutor(max_workers=n_workers) as executor:
+        # Process results with a progress bar
+        results = list(
+            tqdm(
+                executor.map(worker_wrapper_cpr, worker_args),
+                total=len(worker_args),
+                desc="Cropping & resizing images",
+            )
+        )
+
+        # Process the results and update DataFrame
+        for i, (downscale_flag, upscale_flag, exclude_flag, success_flag) in enumerate(
+            results
+        ):
+            downscale_flags.append(downscale_flag)
+            upscale_flags.append(upscale_flag)
+            exclude_flags.append(exclude_flag)
+            success_flags.append(success_flag)
+
+            # Only update the DataFrame if processing was successful
+            if success_flag:
+                product_id = task_to_product[i]
+
+                # Update all flags independently (not mutually exclusive)
+                if downscale_flag == 1:
+                    df.loc[product_id, "downscaled"] = 1
+
+                if upscale_flag == 1:
+                    df.loc[product_id, "upscaled"] = 1
+
+                if exclude_flag == 1:
+                    df.loc[product_id, "exclude"] = 1
+
+    # Count successful operations and categorized images
+    successful = sum(success_flags)
+    downscaled = sum(downscale_flags)
+    upscaled = sum(upscale_flags)
+    excluded = sum(exclude_flags)
+
+    print(f"Successfully processed {successful} of {len(worker_args)} images:")
+    print(f"  - Downscaled {downscaled} images")
+    print(f"  - Upscaled {upscaled} images")
+    print(f"  - Flagged {excluded} images for potential exclusion due to small size")
+
+    # Return the DataFrame with the new columns
     return df
