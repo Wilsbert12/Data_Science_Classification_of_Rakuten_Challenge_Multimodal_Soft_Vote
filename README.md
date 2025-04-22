@@ -10,6 +10,7 @@ IMPORTANT NOTE: We are running very late. Defense is on the week of the 12th of 
         - Vectorization before pipeline -> save & reuse
         - One set of Hyperparameters per vectorization only (do more if time allows)
         - deepl_results ist die falsche Datei als Input -> richtige Datei?
+        - Use resources like Google Colab to access GPU -> speed x10
 
 
 
