@@ -32,3 +32,5 @@
 vectorized_data/*.pkl
 checkpoints/*.pkl
 vectorized_data/*.pkl
+checkpoints/*.pkl
+vectorized_data/*.pkl
