@@ -9,7 +9,7 @@ import pandas as pd
 
 from PIL import Image
 from PIL.ExifTags import TAGS
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 
@@ -880,6 +880,149 @@ def create_duplicates_dataframe(unique_duplicates):
     duplicates_df["Similarity, pct"] = 100 * (1 - duplicates_df["hash distance"] / 64)
 
     return duplicates_df
+
+
+def preprocess_image(image_array):
+
+    # Process the image through all preprocessing steps
+    # 1. Create a copy for bounding box detection
+    img_bb = image_array.copy()
+
+    # Apply bounding box detection
+    gray = cv2.cvtColor(img_bb, cv2.COLOR_RGB2BGR)
+    gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    _, thresh = cv2.threshold(blurred, 247, 255, cv2.THRESH_BINARY_INV)
+    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Initialize coordinates
+    x, y, w, h = 0, 0, image_array.shape[1], image_array.shape[0]
+
+    # If contours found, get the largest one
+    if len(contours) > 0:
+        largest_contour = max(contours, key=cv2.contourArea)
+        x, y, w, h = cv2.boundingRect(largest_contour)
+
+    # Draw bounding box on the image
+    img_with_bb = image_array.copy()
+    img_with_bb = cv2.cvtColor(img_with_bb, cv2.COLOR_RGB2BGR)
+    img_with_bb = cv2.rectangle(img_with_bb, (x, y), (x + w, y + h), (0, 0, 255), 2)
+    img_with_bb = cv2.cvtColor(img_with_bb, cv2.COLOR_BGR2RGB)
+
+    # 2. Crop, pad and resize
+    # Calculate aspect ratio
+    ar = w / h if h > 0 else 1
+
+    # Crop to bounding box
+    img_cropped = image_array[y : y + h, x : x + w]
+
+    # Define target size
+    target_size = (299, 299)
+
+    # Calculate new dimensions while preserving aspect ratio
+    target_w, target_h = target_size
+
+    # Resize based on the smaller dimension to preserve aspect ratio
+    if w >= h:  # Wider than tall
+        new_w = round(target_h * ar)
+        new_h = target_h
+    else:  # Taller than wide
+        new_w = target_w
+        new_h = round(target_w / ar)
+
+    # Ensure the longer side doesn't exceed the target size
+    if new_w > target_w:
+        new_w = target_w
+        new_h = round(target_w / ar)
+    if new_h > target_h:
+        new_h = target_h
+        new_w = round(target_h * ar)
+
+    # Determine interpolation method
+    min_dim = min(h, w)
+    downscaled = 1 if min_dim > min(target_size) else 0
+    upscaled = 1 if min_dim < min(target_size) else 0
+    exclude = 1 if min_dim < 75 else 0
+
+    interpolation = (
+        cv2.INTER_AREA
+        if downscaled
+        else cv2.INTER_CUBIC if upscaled else cv2.INTER_LINEAR
+    )
+
+    # Resize the image while maintaining aspect ratio
+    resized_img = cv2.resize(img_cropped, (new_w, new_h), interpolation=interpolation)
+
+    # Create a blank white canvas of the target size
+    canvas = np.ones((target_h, target_w, 3), dtype=np.uint8) * 255
+
+    # Calculate positioning to center the image
+    y_offset = (target_h - new_h) // 2
+    x_offset = (target_w - new_w) // 2
+
+    # Place the resized image onto the canvas
+    canvas[y_offset : y_offset + new_h, x_offset : x_offset + new_w] = resized_img
+
+    # 3. Calculate perceptual hash
+    img_pil = Image.fromarray(image_array)
+    hash_value = str(imagehash.phash(img_pil, hash_size=8))
+
+    # Generate hash visualization
+    phash_img = display_phash(hash_value, size=8, scale=32)
+
+    # Create a dataframe with metadata
+    image_data = {
+        "name": "Uploaded image",
+        "file_size_kb": [len(image_array) / 1024],
+        "mean_r": [np.mean(image_array[:, :, 0])],
+        "mean_g": [np.mean(image_array[:, :, 1])],
+        "mean_b": [np.mean(image_array[:, :, 2])],
+        "bb_x": [x],
+        "bb_y": [y],
+        "bb_w": [w],
+        "bb_h": [h],
+        "bb_ar": [ar],
+        "downscale": [downscaled],
+        "upscale": [upscaled],
+        "exclude": [exclude],
+        "phash": [hash_value],
+    }
+
+    df_image_data = pd.DataFrame(image_data, index=["name"])
+
+    return img_with_bb, canvas, phash_img, df_image_data
+
+
+def display_phash(hash_hex, size=8, scale=32):
+    """
+    Visualize a product image's perceptual hash as a black and white image similar to a QR code.
+
+    Parameters:
+    - hash_hex: The perceptual hash value as a hexadecimal string
+    - size: Width/height of the hash visualization (default 8 for 64-bit hash)
+    - scale: Scaling factor to make the visualization larger
+
+    Returns:
+    - PIL Image object
+    """
+    # Convert hex hash to binary
+    binary = bin(int(hash_hex, 16))[2:].zfill(size * size)
+
+    # Create a new blank image (mode '1' is 1-bit pixels, black and white)
+    img = Image.new("1", (size, size))
+
+    # Fill the image based on the hash bits
+    for i in range(size):
+        for j in range(size):
+            pixel_index = i * size + j
+            if pixel_index < len(binary):
+                # Set pixel to white (1) if the hash bit is 1
+                img.putpixel((j, i), int(binary[pixel_index]))
+
+    # Scale it up for better visibility
+    img = img.resize((size * scale, size * scale), Image.NEAREST)
+
+    return img
 
 
 def copy_image_to_class_folders(

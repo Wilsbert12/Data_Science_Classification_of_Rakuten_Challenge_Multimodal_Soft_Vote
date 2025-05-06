@@ -7,12 +7,7 @@ import pandas as pd
 
 from PIL import Image
 from text_utils import text_cleaner
-
-df_text_clean = pd.read_csv("df_text_clean_streamlit.csv", index_col="productid")
-df_text_preprocessing = df_text_clean[["designation", "description"]]
-
-df_image_train = pd.read_csv("df_image_train.csv", index_col="productid")
-df_image_train_preprocessing = df_image_train[["imageid"]]
+from image_utils import preprocess_image, display_phash
 
 st.set_page_config(
     page_title="Preprocessing",
@@ -20,22 +15,112 @@ st.set_page_config(
     layout="wide",
 )
 
+
+# Constants
+BUCKET_NAME = "feb25_bds_classification-of-rakuten-e-commerce-products"
+GOOGLE_CLOUD_STORAGE_URL = "https://storage.googleapis.com"
+GCP_PROJECT_URL = f"{GOOGLE_CLOUD_STORAGE_URL}/{BUCKET_NAME}"
+
+# File names and URLs of DataFrames
+DF_TEXT_CLEAN_FN = "df_text_clean_streamlit.parquet"  # FN as in "file name"
+DF_TEXT_CLEAN_URL = f"{GCP_PROJECT_URL}/{DF_TEXT_CLEAN_FN}"
+
+DF_IMAGE_TRAIN_FN = "df_image_train.parquet"  # FN as in "file name"
+
+
+@st.cache_data()
+def load_DataFrame(URL):
+    """
+    Fetch a DataFrame from a given URL.
+
+    Parameters:
+    - URL: The URL to fetch the DataFrame from.
+
+    Returns:
+    - DataFrame: The fetched DataFrame.
+    """
+    df = pd.read_parquet(URL, engine="pyarrow")
+    return df
+
+
+def display_image(id):
+
+    pi = id[0]  # product ID
+    ii = id[1]  # image ID
+    ipo = id[2]  # image preprocessing option
+    iph = id[3]  # image preprocessing option
+
+    if ipo == "Original image data" or ipo == "1. Basic image data extraction":
+        fais = ""  # fais as in "folder and image suffix"
+    elif ipo == "2. Bounding box detection":
+        fais = "_bb"
+    elif ipo == "3. Crop, pad and resize":
+        fais = "_cpr"
+    else:
+        pass
+
+    # Create the full public URL for the image
+    if ipo != "(4. Duplicate search)":
+        image_path = f"image_{ii}_product_{pi}{fais}.jpg"
+        image_url = f"{GCP_PROJECT_URL}/images/image_train{fais}/{image_path}"
+    else:
+        image_url = display_phash(iph, size=8, scale=32)
+
+    # Display the image with product ID and image ID as caption
+    st.image(
+        image_url,
+        caption=f"Product ID: {pi} - Image ID: {ii}",
+        use_container_width=True,
+    )
+
+
+df_text_clean = load_DataFrame(DF_TEXT_CLEAN_URL)
+df_text_preprocessing = df_text_clean[["designation", "description"]]
+
+df_image_train = load_DataFrame(DF_IMAGE_TRAIN_FN)
+df_image_train_preprocessing = df_image_train[["imageid"]]
+
 st.title("Preprocessing")
 st.sidebar.header("Preprocessing")
 st.markdown(
     """
-Showcasing of preprocessing steps needed for...
-1. **strings** contained in columns `designation` and `description`
-2. **images** available in the directories 'image_train/' and 'image_test/'
+Showcasing of preprocessing steps needed for`...
+- **strings** contained in columns `designation` and `description`
+- **images** available in the directories 'image_train/' and 'image_test/'
 """
 )
 
-tab_text, tab_image = st.tabs(["1. Text preprocessing", "2. Image preprocessing"])
+with st.expander("**Options** for product data preview"):
+
+    # Create a horizontal container with columns
+    tpt_col1, tpt_col2 = st.columns([2, 3])  # tpt_ as in "text preprocessing tab"
+
+    # Number input in the first column
+    with tpt_col1:
+
+        nr_of_products = st.number_input(
+            "**Number** of products",
+            value=3,
+            min_value=1,
+            max_value=48,
+            step=3,
+            help="Select the number _n_ for product preview. Recommended value is a multiple of 3.",
+        )
+
+    # Place checkboxes in remaining columns
+    with tpt_col2:
+        sort_option = st.radio(
+            "**Sorting** option:",
+            ["First products", "Random products", "Last products"],
+            horizontal=True,
+            help="Select the sorting option for product preview. Either first _n_ products, random _n_ products or last _n_ products.",
+        )
+
+tab_text, tab_image, tab_showcase = st.tabs(
+    ["Text preprocessing", "Image preprocessing", "Try live functions"]
+)
 
 with tab_text:
-
-    # Show examples from DataFrame with text data
-    st.header("DataFrame with examples")
 
     # Selection text preprocessing step
     text_preprocessing_option = st.selectbox(
@@ -126,26 +211,25 @@ with tab_text:
             ["description", "description_cleaned", "description_parentheses"]
         ]
 
-    st.dataframe(df_text_preprocessing.head())
+    # Display the DataFrame with text data
+    rows_df_txt = df_text_preprocessing.shape[0]
 
-    # Showcase function from text_utils.py
-    st.header("Showcase text cleaning function")
-    text = st.text_input(
-        "Try text preprocessing:",
-        "Example   phrase     containing       spaces, tags and accents: <p>Caf&eacute;</p>.",
-    )
-    st.write("The cleaned text is:")
-    cleaned_text = text_cleaner(text)
-    st.code(cleaned_text, language="None")
+    if sort_option == "First products":
+        df_text_preprocessing = df_text_preprocessing.head(nr_of_products)
+        st.dataframe(df_text_preprocessing)
+    elif sort_option == "Last products":
+        df_text_preprocessing = df_text_preprocessing.tail(nr_of_products)
+        st.dataframe(df_text_preprocessing)
+    elif sort_option == "Random products":
+        df_text_preprocessing = df_text_preprocessing.sample(nr_of_products)
+        st.dataframe(df_text_preprocessing)
+
 
 with tab_image:
 
-    # Show examples from DataFrame with image data
-    st.header("DataFrame with examples")
-
     # Text model section
     image_preprocessing_option = st.selectbox(
-        "Select step:",
+        "Select preprocessing step for images:",
         (
             "Original image data",
             "1. Basic image data extraction",
@@ -176,10 +260,6 @@ with tab_image:
                 "bb_w",
                 "bb_h",
                 "bb_ar",
-                "file_size_kb",
-                "mean_r",
-                "mean_g",
-                "mean_b",
             ]
         ]
     elif image_preprocessing_option == "3. Crop, pad and resize":
@@ -192,10 +272,6 @@ with tab_image:
                 "bb_w",
                 "bb_h",
                 "bb_ar",
-                "file_size_kb",
-                "mean_r",
-                "mean_g",
-                "mean_b",
                 "downscale",
                 "upscale",
                 "exclude",
@@ -206,48 +282,99 @@ with tab_image:
             [
                 "imageid",
                 "prdtypecode",
-                "bb_x",
-                "bb_y",
-                "bb_w",
-                "bb_h",
-                "bb_ar",
-                "file_size_kb",
-                "mean_r",
-                "mean_g",
-                "mean_b",
-                "downscale",
-                "upscale",
-                "exclude",
                 "phash",
                 "phash_duplicate",
             ]
         ]
 
-    # df_text_filtered = df_text_clean[text_preprocessing_option]
-    st.dataframe(df_image_train_preprocessing.head())
+    # Display the DataFrame with image data
+    rows_df_img = df_image_train_preprocessing.shape[0]
 
-    # Showcase function from image_utils.py
-    st.header("Showcase image preprocessing function")
+    if sort_option == "First products":
+        df_image_train_preprocessing = df_image_train_preprocessing.head(nr_of_products)
+        st.dataframe(df_image_train_preprocessing)
+    elif sort_option == "Last products":
+        df_image_train_preprocessing = df_image_train_preprocessing.tail(nr_of_products)
+        st.dataframe(df_image_train_preprocessing)
+    elif sort_option == "Random products":
+        df_image_train_preprocessing = df_image_train_preprocessing.sample(
+            nr_of_products
+        )
+        st.dataframe(df_image_train_preprocessing)
 
-    # Upload image
-    uploaded_image = st.file_uploader("Upload an image...", type=["png", "jpg", "jpeg"])
+    # Display table containing original images and ...
+    # ... images with bounding boxes or
+    # ... cropped, padded and resized images
 
-    if uploaded_image is not None:
-        # Read the uploaded image
-        image = Image.open(uploaded_image)
+    # Iterate over the rows of the DataFrame
+    image_data = []
 
-        # Convert to numpy array for OpenCV processing
-        image_array = np.array(image)
+    for product_id, row in df_image_train_preprocessing.iterrows():
+        product_id = str(product_id)
+        image_id = str(int(row["imageid"]))
+        image_phash = str(row["phash"]) if "phash" in row else ""
 
-        # Preprocessing options
-        col1, col2, col3 = st.columns(3)
+        image_data.append(
+            [product_id, image_id, image_preprocessing_option, image_phash]
+        )
 
-        with col1:
-            st.markdown("**Original image**")
-            st.image(image, use_container_width=True)
-        with col2:
-            st.markdown("**Bounding box**")
-            st.image(image, use_container_width=True)
-        with col3:
-            st.markdown("**Crop, pad and resize**")
-            st.image(image, use_container_width=True)
+    # Create a grid layout with 3 columns
+    cols = st.columns(3)
+
+    # Display each image in its own column
+    for i, image_data in enumerate(image_data):
+        with cols[i % 3]:
+            display_image(image_data)
+
+
+with tab_showcase:
+
+    # Showcase text cleaning function from text_utils.py
+    with st.expander("**Try** text cleaning function"):
+        text = st.text_input(
+            "Try text preprocessing:",
+            "<p>Example containing examples   e.g.      spaces,     <strong>HTML tags, </strong>  and accents: Tu veux du Caf&eacute;?</p>",
+        )
+        st.write("The cleaned text is:")
+        cleaned_text = text_cleaner(text)
+        st.code(cleaned_text, language="None")
+
+    # Showcase image preprocessing function from image_utils.py
+    with st.expander("**Try** image preprocessing function"):
+
+        # Upload image
+        uploaded_image = st.file_uploader(
+            "Upload an image...", type=["png", "jpg", "jpeg"]
+        )
+
+        if uploaded_image is not None:
+
+            # Read the uploaded image
+            image = Image.open(uploaded_image)
+
+            # Convert to numpy array for OpenCV processing
+            image_array = np.array(image)
+
+            img_with_bb, img_cpr, img_phash, df_uploaded_image = preprocess_image(
+                image_array
+            )
+
+            # Preprocessing options
+            ipt_col1, ipt_col2, ipt_col3, ipt_col4 = st.columns(
+                4
+            )  # ipt_ as in "image preprocessing tab"
+
+            with ipt_col1:
+                st.markdown("**Uploaded image**")
+                st.image(uploaded_image, use_container_width=True)
+            with ipt_col2:
+                st.markdown("**Bounding box**")
+                st.image(img_with_bb, use_container_width=True)
+            with ipt_col3:
+                st.markdown("**Crop, pad and resize**")
+                st.image(img_cpr, use_container_width=True)
+            with ipt_col4:
+                st.markdown("**Perceptual hash**")
+                st.image(img_phash, use_container_width=True)
+
+            st.dataframe(df_uploaded_image, use_container_width=True)
