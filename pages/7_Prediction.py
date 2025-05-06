@@ -1,5 +1,10 @@
 # Prepare image for prediction using identical preprocessing pipeline of training database
 
+st.set_page_config(
+    page_title="Prediction",
+    page_icon="images/logos/rakuten-favicon.ico",
+    layout="wide",
+)
 
 transform = transforms.Compose(
     [
@@ -40,11 +45,6 @@ print(f"Predicted class: {predicted.item()}")
 # Prediction
 import streamlit as st
 
-st.set_page_config(
-    page_title="Prediction",
-    page_icon="images/logos/rakuten-favicon.ico",
-    layout="wide",
-)
 
 st.title("Prediction")
 st.sidebar.header("Prediction")
