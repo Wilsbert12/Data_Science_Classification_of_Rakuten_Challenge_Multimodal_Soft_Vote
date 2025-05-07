@@ -1,5 +1,6 @@
 # Data Visualization
 import streamlit as st
+from streamlit_utils import add_pagination
 
 st.set_page_config(
     page_title="FEB25 BDS // Data Visualization",
@@ -32,3 +33,9 @@ fig, ax = plt.subplots()
 st.pyplot(fig)
 """
 )
+
+
+# Pagination and footer
+st.markdown("---")
+add_pagination("pages/4_Data_Visualization.py")
+st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")

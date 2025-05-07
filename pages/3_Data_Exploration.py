@@ -1,5 +1,6 @@
 # Data Exploration
 import streamlit as st
+from streamlit_utils import add_pagination
 
 st.set_page_config(
     page_title="FEB25 BDS // Data Exploration",
@@ -34,3 +35,9 @@ data = pd.read_csv('your_data.csv')
 # Example data preview section
 st.header("Data Preview")
 st.write("Add code to display your dataframe here")
+
+
+# Pagination and footer
+st.markdown("---")
+add_pagination("pages/3_Data_Exploration.py")
+st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")

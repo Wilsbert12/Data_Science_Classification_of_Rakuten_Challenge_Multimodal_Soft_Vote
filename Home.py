@@ -1,5 +1,6 @@
 # Home.py
 import streamlit as st
+from streamlit_utils import add_pagination
 
 st.set_page_config(
     page_title="FEB25 BDS // Rakuten: Classification of eCommmerce products",
@@ -21,39 +22,8 @@ st.markdown(
     The goal of this project is to classify products from the **Rakuten dataset** into different categories.
     """
 )
+
+# Pagination and footer
 st.markdown("---")
-
-# Create navigation dropdown
-page_selected = st.selectbox(
-    "Use the sidebar or drowdown menu to navigate through the steps of our project:",
-    [
-        "Home",
-        "1. Project Presentation",
-        "2. Team Presentation",
-        "3. Data Exploration",
-        "4. Data Visualization",
-        "5. Data Preprocessing",
-        "6. Modelling",
-        "7. Prediction",
-        "8. Thank you",
-    ],
-    key="navigation_dropdown",
-)
-
-# Handle navigation
-if page_selected == "1. Project Presentation":
-    st.switch_page("pages/1_Project_Presentation.py")
-elif page_selected == "2. Team Presentation":
-    st.switch_page("pages/2_Team_Presentation.py")
-elif page_selected == "3. Data Exploration":
-    st.switch_page("pages/3_Data_Exploration.py")
-elif page_selected == "4. Data Visualization":
-    st.switch_page("pages/4_Data_Visualization.py")
-elif page_selected == "5. Data Preprocessing":
-    st.switch_page("pages/5_Data_Preprocessing.py")
-elif page_selected == "6. Modelling":
-    st.switch_page("pages/6_Modelling.py")
-elif page_selected == "7. Prediction":
-    st.switch_page("pages/7_Prediction.py")
-elif page_selected == "8. Thank you":
-    st.switch_page("pages/8_Thank_you.py")
+add_pagination("pages/Home.py")
+st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")

@@ -1,5 +1,6 @@
 # Prediction
 import streamlit as st
+from streamlit_utils import add_pagination
 
 st.set_page_config(
     page_title="FEB25 BDS // Prediction",
@@ -62,3 +63,9 @@ with torch.no_grad():
 
 print(f"Predicted class: {predicted.item()}")
 """
+
+
+# Pagination and footer
+st.markdown("---")
+add_pagination("pages/7_Prediction.py")
+st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")

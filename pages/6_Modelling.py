@@ -1,5 +1,6 @@
 # Modelling
 import streamlit as st
+from streamlit_utils import add_pagination
 
 st.set_page_config(
     page_title="FEB25 BDS // Modelling",
@@ -48,3 +49,9 @@ with tab_image:
     # Model parameters section
     st.header("Model Parameters")
     st.write("Add model parameter sliders and inputs here")
+
+
+# Pagination and footer
+st.markdown("---")
+add_pagination("pages/6_Modelling.py")
+st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")

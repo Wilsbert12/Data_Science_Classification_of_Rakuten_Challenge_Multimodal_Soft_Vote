@@ -8,6 +8,7 @@ import pandas as pd
 from PIL import Image
 from text_utils import text_cleaner
 from image_utils import preprocess_image, display_phash
+from streamlit_utils import add_pagination
 
 st.set_page_config(
     page_title="Preprocessing",
@@ -391,3 +392,8 @@ with tab_showcase:
                 st.image(img_phash, use_container_width=True)
 
             st.dataframe(df_uploaded_image, use_container_width=True)
+
+# Pagination and footer
+st.markdown("---")
+add_pagination("pages/5_Data_Preprocessing.py")
+st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")
