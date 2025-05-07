@@ -8,6 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
+st.progress(4 / 8)
 st.title("Data Visualization")
 st.sidebar.header(":material/query_stats: Data Visualization")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)

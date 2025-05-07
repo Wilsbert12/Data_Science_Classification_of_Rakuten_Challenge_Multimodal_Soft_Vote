@@ -8,10 +8,12 @@ st.set_page_config(
     layout="wide",
 )
 
+st.progress(0 / 8)
 st.title("FEB25 BDS // Rakuten")
 
 st.sidebar.header(":material/home: Home")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
+
 
 # Home page content
 st.write("## eCommerce Products Classification Project")

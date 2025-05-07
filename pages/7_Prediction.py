@@ -8,6 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
+st.progress(7 / 8)
 st.title("Prediction")
 st.sidebar.header(":material/category_search: Prediction")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)

@@ -8,6 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
+st.progress(6 / 8)
 st.title("Modelling")
 st.sidebar.header(":material/model_training: Modelling")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)

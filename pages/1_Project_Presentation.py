@@ -8,6 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
+st.progress(1 / 8)
 st.title("Project Presentation")
 st.sidebar.header(":material/work: Project Presentation")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)

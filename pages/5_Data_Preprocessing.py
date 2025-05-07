@@ -11,7 +11,7 @@ from image_utils import preprocess_image, display_phash
 from streamlit_utils import add_pagination
 
 st.set_page_config(
-    page_title="Preprocessing",
+    page_title="FEB25 BDS // Preprocessing",
     page_icon="images/logos/rakuten-favicon.ico",
     layout="wide",
 )
@@ -82,6 +82,7 @@ df_text_preprocessing = df_text_clean[["designation", "description"]]
 df_image_train = load_DataFrame(DF_IMAGE_TRAIN_FN)
 df_image_train_preprocessing = df_image_train[["imageid", "designation"]]
 
+st.progress(5 / 8)
 st.title("FEB25 BDS // Data Preprocessing")
 st.sidebar.header(":material/rule: Data Preprocessing")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
