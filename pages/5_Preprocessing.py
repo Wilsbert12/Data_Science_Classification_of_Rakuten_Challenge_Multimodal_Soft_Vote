@@ -47,8 +47,9 @@ def display_image(id):
 
     pi = id[0]  # product ID
     ii = id[1]  # image ID
-    ipo = id[2]  # image preprocessing option
-    iph = id[3]  # image preprocessing option
+    pt = id[2]  # product title, aka designation
+    ipo = id[3]  # image preprocessing option
+    iph = id[4]  # image perceptual hash
 
     if ipo == "Original image data" or ipo == "1. Basic image data extraction":
         fais = ""  # fais as in "folder and image suffix"
@@ -69,7 +70,7 @@ def display_image(id):
     # Display the image with product ID and image ID as caption
     st.image(
         image_url,
-        caption=f"Product ID: {pi} - Image ID: {ii}",
+        caption=f"Title: {pt[:33]} - Product: {pi} - Image: {ii}",
         use_container_width=True,
     )
 
@@ -78,13 +79,13 @@ df_text_clean = load_DataFrame(DF_TEXT_CLEAN_URL)
 df_text_preprocessing = df_text_clean[["designation", "description"]]
 
 df_image_train = load_DataFrame(DF_IMAGE_TRAIN_FN)
-df_image_train_preprocessing = df_image_train[["imageid"]]
+df_image_train_preprocessing = df_image_train[["imageid", "designation"]]
 
 st.title("Preprocessing")
 st.sidebar.header("Preprocessing")
 st.markdown(
     """
-Showcasing of preprocessing steps needed for`...
+Showcasing of preprocessing steps needed for...
 - **strings** contained in columns `designation` and `description`
 - **images** available in the directories 'image_train/' and 'image_test/'
 """
@@ -243,6 +244,7 @@ with tab_image:
         df_image_train_preprocessing = df_image_train[
             [
                 "imageid",
+                "designation",
                 "prdtypecode",
                 "file_size_kb",
                 "mean_r",
@@ -254,6 +256,7 @@ with tab_image:
         df_image_train_preprocessing = df_image_train[
             [
                 "imageid",
+                "designation",
                 "prdtypecode",
                 "bb_x",
                 "bb_y",
@@ -266,6 +269,7 @@ with tab_image:
         df_image_train_preprocessing = df_image_train[
             [
                 "imageid",
+                "designation",
                 "prdtypecode",
                 "bb_x",
                 "bb_y",
@@ -281,6 +285,7 @@ with tab_image:
         df_image_train_preprocessing = df_image_train[
             [
                 "imageid",
+                "designation",
                 "prdtypecode",
                 "phash",
                 "phash_duplicate",
@@ -312,10 +317,17 @@ with tab_image:
     for product_id, row in df_image_train_preprocessing.iterrows():
         product_id = str(product_id)
         image_id = str(int(row["imageid"]))
+        product_title = str(row["designation"])
         image_phash = str(row["phash"]) if "phash" in row else ""
 
         image_data.append(
-            [product_id, image_id, image_preprocessing_option, image_phash]
+            [
+                product_id,
+                image_id,
+                product_title,
+                image_preprocessing_option,
+                image_phash,
+            ]
         )
 
     # Create a grid layout with 3 columns
