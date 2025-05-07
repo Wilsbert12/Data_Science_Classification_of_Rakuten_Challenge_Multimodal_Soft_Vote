@@ -2,7 +2,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Data Exploration",
+    page_title="FEB25 BDS // Data Exploration",
     page_icon="images/logos/rakuten-favicon.ico",
     layout="wide",
 )

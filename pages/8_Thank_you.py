@@ -2,7 +2,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Thank You",
+    page_title="FEB25 BDS // Thank You",
     page_icon="images/logos/rakuten-favicon.ico",
     layout="wide",
 )
@@ -44,18 +44,6 @@ st.subheader("Project Exploration Progress")
 st.progress(100)
 st.success("You've completed the entire project tour! Thank you for your interest!")
 
-# Optional: Add team contact information
-st.markdown("---")
-st.subheader("Connect With Us")
-
-# You can customize this part with actual team information
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.info("Project Lead: [Team Member Name](mailto:email@example.com)")
-with col2:
-    st.info("Data Science: [Team Member Name](mailto:email@example.com)")
-with col3:
-    st.info("Development: [Team Member Name](mailto:email@example.com)")
 
 # Final touch - a simple animation
 st.balloons()

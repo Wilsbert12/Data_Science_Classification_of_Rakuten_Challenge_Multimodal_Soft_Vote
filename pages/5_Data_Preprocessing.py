@@ -81,8 +81,8 @@ df_text_preprocessing = df_text_clean[["designation", "description"]]
 df_image_train = load_DataFrame(DF_IMAGE_TRAIN_FN)
 df_image_train_preprocessing = df_image_train[["imageid", "designation"]]
 
-st.title("Preprocessing")
-st.sidebar.header("Preprocessing")
+st.title("FEB25 BDS // Data Preprocessing")
+st.sidebar.header("Data Preprocessing")
 st.markdown(
     """
 Showcasing of preprocessing steps needed for...
