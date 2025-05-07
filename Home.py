@@ -25,7 +25,7 @@ page_selected = st.selectbox(
         "2. Team Presentation",
         "3. Data Exploration",
         "4. Data Visualization",
-        "5. Preprocessing",
+        "5. Data Preprocessing",
         "6. Modelling",
         "7. Prediction",
         "8. Thank you",
@@ -42,8 +42,8 @@ elif page_selected == "3. Data Exploration":
     st.switch_page("pages/3_Data_Exploration.py")
 elif page_selected == "4. Data Visualization":
     st.switch_page("pages/4_Data_Visualization.py")
-elif page_selected == "5. Preprocessing":
-    st.switch_page("pages/5_Preprocessing.py")
+elif page_selected == "5. Data Preprocessing":
+    st.switch_page("pages/5_Data_Preprocessing.py")
 elif page_selected == "6. Modelling":
     st.switch_page("pages/6_Modelling.py")
 elif page_selected == "7. Prediction":
