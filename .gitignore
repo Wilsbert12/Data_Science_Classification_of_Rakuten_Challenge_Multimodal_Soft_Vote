@@ -6,12 +6,6 @@
 !/images/logos/
 !/images/profile_pictures/
 
-# Ignore JPG/JPEG files regardless of location
-*.jpg
-*.jpeg
-*.JPG
-*.JPEG
-
 # Ignore folder containing byte-compiled, optimized, DLL files
 /__pycache__/
 *.py[cod]
