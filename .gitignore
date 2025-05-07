@@ -2,8 +2,9 @@
 /images/*
 /Images/*
 
-# Re-include logo directory
+# Re-include directories with logos and profile pictures
 !/images/logos/
+!/images/profile_pictures/
 
 # Ignore JPG/JPEG files regardless of location
 *.jpg

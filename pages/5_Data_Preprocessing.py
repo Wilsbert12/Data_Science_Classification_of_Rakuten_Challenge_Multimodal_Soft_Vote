@@ -82,7 +82,8 @@ df_image_train = load_DataFrame(DF_IMAGE_TRAIN_FN)
 df_image_train_preprocessing = df_image_train[["imageid", "designation"]]
 
 st.title("FEB25 BDS // Data Preprocessing")
-st.sidebar.header("Data Preprocessing")
+st.sidebar.header(":material/rule: Data Preprocessing")
+st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 st.markdown(
     """
 Showcasing of preprocessing steps needed for...

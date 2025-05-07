@@ -8,7 +8,8 @@ st.set_page_config(
 )
 
 st.title("Thank You")
-st.sidebar.header("Thank You")
+st.sidebar.header(":material/folded_hands: Thank You")
+st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
 # Main content
 st.markdown(

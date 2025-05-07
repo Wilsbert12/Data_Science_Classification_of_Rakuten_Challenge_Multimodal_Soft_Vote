@@ -8,7 +8,8 @@ st.set_page_config(
 )
 
 st.title("Data Exploration")
-st.sidebar.header("Data Exploration")
+st.sidebar.header(":material/search: Data Exploration")
+st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
 # Add your data exploration code here
 st.write("Welcome to the Data Exploration page!")

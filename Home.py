@@ -8,20 +8,27 @@ st.set_page_config(
 )
 
 st.title("FEB25 BDS // Rakuten")
+
+st.sidebar.header(":material/home: Home")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
 # Home page content
 st.write("## eCommerce Products Classification Project")
 st.markdown(
-    "This is a Streamlit app for the FEB25 BDS project on **eCommerce product classification**.  \nThe goal of this project is to classify products from the **Rakuten dataset** into different categories."
+    """
+    This is a Streamlit app for DataScientest's FEB25 BDS project on **eCommerce product classification**.
+    
+    The goal of this project is to classify products from the **Rakuten dataset** into different categories.
+    """
 )
+st.markdown("---")
 
 # Create navigation dropdown
 page_selected = st.selectbox(
     "Use the sidebar or drowdown menu to navigate through the steps of our project:",
     [
         "Home",
-        "1. Project Overview",
+        "1. Project Presentation",
         "2. Team Presentation",
         "3. Data Exploration",
         "4. Data Visualization",
@@ -34,8 +41,8 @@ page_selected = st.selectbox(
 )
 
 # Handle navigation
-if page_selected == "1. Project Overview":
-    st.switch_page("pages/1_Project_Overview.py")
+if page_selected == "1. Project Presentation":
+    st.switch_page("pages/1_Project_Presentation.py")
 elif page_selected == "2. Team Presentation":
     st.switch_page("pages/2_Team_Presentation.py")
 elif page_selected == "3. Data Exploration":

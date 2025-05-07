@@ -1,4 +1,5 @@
-# Prepare image for prediction using identical preprocessing pipeline of training database
+# Prediction
+import streamlit as st
 
 st.set_page_config(
     page_title="FEB25 BDS // Prediction",
@@ -6,6 +7,26 @@ st.set_page_config(
     layout="wide",
 )
 
+st.title("Prediction")
+st.sidebar.header(":material/category_search: Prediction")
+st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
+
+st.write("Welcome to the Prediction page!")
+
+# Example section
+st.header("Section 1")
+st.write("This is a sample section for our prediction content.")
+
+# Example prediction input section
+st.header("Make Predictions")
+st.write("Add input fields for your model predictions here")
+
+# Example prediction output
+st.header("Prediction Results")
+if st.button("Generate Prediction"):
+    st.write("Your prediction results will appear here")
+
+"""
 transform = transforms.Compose(
     [
         transforms.Resize(256),
@@ -40,26 +61,4 @@ with torch.no_grad():
     _, predicted = torch.max(outputs, 1)
 
 print(f"Predicted class: {predicted.item()}")
-
-
-# Prediction
-import streamlit as st
-
-
-st.title("Prediction")
-st.sidebar.header("Prediction")
-
-st.write("Welcome to the Prediction page!")
-
-# Example section
-st.header("Section 1")
-st.write("This is a sample section for our prediction content.")
-
-# Example prediction input section
-st.header("Make Predictions")
-st.write("Add input fields for your model predictions here")
-
-# Example prediction output
-st.header("Prediction Results")
-if st.button("Generate Prediction"):
-    st.write("Your prediction results will appear here")
+"""

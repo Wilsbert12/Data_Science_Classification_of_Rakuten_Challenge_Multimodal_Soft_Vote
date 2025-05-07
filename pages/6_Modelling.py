@@ -8,7 +8,8 @@ st.set_page_config(
 )
 
 st.title("Modelling")
-st.sidebar.header("Modelling")
+st.sidebar.header(":material/model_training: Modelling")
+st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
 # Add your modelling code here
 st.write("Welcome to the Modelling page!")
