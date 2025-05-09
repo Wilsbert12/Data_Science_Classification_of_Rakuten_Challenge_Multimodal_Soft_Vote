@@ -1,9 +1,11 @@
 # Prediction
 import streamlit as st
 import pandas as pd
-from streamlit_utils import add_pagination, load_DataFrame, display_image
+import numpy as np
+from PIL import Image
 
-import os
+from streamlit_utils import add_pagination, load_DataFrame, display_image
+from image_utils import preprocess_image
 
 
 st.set_page_config(
@@ -22,6 +24,9 @@ image_id = str(row["imageid"])
 product_title = row["designation"]
 product_description = row["description"]
 image_data = [product_id, image_id, product_title]
+
+product_title_len = len(product_title)
+product_description_len = len(product_description) if product_description else 0
 
 st.progress(7 / 8)
 st.title("Prediction")
@@ -52,8 +57,8 @@ with prediction_tab1:
 
     # Display product details in fourth column
     with text_col:
-        st.write("**Cleaned text Data**")
-        st.write(f"{row['designation']}")
+        st.write("**Cleaned Text Data**")
+        st.write(f"{product_title}")
 
     with prediction_col:
         st.write("**Predicted category**")
@@ -71,12 +76,17 @@ with prediction_tab1:
     # Display product details in fourth column
     with title_col:
         st.write("**Title**")
-        st.write(f"{row['designation']}")
+        st.write(f"{product_title}")
 
     # Display product ids in second column
     with description_col:
         st.write("**Description**")
-        st.write(f"{row['description']}")
+        if (product_description is None) or (
+            product_description_len < product_title_len
+        ):
+            st.write(f"{product_description}")
+        else:
+            st.markdown(f"{product_description[:product_title_len-6]} *[...]*")
 
         # Display product ids in second column
     with pid_col:
@@ -89,8 +99,14 @@ with prediction_tab1:
         st.write(image_id)
 
     # Optional: Display the raw data below
-    with st.expander("View original test data"):
-        st.dataframe(pd.DataFrame(df_text_test))
+    footer_col1, footer_col2 = st.columns([4, 1])
+
+    with footer_col1:
+        with st.expander("View original test data"):
+            st.dataframe(pd.DataFrame(df_text_test))
+
+    with footer_col2:
+        st.button("Change product", type="primary")
 
 
 with prediction_tab2:
@@ -110,6 +126,50 @@ with prediction_tab2:
 
     # Upload image
     uploaded_image = st.file_uploader("Upload an image...", type=["png", "jpg", "jpeg"])
+
+    elc, button_col, erc = st.columns([2, 1, 2])
+
+    with button_col:
+        prediction_button = st.button("Predict category", type="primary")
+
+    if prediction_button:
+
+        st.markdown("---")
+
+        # Create a layout to display the processed image and predictions
+        pred_img_col, pred_txt_col, pred_cat_col = st.columns([1, 2, 1])
+
+        with pred_img_col:
+
+            if uploaded_image is not None:
+                # Read the uploaded image
+                image = Image.open(uploaded_image)
+
+                # Convert to numpy array for OpenCV processing
+                image_array = np.array(image)
+
+                # Call preprocessing function
+                img_with_bb, img_cpr, img_phash, df_uploaded_image = preprocess_image(
+                    image_array
+                )
+
+                st.write("**Processed Image**")
+                st.image(img_cpr, use_container_width=True)
+
+            else:
+                st.write("**(No Image Data)**")
+                st.image(
+                    "images/logos/rakuten-logo-red-square.svg",
+                    use_container_width=True,
+                )
+
+        with pred_txt_col:
+            st.write("**Cleaned Text Data**")
+            st.write(user_product_title)
+
+        with pred_cat_col:
+            st.write("**Predicted Category**")
+            st.write("2810")
 
 # Pagination and footer
 st.markdown("---")
