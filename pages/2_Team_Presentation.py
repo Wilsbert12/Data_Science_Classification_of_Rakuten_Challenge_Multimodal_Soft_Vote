@@ -60,9 +60,9 @@ with tp_col2:
     st.write("**Primary Contributions:**")
     st.write("• Model Development and Evaluation")
     st.write("• Classical Machine Learning")
-    st.write("• ?")
-    st.write("• ?")
-    st.write("• ?")
+    st.write("• Training data enrichment")
+    st.write("• Target data exploration")
+    st.write("• Data visualization")
 
     with st.expander("… more info"):
         st.markdown(
