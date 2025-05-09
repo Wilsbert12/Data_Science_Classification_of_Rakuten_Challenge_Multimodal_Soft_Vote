@@ -29,7 +29,7 @@ PAGE_SEQUENCE = [
 ]
 
 
-@st.cache_data()
+@st.cache_data
 def load_DataFrame(URL):
     """
     Fetch a DataFrame from a given URL.
@@ -44,7 +44,7 @@ def load_DataFrame(URL):
     return df
 
 
-@st.cache_resource()
+@st.cache_resource
 def load_vgg16():
     """
     Load a pretrained VGG16 model modified for FEB25 BDS Rakuten dataset classification.
@@ -55,18 +55,18 @@ def load_vgg16():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Start with pretrained VGG16 as model architecture
-    model_ft = models.vgg16(pretrained=True)
+    model = models.vgg16(pretrained=True)
 
-    # Modify classifier part, as model_ft.state_dict
+    # Modify classifier part, as model.state_dict
     # ... only contains the parameter values (weights and biases)
     # ... but not the architectural definitions
-    num_ftrs = model_ft.classifier[6].in_features
-    model_ft.classifier[6] = nn.Linear(
+    num_ftrs = model.classifier[6].in_features
+    model.classifier[6] = nn.Linear(
         num_ftrs, 27
     )  # 27 outputs for categories of Rakuten dataset
 
     # Place the model on the best available device
-    model_ft = model_ft.to(device)
+    model = model.to(device)
 
     # Create a local path for downloading model weights
     vgg16_url = f"{GCP_PROJECT_URL}/vgg16_transfer_model.pth"
@@ -90,11 +90,12 @@ def load_vgg16():
     # Load checkpoint from local path
     try:
         checkpoint = torch.load(local_path, map_location=device)
-        model_ft.load_state_dict(checkpoint)
+        model.load_state_dict(checkpoint)
 
         # Put the model in evaluation mode
-        model_ft.eval()
-        return model_ft
+        model.eval()
+        return model
+
     except Exception as e:
         st.error(f"Failed to load model: {str(e)}")
         return None
