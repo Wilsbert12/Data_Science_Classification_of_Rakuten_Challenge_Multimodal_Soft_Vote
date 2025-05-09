@@ -73,15 +73,15 @@ def add_pagination(current_page_path):
 
 def display_image(id, option):  # id as in "image data"
 
-    pi = id[0]  # product ID
-    ii = id[1]  # image ID
-    pt = id[2]  # product title, aka designation
-    fais = ""  # fais as in "folder and image suffix"
-
     if option == "preprocessing":
+
         dataset = "train"
+        pi = id[0]  # product ID
+        ii = id[1]  # image ID
+        pt = id[2]  # product title, aka designation
         ipo = id[3]  # image preprocessing option
         iph = id[4]  # image perceptual hash
+        fais = ""
 
         if ipo == "2. Bounding box detection":
             fais = "_bb"
@@ -97,14 +97,26 @@ def display_image(id, option):  # id as in "image data"
         else:
             image_url = display_phash(iph, size=8, scale=32)
 
-    elif option == "prediction":
-        dataset = "test"
-        image_path = f"image_{ii}_product_{pi}.jpg"
-        image_url = f"{GCP_PROJECT_URL}/images/image_{dataset}/{image_path}"
+        # Display the image with product ID and image ID as caption
+        st.image(
+            image_url,
+            caption=f"Title: {pt[:33]} - Product: {pi} - Image: {ii}",
+            use_container_width=True,
+        )
 
-    # Display the image with product ID and image ID as caption
-    st.image(
-        image_url,
-        # caption=f"Title: {pt[:33]} - Product: {pi} - Image: {ii}",
-        use_container_width=True,
-    )
+    # Test data: Display the image without caption
+    elif option == "prediction":
+
+        dataset = "test"
+        pi = id[0]  # product ID
+        ii = id[1]  # image ID
+        pt = id[2]  # product title, aka designation
+        fais = "_cpr"
+
+        image_path = f"image_{ii}_product_{pi}{fais}.jpg"
+        image_url = f"{GCP_PROJECT_URL}/images/image_{dataset}{fais}/{image_path}"
+
+        st.image(
+            image_url,
+            use_container_width=True,
+        )
