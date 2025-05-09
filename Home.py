@@ -26,7 +26,7 @@ st.markdown(
     * enhancing **user experience** and consumer product discovery as well as 
     * helping **vendors** reach their target customers more effectively.
     
-    You can use the sidebar to navigate through presentations of the project and team, the data's exploration, visualization and preprocessing as well as pages regarding modelling and prediction."""
+    Use the sidebar to navigate through presentations of the project and team, the data's exploration, visualization and preprocessing as well as pages regarding modelling and prediction."""
 )
 
 # Pagination and footer
