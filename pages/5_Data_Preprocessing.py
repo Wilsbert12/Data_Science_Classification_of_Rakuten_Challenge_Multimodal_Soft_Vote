@@ -8,7 +8,7 @@ import pandas as pd
 from PIL import Image
 from text_utils import text_cleaner
 from image_utils import preprocess_image, display_phash
-from streamlit_utils import add_pagination
+from streamlit_utils import add_pagination, display_image, load_DataFrame
 
 st.set_page_config(
     page_title="FEB25 BDS // Preprocessing",
@@ -29,53 +29,6 @@ DF_TEXT_CLEAN_URL = f"{GCP_PROJECT_URL}/{DF_TEXT_CLEAN_FN}"
 DF_IMAGE_TRAIN_FN = "df_image_train.parquet"  # FN as in "file name"
 
 
-@st.cache_data()
-def load_DataFrame(URL):
-    """
-    Fetch a DataFrame from a given URL.
-
-    Parameters:
-    - URL: The URL to fetch the DataFrame from.
-
-    Returns:
-    - DataFrame: The fetched DataFrame.
-    """
-    df = pd.read_parquet(URL, engine="pyarrow")
-    return df
-
-
-def display_image(id):
-
-    pi = id[0]  # product ID
-    ii = id[1]  # image ID
-    pt = id[2]  # product title, aka designation
-    ipo = id[3]  # image preprocessing option
-    iph = id[4]  # image perceptual hash
-
-    if ipo == "Original image data" or ipo == "1. Basic image data extraction":
-        fais = ""  # fais as in "folder and image suffix"
-    elif ipo == "2. Bounding box detection":
-        fais = "_bb"
-    elif ipo == "3. Crop, pad and resize":
-        fais = "_cpr"
-    else:
-        pass
-
-    # Create the full public URL for the image
-    if ipo != "(4. Duplicate search)":
-        image_path = f"image_{ii}_product_{pi}{fais}.jpg"
-        image_url = f"{GCP_PROJECT_URL}/images/image_train{fais}/{image_path}"
-    else:
-        image_url = display_phash(iph, size=8, scale=32)
-
-    # Display the image with product ID and image ID as caption
-    st.image(
-        image_url,
-        caption=f"Title: {pt[:33]} - Product: {pi} - Image: {ii}",
-        use_container_width=True,
-    )
-
-
 df_text_clean = load_DataFrame(DF_TEXT_CLEAN_URL)
 df_text_preprocessing = df_text_clean[["designation", "description"]]
 
@@ -88,10 +41,10 @@ st.sidebar.header(":material/rule: Data Preprocessing")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 st.markdown(
     """
-Showcasing of preprocessing steps needed for...
-- **strings** contained in columns `designation` and `description`
-- **images** available in the directories 'image_train/' and 'image_test/'
-"""
+    Showcasing of preprocessing steps needed for...
+    - **strings** contained in columns `designation` and `description`
+    - **images** available in the directories 'image_train/' and 'image_test/'
+    """
 )
 
 with st.expander("**Options** for product data preview"):
@@ -339,7 +292,7 @@ with tab_image:
     # Display each image in its own column
     for i, image_data in enumerate(image_data):
         with cols[i % 3]:
-            display_image(image_data)
+            display_image(image_data, option="preprocessing")
 
 
 with tab_showcase:

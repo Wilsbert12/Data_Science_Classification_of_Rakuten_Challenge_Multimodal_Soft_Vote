@@ -1,6 +1,10 @@
 # Prediction
 import streamlit as st
-from streamlit_utils import add_pagination
+import pandas as pd
+from streamlit_utils import add_pagination, load_DataFrame, display_image
+
+import os
+
 
 st.set_page_config(
     page_title="FEB25 BDS // Prediction",
@@ -8,62 +12,61 @@ st.set_page_config(
     layout="wide",
 )
 
+df_text_test = load_DataFrame("df_text_test.parquet")
+df_text_test = df_text_test.sample(1)
+row = df_text_test.iloc[0]
+
+
+product_id = str(row.name)
+image_id = str(row["imageid"])
+product_title = str(row["designation"])
+image_data = [product_id, image_id, product_title]
+
 st.progress(7 / 8)
 st.title("Prediction")
 st.sidebar.header(":material/category_search: Prediction")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
-st.write("Welcome to the Prediction page!")
-
-# Example section
-st.header("Section 1")
-st.write("This is a sample section for our prediction content.")
-
-# Example prediction input section
-st.header("Make Predictions")
-st.write("Add input fields for your model predictions here")
-
-# Example prediction output
-st.header("Prediction Results")
-if st.button("Generate Prediction"):
-    st.write("Your prediction results will appear here")
-
-"""
-transform = transforms.Compose(
-    [
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-    ]
+st.markdown(
+    """
+    Predicting the category of a product listing based on its...
+    - text data, e.g. description and/or title
+    - image data
+    ---
+    """
 )
 
 
-cat_10 = "image_36900930_product_1178410_vgg16.jpg"
-cat_40 = "image_857276_product_1170843_vgg16.jpg"
-cat_50 = "image_862362663_product_102075783_vgg16.jpg"
-cat_60 = "image_1100250764_product_247653336_vgg16.jpg"
-cat_1140 = "image_1054649717_product_1046145679_vgg16.jpg"
+# Create a layout with columns for the data
+image_col, pid_col, iid_col, text_col = st.columns([1, 1, 1, 2])
+
+# Display product image in first column
+with image_col:
+    st.write("**Product Image**")
+    display_image(image_data, option="prediction")
 
 
-# Load and preprocess an image
-image = Image.open(PROJECT_FOLDER + "images/image_prediction/" + cat_1140)
-plt.imshow(image)
+# Display product id in second column
+with pid_col:
+    st.write("**Product ID**")
+    st.write(product_id)
 
-image_tensor = transform(image).unsqueeze(0)  # Add batch dimension
+
+# Display image id in third column
+with iid_col:
+    st.write("**Image ID**")
+    st.write(image_id)
 
 
-# Make prediction
-with torch.no_grad():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = model_ft.to(device)
-    image_tensor = image_tensor.to(device)
+# Display product details in fourth column
+with text_col:
+    st.write("**Product Text**")
+    st.write(f"{row['designation']}")
 
-    outputs = model(image_tensor)
-    _, predicted = torch.max(outputs, 1)
 
-print(f"Predicted class: {predicted.item()}")
-"""
+# Optional: Display the raw data below
+with st.expander("View original test data"):
+    st.dataframe(pd.DataFrame(df_text_test))
 
 
 # Pagination and footer
