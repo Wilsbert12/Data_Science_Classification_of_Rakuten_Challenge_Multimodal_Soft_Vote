@@ -15,12 +15,15 @@ st.set_page_config(
 )
 
 # Load trained model
-load_vgg16()
+with st.spinner("Loading VGG16 model: Duration: approx. **5s**", show_time=True):
+    load_vgg16()
 
-# Load DataFrame
-df_text_test = load_DataFrame("df_text_test.parquet")
-df_text_test = df_text_test.sample(1)
-row = df_text_test.iloc[0]
+
+# Load DataFrame with text data
+with st.spinner("Loading DataFrame with **Text Data**", show_time=True):
+    df_text_test = load_DataFrame("df_text_test.parquet")
+    df_text_test = df_text_test.sample(1)
+    row = df_text_test.iloc[0]
 
 product_id = str(row.name)
 image_id = str(row["imageid"])

@@ -28,12 +28,16 @@ DF_TEXT_CLEAN_URL = f"{GCP_PROJECT_URL}/{DF_TEXT_CLEAN_FN}"
 
 DF_IMAGE_TRAIN_FN = "df_image_train.parquet"  # FN as in "file name"
 
+# Load DataFrames
+with st.spinner(
+    "Loading DataFrame with **Text Data**: Duration: approx. **5s**", show_time=True
+):
+    df_text_clean = load_DataFrame(DF_TEXT_CLEAN_URL)
+    df_text_preprocessing = df_text_clean[["designation", "description"]]
 
-df_text_clean = load_DataFrame(DF_TEXT_CLEAN_URL)
-df_text_preprocessing = df_text_clean[["designation", "description"]]
-
-df_image_train = load_DataFrame(DF_IMAGE_TRAIN_FN)
-df_image_train_preprocessing = df_image_train[["imageid", "designation"]]
+with st.spinner("Loading DataFrame with Image Data", show_time=True):
+    df_image_train = load_DataFrame(DF_IMAGE_TRAIN_FN)
+    df_image_train_preprocessing = df_image_train[["imageid", "designation"]]
 
 st.progress(5 / 8)
 st.title("Data Preprocessing")
