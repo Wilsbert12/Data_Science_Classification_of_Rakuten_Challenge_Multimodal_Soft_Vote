@@ -1,7 +1,15 @@
+import os
+import requests
+import tempfile
+
 import streamlit as st
 import pandas as pd
 
 from image_utils import display_phash
+
+import torch
+import torch.nn as nn
+from torchvision import models
 
 # Constants
 BUCKET_NAME = "feb25_bds_classification-of-rakuten-e-commerce-products"
@@ -34,6 +42,62 @@ def load_DataFrame(URL):
     """
     df = pd.read_parquet(URL, engine="pyarrow")
     return df
+
+
+@st.cache_resource()
+def load_vgg16():
+    """
+    Load a pretrained VGG16 model modified for FEB25 BDS Rakuten dataset classification.
+
+    Downloads weights from GCP if not available locally and returns the model.
+    """
+    # Determine best available device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Start with pretrained VGG16 as model architecture
+    model_ft = models.vgg16(pretrained=True)
+
+    # Modify classifier part, as model_ft.state_dict
+    # ... only contains the parameter values (weights and biases)
+    # ... but not the architectural definitions
+    num_ftrs = model_ft.classifier[6].in_features
+    model_ft.classifier[6] = nn.Linear(
+        num_ftrs, 27
+    )  # 27 outputs for categories of Rakuten dataset
+
+    # Place the model on the best available device
+    model_ft = model_ft.to(device)
+
+    # Create a local path for downloading model weights
+    vgg16_url = f"{GCP_PROJECT_URL}/vgg16_transfer_model.pth"
+    local_path = os.path.join(tempfile.gettempdir(), "vgg16_transfer_model.pth")
+
+    # Download file with model weights if it doesn't exist
+    if not os.path.exists(local_path):
+
+        try:
+            response = requests.get(vgg16_url)
+            response.raise_for_status()  # Check if download was successful
+
+            # Save the content to the local file
+            with open(local_path, "wb") as f:
+                f.write(response.content)
+
+        except Exception as e:
+            st.error(f"Failed to download model: {str(e)}")
+            return None
+
+    # Load checkpoint from local path
+    try:
+        checkpoint = torch.load(local_path, map_location=device)
+        model_ft.load_state_dict(checkpoint)
+
+        # Put the model in evaluation mode
+        model_ft.eval()
+        return model_ft
+    except Exception as e:
+        st.error(f"Failed to load model: {str(e)}")
+        return None
 
 
 def add_pagination(current_page_path):

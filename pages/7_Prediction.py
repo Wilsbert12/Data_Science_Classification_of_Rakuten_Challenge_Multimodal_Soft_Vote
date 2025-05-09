@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 
-from streamlit_utils import add_pagination, load_DataFrame, display_image
+from streamlit_utils import add_pagination, load_DataFrame, display_image, load_vgg16
 from image_utils import preprocess_image
 
 
@@ -14,10 +14,13 @@ st.set_page_config(
     layout="wide",
 )
 
+# Load trained model
+load_vgg16()
+
+# Load DataFrame
 df_text_test = load_DataFrame("df_text_test.parquet")
 df_text_test = df_text_test.sample(1)
 row = df_text_test.iloc[0]
-
 
 product_id = str(row.name)
 image_id = str(row["imageid"])
