@@ -4,7 +4,15 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 
-from streamlit_utils import add_pagination, load_DataFrame, display_image, load_vgg16
+from streamlit_utils import (
+    add_pagination,
+    load_DataFrame,
+    display_image,
+    get_img_path,
+    load_vgg16,
+    predict_vgg16,
+)
+
 from image_utils import preprocess_image
 
 
@@ -15,12 +23,12 @@ st.set_page_config(
 )
 
 # Load trained model
-with st.spinner("Loading VGG16 model: Duration: approx. **5s**", show_time=True):
-    load_vgg16()
+with st.spinner("Loading **VGG16 model**: Duration: approx. **5s**", show_time=True):
+    vgg16 = load_vgg16()
 
 
 # Load DataFrame with text data
-with st.spinner("Loading DataFrame with **Text Data**", show_time=True):
+with st.spinner("Loading **DataFrame with Text Data**", show_time=True):
     df_text_test = load_DataFrame("df_text_test.parquet")
     df_text_test = df_text_test.sample(1)
     row = df_text_test.iloc[0]
@@ -68,6 +76,8 @@ with prediction_tab1:
 
     with prediction_col:
         st.write("**Predicted category**")
+        img_cpr_path = get_img_path(product_id, image_id, option="cpr")
+        st.write(f"{predict_vgg16(vgg16, img_cpr_path)}")
 
     # ### Create a layout with columns for the original data
     image_org_col, title_col, description_col, pid_col, iid_col = st.columns(
@@ -131,7 +141,9 @@ with prediction_tab2:
     )
 
     # Upload image
-    uploaded_image = st.file_uploader("Upload an image...", type=["png", "jpg", "jpeg"])
+    uploaded_image = st.file_uploader(
+        "Upload a product image...", type=["png", "jpg", "jpeg"]
+    )
 
     elc, button_col, erc = st.columns([2, 1, 2])
 
@@ -175,7 +187,7 @@ with prediction_tab2:
 
         with pred_cat_col:
             st.write("**Predicted Category**")
-            st.write("2810")
+            st.write(f"{predict_vgg16(vgg16, img_cpr)}")
 
 # Pagination and footer
 st.markdown("---")

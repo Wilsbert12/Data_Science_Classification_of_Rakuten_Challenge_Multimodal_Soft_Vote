@@ -1,4 +1,5 @@
 import os
+import io
 import requests
 import tempfile
 
@@ -9,7 +10,9 @@ from image_utils import display_phash
 
 import torch
 import torch.nn as nn
-from torchvision import models
+
+from PIL import Image
+from torchvision import models, transforms
 
 # Constants
 BUCKET_NAME = "feb25_bds_classification-of-rakuten-e-commerce-products"
@@ -101,6 +104,67 @@ def load_vgg16():
         return None
 
 
+def predict_vgg16(vgg16, image_path):
+    """
+    Predict the category of a product image using a pretrained VGG16 model.
+
+    Parameters:
+    - model: The pretrained VGG16 model.
+    - image: The input image to classify.
+
+    Returns:
+    - category: The predicted category.
+    """
+
+    # Determine if image_path is a URL or local path
+    # Download the image from URL
+    if isinstance(image_path, str) and image_path.startswith("http"):
+
+        try:
+            response = requests.get(image_path)
+            response.raise_for_status()
+            image = Image.open(io.BytesIO(response.content))
+        except Exception as e:
+            st.error(f"Failed to download image: {str(e)}")
+            return "Error loading image"
+
+    # Open local image file
+    elif isinstance(image_path, str):
+        image = Image.open(image_path)
+
+    # Assume it's already a PIL Image or similar
+    else:
+        image = image_path
+
+    # Preprocess the image
+    preprocess = transforms.Compose(
+        [
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+
+    input_tensor = preprocess(image)
+
+    input_batch = input_tensor.unsqueeze(
+        0
+    )  # Create a mini-batch as expected by the model
+
+    # Get the device from one of the model parameters instead of directly from the model
+    device = next(vgg16.parameters()).device
+
+    # Move the input to the same device as the model
+    input_batch = input_batch.to(device)
+
+    # Perform inference
+    with torch.no_grad():
+        output = vgg16(input_batch)
+
+    # Get the predicted category
+    _, predicted_idx = torch.max(output, 1)
+    return predicted_idx.item()
+
+
 def add_pagination(current_page_path):
     # Find current page index in sequence
     current_index = next(
@@ -185,3 +249,18 @@ def display_image(id, option):  # id as in "image data"
             image_url,
             use_container_width=True,
         )
+
+
+def get_img_path(pi, ii, option):
+    """
+    Generate the image path for a cropped, padded and resized image.
+
+    Parameters:
+    - pi: Product ID
+    - ii: Image ID
+
+    Returns:
+    - str: The image path.
+    """
+    if option == "cpr":
+        return f"{GCP_PROJECT_URL}/images/image_test_{option}/image_{ii}_product_{pi}_{option}.jpg"

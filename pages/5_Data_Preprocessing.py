@@ -30,12 +30,12 @@ DF_IMAGE_TRAIN_FN = "df_image_train.parquet"  # FN as in "file name"
 
 # Load DataFrames
 with st.spinner(
-    "Loading DataFrame with **Text Data**: Duration: approx. **5s**", show_time=True
+    "Loading **DataFrame with Text Data**: Duration: approx. **5s**", show_time=True
 ):
     df_text_clean = load_DataFrame(DF_TEXT_CLEAN_URL)
     df_text_preprocessing = df_text_clean[["designation", "description"]]
 
-with st.spinner("Loading DataFrame with Image Data", show_time=True):
+with st.spinner("Loading **DataFrame with Image Data**", show_time=True):
     df_image_train = load_DataFrame(DF_IMAGE_TRAIN_FN)
     df_image_train_preprocessing = df_image_train[["imageid", "designation"]]
 
@@ -316,7 +316,7 @@ with tab_showcase:
 
         # Upload image
         uploaded_image = st.file_uploader(
-            "Upload an image...", type=["png", "jpg", "jpeg"]
+            "Upload a product image...", type=["png", "jpg", "jpeg"]
         )
 
         if uploaded_image is not None:
