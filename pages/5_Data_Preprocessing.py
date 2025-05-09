@@ -135,7 +135,7 @@ with tab_text:
             "2. Remove URLs, e.g. Amazon, AWS servers, etc.",
             "3. Remove control characters and problematic whitespace, e.g. '\x00-'",
             "4. Remove multiple question marks and inverted question marks",
-            "5. Remove parentheses and quotes, e.g. (), [], \{\}",
+            "5. Remove parentheses and quotes, e.g. (), [], {}",
         ),
     )
 
@@ -348,7 +348,7 @@ with tab_showcase:
     with st.expander("**Try** text cleaning function"):
         text = st.text_input(
             "Try text preprocessing:",
-            "<p>Example containing examples   e.g.      spaces,     <strong>HTML tags, </strong>  and accents: Tu veux du Caf&eacute;?</p>",
+            "<p>Example containing examples   e.g.      spaces,     <strong>HTML tags, </strong>  and accents: Caf&eacute; and Restaurant</p>",
         )
         st.write("The cleaned text is:")
         cleaned_text = text_cleaner(text)

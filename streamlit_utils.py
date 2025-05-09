@@ -24,10 +24,10 @@ def add_pagination(current_page_path):
         0,
     )
 
-    # Create three columns for previous, current page indicator, next
+    # Create columns for previous, current page indicator, next
     prev_butt, elc, pagination, erc, next_butt = st.columns(
         [2, 2, 1, 2, 2]
-    )  # elf and erc as in "empty left column" and "empty right column"
+    )  # elf* and erc* as in "empty left column" and "empty right column"
 
     # Previous button
     with prev_butt:
