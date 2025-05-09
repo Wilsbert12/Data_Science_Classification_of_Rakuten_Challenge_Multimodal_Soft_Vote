@@ -917,7 +917,7 @@ def preprocess_image(image_array):
     img_cropped = image_array[y : y + h, x : x + w]
 
     # Define target size
-    target_size = (299, 299)
+    target_size = (224, 224)  # VGG16: 224
 
     # Calculate new dimensions while preserving aspect ratio
     target_w, target_h = target_size
