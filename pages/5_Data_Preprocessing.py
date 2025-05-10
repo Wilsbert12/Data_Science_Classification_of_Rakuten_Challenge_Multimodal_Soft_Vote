@@ -305,7 +305,7 @@ with tab_showcase:
     with st.expander("**Try** text cleaning function", expanded=True):
         text = st.text_input(
             "Try text preprocessing:",
-            "<p>Example containing examples   e.g.      spaces,     <strong>HTML tags, </strong>  and accents: Caf&eacute; and Restaurant</p>",
+            "<p>Errors e.g. ???  spaces,     <strong>HTML tags, </strong>  and accents: “Caf&eacute; &amp; Canel&eacute;”</p>",
         )
         st.write("The cleaned text is:")
         cleaned_text = text_cleaner(text)
