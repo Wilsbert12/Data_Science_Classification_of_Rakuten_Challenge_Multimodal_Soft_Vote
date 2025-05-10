@@ -233,14 +233,31 @@ def display_image(id, option):  # id as in "image data"
             use_container_width=True,
         )
 
-    # Test data: Display the image without caption
-    elif option == "prediction":
+    # Test data: Display the processed image without caption
+    elif option == "prediction_proc":
 
         dataset = "test"
         pi = id[0]  # product ID
         ii = id[1]  # image ID
         pt = id[2]  # product title, aka designation
         fais = "_cpr"
+
+        image_path = f"image_{ii}_product_{pi}{fais}.jpg"
+        image_url = f"{GCP_PROJECT_URL}/images/image_{dataset}{fais}/{image_path}"
+
+        st.image(
+            image_url,
+            use_container_width=True,
+        )
+
+    # Test data: Display the processed image without caption
+    elif option == "prediction_org":
+
+        dataset = "test"
+        pi = id[0]  # product ID
+        ii = id[1]  # image ID
+        pt = id[2]  # product title, aka designation
+        fais = ""
 
         image_path = f"image_{ii}_product_{pi}{fais}.jpg"
         image_url = f"{GCP_PROJECT_URL}/images/image_{dataset}{fais}/{image_path}"

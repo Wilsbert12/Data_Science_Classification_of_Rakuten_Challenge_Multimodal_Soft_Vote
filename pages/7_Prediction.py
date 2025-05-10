@@ -86,7 +86,7 @@ with prediction_tab1:
     with image_proc_col:
         st.write("**Processed Image**")
 
-        display_image(image_data, option="prediction")
+        display_image(image_data, option="prediction_proc")
 
     # Display product details in fourth column
     with text_col:
@@ -106,7 +106,7 @@ with prediction_tab1:
     # Display product image in first column
     with image_org_col:
         st.write("**Original Image**")
-        display_image(image_data, option="prediction")
+        display_image(image_data, option="prediction_org")
 
     # Display product details in fourth column
     with title_col:
@@ -167,8 +167,7 @@ with prediction_tab2:
     # Display product image in first column
     with image_proc_col:
         st.write("**Processed Image**")
-
-        display_image(image_data, option="prediction")
+        display_image(image_data, option="prediction_proc")
 
     # Display product details in fourth column
     with text_col:
@@ -188,7 +187,7 @@ with prediction_tab2:
     # Display product image in first column
     with image_org_col:
         st.write("**Original Image**")
-        display_image(image_data, option="prediction")
+        display_image(image_data, option="prediction_org")
 
     # Display product details in fourth column
     with title_col:
