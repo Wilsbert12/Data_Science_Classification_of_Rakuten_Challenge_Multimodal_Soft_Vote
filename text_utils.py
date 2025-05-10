@@ -30,65 +30,32 @@ and natural language processing tasks.
 
 def clean_malformed_html_tags(text):
     """
-    Removes leading and trailing malformed HTML tags.
-    Handles tag combinations and internal paragraph markers.
+    Removes malformed paragraph markers at the beginning and end of text.
+    Avoids replacing legitimate words.
     """
-    # Define common HTML tags to look for
-    html_tags = [
-        "p",
-        "div",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "h6",
-        "span",
-        "br",
-        "ul",
-        "li",
-        "a",
-        "img",
-        "table",
-        "tr",
-        "td",
-        "th",
-    ]
+    # Return early for very short texts to avoid false positives
+    if len(text) < 4:
+        return text
 
-    # Generate patterns for tag combinations (up to 2 tags combined)
-    tag_combinations = []
-    for tag1 in html_tags:
-        tag_combinations.append(tag1)
-        for tag2 in html_tags:
-            tag_combinations.append(tag1 + tag2)
+    # Store original text in case we need to revert
+    original_text = text
 
-    # Create regex pattern for tags and combinations
-    tag_pattern = "|".join(tag_combinations)
+    # Only clean specific patterns that are very likely to be malformed HTML
 
-    # Step 1: Remove leading tag combinations
-    # Match one or more occurrences of tag-like strings at the beginning
-    leading_pattern = r"^((?:" + tag_pattern + r"){1,2})"
-    cleaned_text = re.sub(leading_pattern, "", text)
+    # 1. Clean "p" tags at beginning and end (must have uppercase letter after opening p)
+    # The word boundary \b ensures we don't match 'p' at beginning of words like 'print'
+    cleaned_text = re.sub(r"^\bp([A-Z].*?)p\b$", r"\1", text)
 
-    # Step 2: Remove trailing tag combinations
-    # Match one or more occurrences of tag-like strings at the end
-    trailing_pattern = r"((?:" + tag_pattern + r"){1,2})$"
-    cleaned_text = re.sub(trailing_pattern, "", cleaned_text)
+    # 2. Clean "pp" tags at beginning and end
+    cleaned_text = re.sub(r"^\bpp(.*?)pp\b$", r"\1", cleaned_text)
 
-    # Step 3: Clean up internal paragraph markers
-    # This preserves paragraph structure while removing tags
-    internal_p_pattern = r"\s*p\s*p\s*"
-    cleaned_text = re.sub(internal_p_pattern, "\n\n", cleaned_text)
+    # 3. Clean "pdiv" at beginning and "divp" at end
+    cleaned_text = re.sub(r"^\bpdiv(.*?)divp\b$", r"\1", cleaned_text)
 
-    # Step 4: Handle combined tags within the text
-    # Replace tag combinations with appropriate spacing
-    for combo in tag_combinations:
-        if len(combo) > 1:  # Only process combinations, not single tags
-            pattern = r"\s*" + re.escape(combo) + r"\s*"
-            if "p" in combo:  # If it contains 'p', treat it as a paragraph break
-                cleaned_text = re.sub(pattern, "\n\n", cleaned_text)
-            else:  # Otherwise just replace with a space
-                cleaned_text = re.sub(pattern, " ", cleaned_text)
+    # 3.1 Additional common tag combinations
+    cleaned_text = re.sub(r"^\bph5(.*?)h5p\b$", r"\1", cleaned_text)
+    cleaned_text = re.sub(r"^\bp(.*?)divp\b$", r"\1", cleaned_text)
+    cleaned_text = re.sub(r"^\bpdiv(.*?)p\b$", r"\1", cleaned_text)
 
     # Clean up extra whitespace and return
     cleaned_text = re.sub(r"\s+", " ", cleaned_text).strip()
@@ -296,7 +263,7 @@ def _process_dataframe(df):
 
             # Clean malformed HTML tags, e.g. leading and trailing tags without anchor brackets
             # cleaned_text = clean_malformed_html_tags(cleaned_text)
-            '''We cannot discover most malformed html_tags the only thing we can try to find is malformed paragraph markers if they occur at the beginning and end of the description '''
+            """We cannot discover most malformed html_tags the only thing we can try to find is malformed paragraph markers if they occur at the beginning and end of the description """
             cleaned_text = re.sub(r"^p([A-Z].*)p$", r"\1", cleaned_text)
 
             # Remove URLs
@@ -542,7 +509,9 @@ def text_pre_processing(df):
     df = remove_duplicate_description_information(df)
     # merge designation and description to merged_text, avoiding leading or trailing ' - ' while using it as seperators
     df["merged_text"] = np.where(
-        df["designation"].notna() & df["description"].notna() & (df["description"] != ""),
+        df["designation"].notna()
+        & df["description"].notna()
+        & (df["description"] != ""),
         df["designation"] + " - " + df["description"],
         df["designation"].fillna("") + df["description"].fillna(""),
     )
