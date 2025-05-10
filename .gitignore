@@ -11,9 +11,9 @@
 *.py[cod]
 *$py.class
 
-# Ignore cleaned and merged CSV files due to large file size
-*_clean.csv
-*_merge.csv
+# Ignore cleaned and merged CSV and Parquet files due to large file size
+*_clean.*
+*_merge.*
 
 # Ignore macOS specific Desktop Service Store
 .DS_Store

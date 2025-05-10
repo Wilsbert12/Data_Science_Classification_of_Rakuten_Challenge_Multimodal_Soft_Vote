@@ -459,7 +459,7 @@ def text_merger(df):
         elif df_merge.at[idx, "identical_original"]:
             df_merge.at[idx, "text_merged"] = designation
         else:
-            df_merge.at[idx, "text_merged"] = designation + " // " + description
+            df_merge.at[idx, "text_merged"] = designation + " - " + description
 
     return df_merge
 
