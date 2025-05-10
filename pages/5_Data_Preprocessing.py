@@ -302,7 +302,7 @@ with tab_image:
 with tab_showcase:
 
     # Showcase text cleaning function from text_utils.py
-    with st.expander("**Try** text cleaning function"):
+    with st.expander("**Try** text cleaning function", expanded=True):
         text = st.text_input(
             "Try text preprocessing:",
             "<p>Example containing examples   e.g.      spaces,     <strong>HTML tags, </strong>  and accents: Caf&eacute; and Restaurant</p>",

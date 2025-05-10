@@ -285,7 +285,7 @@ with prediction_tab3:
                 st.image(img_cpr, use_container_width=True)
 
             else:
-                st.write("**(No Image Data)**")
+                st.write("**Image**")
                 st.image(
                     "images/logos/no_product_image.png",
                     use_container_width=True,
