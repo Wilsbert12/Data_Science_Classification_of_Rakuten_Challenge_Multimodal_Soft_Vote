@@ -38,21 +38,22 @@ with project_tab2:
     st.markdown(
         """
         :material/search: **Data Exploration**
-        > Analysis of dataset with product titles, descriptions, and images.
+        >> Analysis of dataset with product titles, descriptions, and images.
         
         :material/query_stats: **Data Visualization**
-        > Distribution of product categories, text length, text content, errors, etc.
+        >> Distribution of product categories, text length, text content, errors, etc.
         
         :material/rule: **Data Preprocessing**
-        > Text cleaning by e.g. removing redundant chars/ words and finding bounding boxes.
+        >> Text cleaning by e.g. removing redundant chars/ words and finding bounding boxes.
         
       
         :material/model_training: **Modelling**
-        > 1. **Feature Extraction**: Extraction of relevant features from the text and image data with e.g. TF-IDF and CNN.
-        > 2. **Evaluation**: Assessment of model performance using cross-validation and hyperparameter tuning as well as F1-score.
+        >> **1) Feature Extraction**: Extraction of relevant features from the text and image data with e.g. TF-IDF and CNN.
+        
+        >> **2) Evaluation**: Assessment of model performance using cross-validation and hyperparameter tuning as well as F1-score.
         
         :material/category_search: **Prediction**
-        > Testing models on unseen test data as well as custom user input.
+        >> Testing models on unseen test data as well as custom user input.
         """
     )
 
