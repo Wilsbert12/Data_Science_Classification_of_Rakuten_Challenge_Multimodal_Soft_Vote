@@ -7,7 +7,7 @@ import pandas as pd
 
 from PIL import Image
 from text_utils import text_cleaner
-from image_utils import preprocess_image, display_phash
+from image_utils import preprocess_image
 from streamlit_utils import add_pagination, display_image, load_DataFrame
 
 st.set_page_config(
