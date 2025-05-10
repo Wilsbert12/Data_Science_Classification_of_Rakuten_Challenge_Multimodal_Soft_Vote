@@ -23,7 +23,7 @@ st.set_page_config(
 )
 
 # Load trained model
-with st.spinner("Loading **VGG16 model**: Duration: approx. **5s**", show_time=True):
+with st.spinner("Loading **VGG16 model**: Duration: max. **38s**", show_time=True):
     vgg16 = load_vgg16()
 
 
@@ -31,8 +31,20 @@ with st.spinner("Loading **VGG16 model**: Duration: approx. **5s**", show_time=T
 with st.spinner("Loading **DataFrame with Text Data**", show_time=True):
     df_text_test = load_DataFrame("df_text_test.parquet")
 
-# Get product IDs from DataFrame with test data
+# Get products' IDs and title from DataFrame with test data
 product_ids = df_text_test.index.tolist()
+product_titles = df_text_test["designation"].tolist()
+
+# Create a readable list for users
+product_teasers = zip(product_ids, product_titles)
+product_teasers = [
+    (
+        f"{product_id} - {product_title[:30]} [...]"
+        if len(product_title) > 30
+        else f"{product_id} - {product_title}"
+    )
+    for product_id, product_title in product_teasers
+]
 
 st.progress(7 / 8)
 st.title("Prediction")
@@ -54,7 +66,11 @@ prediction_tab1, prediction_tab2, prediction_tab3 = st.tabs(
 
 with prediction_tab1:
     with st.expander("**Options** for test data preview"):
-        product_id_selected = st.selectbox("Select specific Product ID", product_ids)
+        product_teaser_selected = st.selectbox(
+            "Select specific Product ID", product_teasers
+        )
+
+        product_id_selected = int(product_teaser_selected.split(" - ")[0])
 
     df_text_test_specific = df_text_test.loc[[product_id_selected]]
     row = df_text_test_specific.iloc[0]
@@ -229,14 +245,14 @@ with prediction_tab3:
     # Insert title
     user_product_title = st.text_input(
         "**Product title**",
-        "<p>Sony WH-1000XM4 Casque Sans Fil à <strong>Réduction de Bruit</strong> - Noir",
+        "<p>Sony WH-1000XM4 Casque Sans Fil à <b>Réduction de Bruit</b> - Noir",
         help="Enter your product listing's title",
     )
 
     # Insert description
     user_product_description = st.text_input(
         "**Product description**",
-        "Casque premium circum-aural avec ??? réduction de bruit ??? leader sur le marché, autonomie de 30 heures, commandes tactiles et microphone intégré pour les appels mains libres. Livré avec étui de transport, câble de charge et câble audio pour écoute filaire. Compatible avec tous les appareils Bluetooth.</p>",
+        "Casque premium circum-aural avec ?? réduction de bruit ?? leader sur le marché, autonomie de 30 heures, commandes tactiles et microphone intégré pour les appels mains libres. Livré avec étui de transport, câble de charge et câble audio pour écoute filaire. Compatible avec tous les appareils Bluetooth</p>",
         help="Enter your product listing's description",
     )
 
