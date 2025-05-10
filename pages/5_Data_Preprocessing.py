@@ -23,8 +23,8 @@ GOOGLE_CLOUD_STORAGE_URL = "https://storage.googleapis.com"
 GCP_PROJECT_URL = f"{GOOGLE_CLOUD_STORAGE_URL}/{BUCKET_NAME}"
 
 # File names and URLs of DataFrames
-DF_TEXT_CLEAN_FN = "df_text_clean_streamlit.parquet"  # FN as in "file name"
-DF_TEXT_CLEAN_URL = f"{GCP_PROJECT_URL}/{DF_TEXT_CLEAN_FN}"
+DF_TEXT_TRAIN_CLEAN_FN = "df_text_train_clean.parquet"  # FN as in "file name"
+DF_TEXT_TRAIN_CLEAN_URL = f"{GCP_PROJECT_URL}/{DF_TEXT_TRAIN_CLEAN_FN}"
 
 DF_IMAGE_TRAIN_FN = "df_image_train.parquet"  # FN as in "file name"
 
@@ -32,8 +32,8 @@ DF_IMAGE_TRAIN_FN = "df_image_train.parquet"  # FN as in "file name"
 with st.spinner(
     "Loading **DataFrame with Text Data**: Duration: approx. **5s**", show_time=True
 ):
-    df_text_clean = load_DataFrame(DF_TEXT_CLEAN_URL)
-    df_text_preprocessing = df_text_clean[["designation", "description"]]
+    df_text_train_clean = load_DataFrame(DF_TEXT_TRAIN_CLEAN_URL)
+    df_text_preprocessing = df_text_train_clean[["designation", "description"]]
 
 with st.spinner("Loading **DataFrame with Image Data**", show_time=True):
     df_image_train = load_DataFrame(DF_IMAGE_TRAIN_FN)
@@ -98,11 +98,11 @@ with tab_text:
 
     if text_preprocessing_option == "1. Remove HTML tags and attributes":
 
-        mask_html = (df_text_clean["description_html_tag"] == 1) | (
-            df_text_clean["description_html_entity"] == 1
+        mask_html = (df_text_train_clean["description_html_tag"] == 1) | (
+            df_text_train_clean["description_html_entity"] == 1
         )
 
-        df_text_preprocessing = df_text_clean[mask_html][
+        df_text_preprocessing = df_text_train_clean[mask_html][
             [
                 "description",
                 "description_cleaned",
@@ -114,12 +114,12 @@ with tab_text:
     elif text_preprocessing_option == "2. Remove URLs, e.g. Amazon, AWS servers, etc.":
 
         mask_url = (
-            (df_text_clean["description_URL"] == 1)
-            & (df_text_clean["description_html_tag"] == 0)
-            & (df_text_clean["description_html_entity"] == 0)
+            (df_text_train_clean["description_URL"] == 1)
+            & (df_text_train_clean["description_html_tag"] == 0)
+            & (df_text_train_clean["description_html_entity"] == 0)
         )
 
-        df_text_preprocessing = df_text_clean[mask_url][
+        df_text_preprocessing = df_text_train_clean[mask_url][
             ["description", "description_cleaned", "description_URL"]
         ]
 
@@ -128,13 +128,13 @@ with tab_text:
         == "3. Remove control characters and problematic whitespace, e.g. '\x00-'"
     ):
         mask_control_chars = (
-            (df_text_clean["description_control_chars"] == 1)
-            & (df_text_clean["description_URL"] == 0)
-            & (df_text_clean["description_html_tag"] == 0)
-            & (df_text_clean["description_html_entity"] == 0)
+            (df_text_train_clean["description_control_chars"] == 1)
+            & (df_text_train_clean["description_URL"] == 0)
+            & (df_text_train_clean["description_html_tag"] == 0)
+            & (df_text_train_clean["description_html_entity"] == 0)
         )
 
-        df_text_preprocessing = df_text_clean[mask_control_chars][
+        df_text_preprocessing = df_text_train_clean[mask_control_chars][
             ["description", "description_cleaned", "description_control_chars"]
         ]
 
@@ -142,9 +142,9 @@ with tab_text:
         text_preprocessing_option
         == "4. Remove multiple question marks and inverted question marks"
     ):
-        mask_question_marks = df_text_clean["description_question_marks"] == 1
+        mask_question_marks = df_text_train_clean["description_question_marks"] == 1
 
-        df_text_preprocessing = df_text_clean[mask_question_marks][
+        df_text_preprocessing = df_text_train_clean[mask_question_marks][
             [
                 "description",
                 "description_cleaned",
@@ -162,13 +162,13 @@ with tab_text:
         == "5. Remove parentheses and quotes, e.g. (), [], \{\}"
     ):
         mask_dashes = (
-            (df_text_clean["description_parentheses"] == 1)
-            & (df_text_clean["description_URL"] == 0)
-            & (df_text_clean["description_html_tag"] == 0)
-            & (df_text_clean["description_html_entity"] == 0)
+            (df_text_train_clean["description_parentheses"] == 1)
+            & (df_text_train_clean["description_URL"] == 0)
+            & (df_text_train_clean["description_html_tag"] == 0)
+            & (df_text_train_clean["description_html_entity"] == 0)
         )
 
-        df_text_preprocessing = df_text_clean[mask_dashes][
+        df_text_preprocessing = df_text_train_clean[mask_dashes][
             ["description", "description_cleaned", "description_parentheses"]
         ]
 
