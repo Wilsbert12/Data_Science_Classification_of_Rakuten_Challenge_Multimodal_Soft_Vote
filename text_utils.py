@@ -73,21 +73,20 @@ def text_cleaner(input_data):
     Returns:
         Either a cleaned DataFrame or a cleaned string
     """
-    import pandas as pd
 
     # Check if input is a DataFrame
     if isinstance(input_data, pd.DataFrame):
-        return _process_dataframe(input_data)
+        return _text_cleaner_df(input_data)
 
     # Check if input is a string-like object
     elif isinstance(input_data, (str, bytes)):
-        return _clean_single_text(str(input_data))
+        return _text_cleaner_str(str(input_data))
 
     else:
         raise TypeError("Input must be either a pandas DataFrame or a string")
 
 
-def _process_dataframe(df):
+def _text_cleaner_df(df):
     """
     Clean text in pandas DataFrame by removing unnecessary characters and normalizing spacing.
 
@@ -329,7 +328,7 @@ def _process_dataframe(df):
     return df_clean
 
 
-def _clean_single_text(text):
+def _text_cleaner_str(text):
     """
     Clean a single text string using the same rules as the DataFrame version.
     """
@@ -384,7 +383,33 @@ def _clean_single_text(text):
     return cleaned_text
 
 
-def text_merger(df):
+def text_merger(input_data):
+    """
+    Merge text in pandas DataFrame or individual strings automatically.
+
+    Args:
+        input_data: Either a DataFrame, list of strings, or strings to merge
+
+    Returns:
+        Either a DataFrame with a merged column or a merged string
+    """
+
+    # Check if input is a DataFrame
+    if isinstance(input_data, pd.DataFrame):
+        return _text_merger_df(input_data)
+
+    # Check if input is a list
+    elif isinstance(input_data, list):
+        # Check if all items in the list are strings
+        if all(isinstance(item, (str, bytes)) for item in input_data):
+            return _text_merger_str(input_data)
+    else:
+        raise TypeError(
+            "Input must be either a pandas DataFrame, a list of strings, or a string"
+        )
+
+
+def _text_merger_df(df):
     """
     Merge text columns and set flags for empty or identical columns.
 
@@ -462,6 +487,43 @@ def text_merger(df):
             df_merge.at[idx, "text_merged"] = designation + " - " + description
 
     return df_merge
+
+
+def _text_merger_str(string_array):
+    """
+    Merge two strings with a delimiter if both are non-empty.
+
+    Args:
+        string_array (list): A list containing two items [title, description]
+
+    Returns:
+        str: Merged string with " - " delimiter if both items are valid,
+             otherwise returns the valid item or empty string
+    """
+    # Ensure input is a list with two items
+    if not isinstance(string_array, list) or len(string_array) != 2:
+        raise ValueError("Input must be a list with exactly two items")
+
+    # Extract title and description from the array
+    title, description = string_array
+
+    # Convert to strings if they exist, otherwise use empty strings
+    title = str(title) if title is not None else ""
+    description = str(description) if description is not None else ""
+
+    # Trim whitespace
+    title = title.strip()
+    description = description.strip()
+
+    # Check if both strings are non-empty
+    if title and description:
+        return title + " - " + description
+    elif title:
+        return title
+    elif description:
+        return description
+    else:
+        return ""
 
 
 def count_matching_words(str1, str2):

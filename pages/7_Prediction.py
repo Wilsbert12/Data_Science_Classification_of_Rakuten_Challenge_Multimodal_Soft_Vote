@@ -14,7 +14,7 @@ from streamlit_utils import (
 )
 
 from image_utils import preprocess_image
-
+from text_utils import text_cleaner, text_merger
 
 st.set_page_config(
     page_title="FEB25 BDS // Prediction",
@@ -61,9 +61,20 @@ with prediction_tab1:
 
     product_id = str(row.name)
     image_id = str(row["imageid"])
-    product_title = row["designation"]
-    product_description = row["description"]
+    product_title = str(row["designation"])
+    product_description = str(row["description"])
     image_data = [product_id, image_id, product_title]
+
+    product_title_cleaned = text_cleaner(product_title)
+    product_description_cleaned = (
+        text_cleaner(product_description) if product_description else ""
+    )
+    merged_text = text_merger([product_title_cleaned, product_description_cleaned])
+    merged_text_len = len(merged_text)
+
+    merged_text_char_limit = 240
+    if merged_text_len > merged_text_char_limit:
+        merged_text = f"{merged_text[:merged_text_char_limit-6]} *[...]*"
 
     product_title_len = len(product_title)
     product_description_len = len(product_description) if product_description else 0
@@ -80,7 +91,7 @@ with prediction_tab1:
     # Display product details in fourth column
     with text_col:
         st.write("**Cleaned Text Data**")
-        st.write(f"{product_title}")
+        st.write(merged_text)
 
     with prediction_col:
         st.write("**Predicted category**")
@@ -136,6 +147,17 @@ with prediction_tab2:
     product_description = row["description"]
     image_data = [product_id, image_id, product_title]
 
+    product_title_cleaned = text_cleaner(product_title)
+    product_description_cleaned = (
+        text_cleaner(product_description) if product_description else ""
+    )
+    merged_text = text_merger([product_title_cleaned, product_description_cleaned])
+    merged_text_len = len(merged_text)
+
+    merged_text_char_limit = 240
+    if merged_text_len > merged_text_char_limit:
+        merged_text = f"{merged_text[:merged_text_char_limit-6]} *[...]*"
+
     product_title_len = len(product_title)
     product_description_len = len(product_description) if product_description else 0
 
@@ -151,7 +173,7 @@ with prediction_tab2:
     # Display product details in fourth column
     with text_col:
         st.write("**Cleaned Text Data**")
-        st.write(f"{product_title}")
+        st.write(f"{merged_text}")
 
     with prediction_col:
         st.write("**Predicted category**")
@@ -219,6 +241,16 @@ with prediction_tab3:
         help="Enter your product listing's description",
     )
 
+    user_product_title_cleaned = (
+        text_cleaner(user_product_title) if user_product_title else ""
+    )
+    user_product_description_cleaned = (
+        text_cleaner(user_product_description) if user_product_description else ""
+    )
+    user_text_merged = text_merger(
+        [user_product_title_cleaned, user_product_description_cleaned]
+    )
+
     # Upload image
     uploaded_image = st.file_uploader(
         "Upload a product image...", type=["png", "jpg", "jpeg"]
@@ -256,17 +288,22 @@ with prediction_tab3:
             else:
                 st.write("**(No Image Data)**")
                 st.image(
-                    "images/logos/rakuten-logo-red-square.svg",
+                    "images/logos/no_product_image.png",
                     use_container_width=True,
                 )
 
         with pred_txt_col:
             st.write("**Cleaned Text Data**")
-            st.write(user_product_title)
+            st.write(user_text_merged)
 
         with pred_cat_col:
-            st.write("**Predicted Category**")
-            st.write(f"{predict_vgg16(vgg16, img_cpr)}")
+
+            if uploaded_image is not None:
+                st.write("**Predicted Category**")
+                st.write(f"{predict_vgg16(vgg16, img_cpr_path)}")
+            else:
+                st.write("**Predicted Category**")
+                st.write("*Placeholder*")
 
 # Pagination and footer
 st.markdown("---")
