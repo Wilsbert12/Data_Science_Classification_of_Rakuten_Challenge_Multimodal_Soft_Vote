@@ -21,14 +21,13 @@ GCP_PROJECT_URL = f"{GOOGLE_CLOUD_STORAGE_URL}/{BUCKET_NAME}"
 
 PAGE_SEQUENCE = [
     {"name": "Home", "path": "Home.py"},
-    {"name": "1. Project Presentation", "path": "pages/1_Project_Presentation.py"},
-    {"name": "2. Team Presentation", "path": "pages/2_Team_Presentation.py"},
-    {"name": "3. Data Exploration", "path": "pages/3_Data_Exploration.py"},
-    {"name": "4. Data Visualization", "path": "pages/4_Data_Visualization.py"},
-    {"name": "5. Data Preprocessing", "path": "pages/5_Data_Preprocessing.py"},
-    {"name": "6. Modelling", "path": "pages/6_Modelling.py"},
-    {"name": "7. Prediction", "path": "pages/7_Prediction.py"},
-    {"name": "8. Thank you", "path": "pages/8_Thank_you.py"},
+    {"name": "1. Team Presentation", "path": "pages/1_Team_Presentation.py"},
+    {"name": "2. Project Presentation", "path": "pages/2_Project_Presentation.py"},
+    {"name": "3. Data Preview", "path": "pages/3_Data_Preview.py"},
+    {"name": "4. Data Preprocessing", "path": "pages/4_Data_Preprocessing.py"},
+    {"name": "5. Modelling", "path": "pages/5_Modelling.py"},
+    {"name": "6. Prediction", "path": "pages/6_Prediction.py"},
+    {"name": "7. Thank you", "path": "pages/7_Thank_you.py"},
 ]
 
 

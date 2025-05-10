@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.progress(1 / 8)
+st.progress(2 / 7)
 st.title("Project Presentation")
 st.sidebar.header(":material/work: Project Presentation")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
@@ -111,5 +111,5 @@ with project_tab4:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/1_Project_Presentation.py")
+add_pagination("pages/2_Project_Presentation.py")
 st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")

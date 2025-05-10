@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.progress(2 / 8)
+st.progress(1 / 7)
 st.title("Team Presentation")
 st.sidebar.header(":material/diversity_3: Team Presentation")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
@@ -128,5 +128,5 @@ with tp_col3:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/2_Team_Presentation.py")
+add_pagination("pages/1_Team_Presentation.py")
 st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")

@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.progress(6 / 8)
+st.progress(5 / 7)
 st.title("Modelling")
 st.sidebar.header(":material/model_training: Modelling")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
@@ -54,5 +54,5 @@ with tab_image:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/6_Modelling.py")
+add_pagination("pages/5_Modelling.py")
 st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")

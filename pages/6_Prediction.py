@@ -46,7 +46,7 @@ product_teasers = [
     for product_id, product_title in product_teasers
 ]
 
-st.progress(7 / 8)
+st.progress(6 / 7)
 st.title("Prediction")
 st.sidebar.header(":material/category_search: Prediction")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
@@ -67,7 +67,7 @@ prediction_tab1, prediction_tab2, prediction_tab3 = st.tabs(
 with prediction_tab1:
     with st.expander("**Options** for test data preview"):
         product_teaser_selected = st.selectbox(
-            "Select specific Product ID", product_teasers
+            "Select specific product", product_teasers
         )
 
         product_id_selected = int(product_teaser_selected.split(" - ")[0])
@@ -322,5 +322,5 @@ with prediction_tab3:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/7_Prediction.py")
+add_pagination("pages/6_Prediction.py")
 st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")

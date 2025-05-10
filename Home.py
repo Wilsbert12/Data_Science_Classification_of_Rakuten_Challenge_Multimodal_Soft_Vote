@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.progress(0 / 8)
+st.progress(0 / 7)
 st.title("FEB25 BDS // Rakuten")
 
 st.sidebar.header(":material/home: Home")
