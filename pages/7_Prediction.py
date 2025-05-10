@@ -229,14 +229,14 @@ with prediction_tab3:
     # Insert title
     user_product_title = st.text_input(
         "**Product title**",
-        "Sony WH-1000XM4 Casque Sans Fil à Réduction de Bruit - Noir",
+        "<p>Sony WH-1000XM4 Casque Sans Fil à <strong>Réduction de Bruit</strong> - Noir",
         help="Enter your product listing's title",
     )
 
     # Insert description
     user_product_description = st.text_input(
         "**Product description**",
-        "Casque premium circum-aural avec réduction de bruit leader sur le marché, autonomie de 30 heures, commandes tactiles et microphone intégré pour les appels mains libres. Livré avec étui de transport, câble de charge et câble audio pour écoute filaire. Compatible avec tous les appareils Bluetooth.",
+        "Casque premium circum-aural avec ??? réduction de bruit ??? leader sur le marché, autonomie de 30 heures, commandes tactiles et microphone intégré pour les appels mains libres. Livré avec étui de transport, câble de charge et câble audio pour écoute filaire. Compatible avec tous les appareils Bluetooth.</p>",
         help="Enter your product listing's description",
     )
 
