@@ -26,7 +26,11 @@ st.markdown(
     * enhancing **user experience** and consumer product discovery as well as 
     * helping **vendors** reach their target customers more effectively.
     
-    Use the sidebar to navigate through presentations of the project and team, the data's exploration, visualization and preprocessing as well as pages regarding modelling and prediction."""
+    Use the sidebar or pagination to browse through presentations of the project and team, the data's exploration, visualization and preprocessing as well as pages regarding modelling and prediction.
+    
+    **:material/folder_code: GitHub Repository:** [feb25_bds_classification-of-rakuten-e-commerce-products](https://github.com/PeterStieg/feb25_bds_classification-of-rakuten-e-commerce-products)
+    
+    """
 )
 
 # Pagination and footer
