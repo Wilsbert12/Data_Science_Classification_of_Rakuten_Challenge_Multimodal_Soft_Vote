@@ -22,7 +22,7 @@ with tp_col1:
 
     # Display primary contribution information directly
     st.write("**Primary Contributions:**")
-    st.write("• Data preprocessing for text and images")
+    st.write("• Preprocessing of text and images")
     st.write("• Image classification with VGG16")
     st.write("• Streamlit presentation")
     st.write("• GitHub Management")
@@ -40,10 +40,8 @@ with tp_col1:
         - COO
         
         **Skills & Expertise:**
-        - Python, PHP, JavaScript
         - Project Management 
         - User Experience
-        - Data Science
         - Marketing
         
         **Links:**
@@ -76,11 +74,9 @@ with tp_col2:
         - Director of Sales and Marketing
         
         **Skills & Expertise:**
-        - ?
-        - ?
-        - ?
-        - ?
-        - ?
+        - SaaS B2B Enterprise Sales
+        - Performance Marketing
+        - Pre-Sales
         
         **Links:**
         - [GitHub Profile](https://github.com/Wilsbert12)
@@ -94,7 +90,7 @@ with tp_col3:
 
     # Display primary contribution information directly
     st.write("**Primary Contributions:**")
-    st.write("• Text preprocessing: Cleaning and localization")
+    st.write("• Text cleaning and localization")
     st.write("• Model Development and Evaluation")
     st.write("• BERT")
     st.write("• ?")
