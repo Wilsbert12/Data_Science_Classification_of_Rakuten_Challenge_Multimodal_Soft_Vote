@@ -13,6 +13,7 @@ st.title("Team Presentation")
 st.sidebar.header(":material/diversity_3: Team Presentation")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
+
 # Create three columns for team members
 tp_col1, tp_col2, tp_col3 = st.columns(3)  # tp_ as in "team presentation"
 
@@ -60,7 +61,7 @@ with tp_col2:
     st.write("• Classical Machine Learning")
     st.write("• Training data enrichment")
     st.write("• Target data exploration")
-    st.write("• Data visualization")
+    st.write("• Data Visualization")
 
     with st.expander("… more info"):
         st.markdown(
@@ -69,9 +70,9 @@ with tp_col2:
         ---
         
         **Former positions:**
+        - Director of Sales and Marketing
         - Senior Account Executive
         - Sales Manager
-        - Director of Sales and Marketing
         
         **Skills & Expertise:**
         - SaaS B2B Enterprise Sales
@@ -92,7 +93,7 @@ with tp_col3:
     st.write("**Primary Contributions:**")
     st.write("• Text cleaning and localization")
     st.write("• Model Development and Evaluation")
-    st.write("• BERT")
+    st.write("• BERT fine-tuning")
     st.write("• ?")
     st.write("• ?")
 
