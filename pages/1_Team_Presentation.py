@@ -113,8 +113,7 @@ with tp_col3:
         - Natural Language Processing
         - ?
         - ?
-        - ?
-        - ?
+        
     
         **Links:**
         - [GitHub Profile](https://github.com/thomas-borer)
