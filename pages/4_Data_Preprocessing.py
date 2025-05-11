@@ -1,6 +1,5 @@
 # Data Preprocessing
 import streamlit as st
-import re
 
 import numpy as np
 import pandas as pd
@@ -43,9 +42,10 @@ st.progress(4 / 7)
 st.title("Data Preprocessing")
 st.sidebar.header(":material/rule: Data Preprocessing")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
+
 st.markdown(
     """
-    Showcasing of preprocessing steps needed for...
+    Showcasing of preprocessing steps necessary for...
     - **strings** contained in columns `designation` and `description`
     - **images** available in the directories 'image_train/' and 'image_test/'
     """
