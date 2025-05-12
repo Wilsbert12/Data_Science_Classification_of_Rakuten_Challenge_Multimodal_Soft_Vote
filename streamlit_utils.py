@@ -24,9 +24,9 @@ PAGE_SEQUENCE = [
     {"name": "Home", "path": "Home.py"},
     {"name": "1. Team Presentation", "path": "pages/1_Team_Presentation.py"},
     {"name": "2. Project Presentation", "path": "pages/2_Project_Presentation.py"},
-    {"name": "3. Data Visploration", "path": "pages/3_Data_Visploration.py"},
-    {"name": "4. Data Preprocessing", "path": "pages/4_Data_Preprocessing.py"},
-    {"name": "5. Modelling", "path": "pages/5_Modelling.py"},
+    {"name": "3. Modelling", "path": "pages/3_Modelling.py"},
+    {"name": "4. Data Visploration", "path": "pages/4_Data_Visploration.py"},
+    {"name": "5. Data Preprocessing", "path": "pages/5_Data_Preprocessing.py"},
     {"name": "6. Prediction", "path": "pages/6_Prediction.py"},
     {"name": "7. Thank you", "path": "pages/7_Thank_you.py"},
 ]

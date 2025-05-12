@@ -38,7 +38,7 @@ with st.spinner("Loading **DataFrame with Image Data**", show_time=True):
     df_image_train = load_DataFrame(DF_IMAGE_TRAIN_FN)
     df_image_train_preprocessing = df_image_train[["imageid", "designation"]]
 
-st.progress(4 / 7)
+st.progress(5 / 7)
 st.title("Data Preprocessing")
 st.sidebar.header(":material/rule: Data Preprocessing")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
@@ -353,5 +353,5 @@ with tab_showcase:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/4_Data_Preprocessing.py")
+add_pagination("pages/5_Data_Preprocessing.py")
 st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")

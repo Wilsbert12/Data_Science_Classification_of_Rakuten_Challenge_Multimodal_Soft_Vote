@@ -81,7 +81,7 @@ with st.spinner(
     df_text_train_clean_info_graph = load_DataFrame(DF_TEXT_TRAIN_CLEAN_INFO_GRAPH_FN)
 
 
-st.progress(3 / 7)
+st.progress(4 / 7)
 st.title("Data Visploration")
 st.sidebar.header(":material/search: Data Visploration")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
@@ -384,5 +384,5 @@ with tab_dupl_values:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/3_Data_Visploration.py")
+add_pagination("pages/4_Data_Visploration.py")
 st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")
