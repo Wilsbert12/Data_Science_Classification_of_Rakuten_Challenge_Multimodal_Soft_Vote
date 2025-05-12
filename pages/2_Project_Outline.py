@@ -178,9 +178,11 @@ with project_tab4:
         _Key Findings_
         * Easy to use library from HuggingFace
         * Training is somewhat resource intensive - limited number of parameters tried
+            * Colab L4 GPU - ~3h
             * tokenizer max length - 256
             * class weight - balanced
-            * training epochs 10 - training and validation loss starting to move opposite directions
+            * training epochs - 10
+            * training and validation loss starting to move opposite directions after 10 epochs
         * potential next step - Use LLM to generate more data
         """
     )
