@@ -1,7 +1,7 @@
 # Project presentation
 import streamlit as st
 import pandas as pd
-from streamlit_utils import add_pagination
+from streamlit_utils import add_pagination_and_footer
 
 st.set_page_config(
     page_title="FEB25 BDS // Project Presentation",
@@ -162,5 +162,4 @@ with project_tab4:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/2_Project_Presentation.py")
-st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")
+add_pagination_and_footer("pages/2_Project_Presentation.py")

@@ -1,6 +1,6 @@
 # Home.py
 import streamlit as st
-from streamlit_utils import add_pagination
+from streamlit_utils import add_pagination_and_footer
 
 st.set_page_config(
     page_title="FEB25 BDS // Rakuten: Classification of eCommmerce products",
@@ -35,5 +35,4 @@ st.markdown(
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/Home.py")
-st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")
+add_pagination_and_footer("pages/Home.py")

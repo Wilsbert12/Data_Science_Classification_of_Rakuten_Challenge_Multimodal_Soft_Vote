@@ -226,7 +226,7 @@ def load_category_mapping(language="en"):
     return mapping[language]
 
 
-def add_pagination(current_page_path):
+def add_pagination_and_footer(current_page_path):
     # Find current page index in sequence
     current_index = next(
         (
@@ -238,8 +238,8 @@ def add_pagination(current_page_path):
     )
 
     # Create columns for previous, current page indicator, next
-    prev_butt, elc, pagination, erc, next_butt = st.columns(
-        [2, 2, 1, 2, 2]
+    prev_butt, next_butt = st.columns(
+        2
     )  # elf* and erc* as in "empty left column" and "empty right column"
 
     # Previous button
@@ -249,16 +249,17 @@ def add_pagination(current_page_path):
             if st.button("← Previous", use_container_width=True):
                 st.switch_page(prev_page["path"])
 
-    # Page indicator
-    with pagination:
-        st.markdown(f"**Page {current_index}/{len(PAGE_SEQUENCE) - 1}**")
-
     # Next button
     with next_butt:
         if current_index < len(PAGE_SEQUENCE) - 1:  # Not on last page
             next_page = PAGE_SEQUENCE[current_index + 1]
             if st.button("Next →", use_container_width=True):
                 st.switch_page(next_page["path"])
+
+    # Copyright line and page indicator
+    st.markdown(
+        f"© 2025 // Peter Stieg, Robert Wilson, Thomas Borer // [Page {current_index + 1}/{len(PAGE_SEQUENCE)}]"
+    )
 
 
 def display_image(id, option):  # id as in "image data"

@@ -1,6 +1,6 @@
 # Data Visploration
 import streamlit as st
-from streamlit_utils import add_pagination, load_DataFrame
+from streamlit_utils import add_pagination_and_footer, load_DataFrame
 import time
 
 st.set_page_config(
@@ -384,5 +384,4 @@ with tab_dupl_values:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/4_Data_Visploration.py")
-st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")
+add_pagination_and_footer("pages/4_Data_Visploration.py")

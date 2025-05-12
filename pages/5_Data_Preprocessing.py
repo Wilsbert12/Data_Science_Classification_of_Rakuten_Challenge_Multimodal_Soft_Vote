@@ -7,7 +7,7 @@ import pandas as pd
 from PIL import Image
 from text_utils import text_cleaner
 from image_utils import preprocess_image
-from streamlit_utils import add_pagination, display_image, load_DataFrame
+from streamlit_utils import add_pagination_and_footer, display_image, load_DataFrame
 
 st.set_page_config(
     page_title="FEB25 BDS // Preprocessing",
@@ -353,5 +353,4 @@ with tab_showcase:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/5_Data_Preprocessing.py")
-st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")
+add_pagination_and_footer("pages/5_Data_Preprocessing.py")

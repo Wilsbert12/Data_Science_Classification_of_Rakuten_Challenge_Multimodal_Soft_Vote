@@ -1,6 +1,6 @@
 # Modelling
 import streamlit as st
-from streamlit_utils import add_pagination
+from streamlit_utils import add_pagination_and_footer
 from streamlit_mermaid import st_mermaid
 
 st.set_page_config(
@@ -21,5 +21,4 @@ st_mermaid(methodology_mermaid, height="auto", pan=True, zoom=True, show_control
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/3_Modelling.py")
-st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")
+add_pagination_and_footer("pages/3_Modelling.py")

@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 
 from streamlit_utils import (
-    add_pagination,
+    add_pagination_and_footer,
     load_DataFrame,
     display_image,
     get_img_path,
@@ -54,8 +54,8 @@ st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=T
 st.markdown(
     """
     Predicting the category of a product listing based on its...
-    - text data, e.g. description and/or title
-    - image data
+    - cleaned and merged text data
+    - preprocessed image data
     """
 )
 
@@ -371,5 +371,4 @@ with prediction_tab3:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/6_Prediction.py")
-st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")
+add_pagination_and_footer("pages/6_Prediction.py")
