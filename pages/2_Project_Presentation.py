@@ -86,39 +86,51 @@ with project_tab4:
 
     # Example results visualization
     model_results_data = {
+        "Type": [
+            "Text classifier",
+            "Text classifier",
+            "Text classifier",
+            "Text classifier",
+            "Image classifier",
+        ],
         "Classifier": [
-            "RandomForestClassifier",
+            "SVM",
             "LogisticRegression",
             "XGBClassifier",
+            "RandomForestClassifier",
             "VGG16",
         ],
         "Accuracy": [
-            0.55455,
-            0.7426,
-            0.6525,
-            0.5883,
+            0.77,
+            0.74,
+            0.65,
+            0.55,
+            0.58,
         ],
-        "Precision-Weighted": [
-            0.7343,
-            0.7524,
-            0.7234,
-            0.6153,
+        "Precision (weighted)": [
+            0.78,
+            0.75,
+            0.72,
+            0.73,
+            0.61,
         ],
-        "Recall-Weighted": [
-            0.5545,
-            0.74262,
-            0.6525,
-            0.5883,
+        "Recall (weighted)": [
+            0.76,
+            0.742,
+            0.65,
+            0.55,
+            0.58,
         ],
-        "F1-Weighted": [
-            None,
-            0.7434,
-            0.6644,
-            0.5825,
+        "F1 (weighted)": [
+            0.76,
+            0.74,
+            0.66,
+            0.63,
+            0.58,
         ],
     }
 
-    model_results_df = pd.DataFrame(model_results_data)
+    model_results_df = pd.DataFrame(model_results_data).set_index("Classifier")
 
     # Add a color column for the bar chart
     st.dataframe(model_results_df, use_container_width=True)
