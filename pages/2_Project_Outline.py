@@ -148,7 +148,7 @@ with project_tab4:
 
     st.dataframe(models_results_df, use_container_width=True)
 
-    st.markdown("**Best Model Parameters**")
+    st.markdown("**SVC // Best performing hyperparameters**")
     st.dataframe(best_model_info_df, use_container_width=True)
 
     st.markdown(
