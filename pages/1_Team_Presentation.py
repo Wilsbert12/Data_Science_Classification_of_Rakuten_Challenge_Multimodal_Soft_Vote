@@ -1,6 +1,6 @@
 # Team Presentation
 import streamlit as st
-from streamlit_utils import add_pagination
+from streamlit_utils import add_pagination_and_footer
 
 st.set_page_config(
     page_title="FEB25 BDS // Team Presentation",
@@ -94,8 +94,8 @@ with tp_col3:
     st.write("• Text cleaning and localization")
     st.write("• Model Development and Evaluation")
     st.write("• Text classification with BERT")
-    st.write("• Voting Classifier")
     st.write("• LLM workflow integration")
+    st.write("• Voting Classifier")
 
     with st.expander("… more info"):
         st.markdown(
@@ -112,8 +112,8 @@ with tp_col3:
         **Skills & Expertise:**
         - Natural Language Processing
         - Regression Testing
+        - CI/CD Pipelines
         - Agile Scrum
-        - CI/CD Pipliens
     
         **Links:**
         - [GitHub Profile](https://github.com/thomas-borer)
@@ -124,5 +124,4 @@ with tp_col3:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination("pages/1_Team_Presentation.py")
-st.markdown("© 2025 | Peter Stieg, Robert Wilson, Thomas Borer")
+add_pagination_and_footer("pages/1_Team_Presentation.py")
