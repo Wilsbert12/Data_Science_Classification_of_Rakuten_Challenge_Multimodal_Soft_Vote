@@ -12,7 +12,7 @@ from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 from torchvision import datasets, models, transforms
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import f1_score # Import f1_score
+from sklearn.metrics import f1_score  # Import f1_score
 import argparse
 
 # import files from gogoel drive
@@ -50,10 +50,10 @@ class CustomImageTextDataset(Dataset):
         # Tokenize the text data with padding to max_length
         text_inputs = self.tokenizer(
             text,
-            return_tensors='pt',  # Return pytorch tensors
-            padding='max_length',  # Pad to a fixed max length
+            return_tensors="pt",  # Return pytorch tensors
+            padding="max_length",  # Pad to a fixed max length
             truncation=True,  # Truncate if text is longer than max_length
-            max_length=256  # Set a fixed max length for all sequences
+            max_length=256,  # Set a fixed max length for all sequences
         )
 
         # Squeeze the batch dimension
@@ -79,39 +79,63 @@ def predict_voting(image, text, model_vgg16, model_bert, le, device):
     with torch.no_grad():
         texts = {key: val.to(device) for key, val in text.items()}
         text_output = model_bert(**texts)  # Get output for the text (logits)
-        text_prob = F.softmax(text_output.logits, dim=1)  # Convert logits to probabilities
+        text_prob = F.softmax(
+            text_output.logits, dim=1
+        )  # Convert logits to probabilities
 
     # Combine the probabilities (soft voting)
     avg_prob = (image_prob + text_prob) / 2.0  # You can adjust the weights if needed
 
     # Final prediction (class with the highest average probability)
-    final_prediction_encoded = torch.argmax(avg_prob, dim=1).cpu().numpy() # Move to CPU for inverse_transform
+    final_prediction_encoded = (
+        torch.argmax(avg_prob, dim=1).cpu().numpy()
+    )  # Move to CPU for inverse_transform
 
     # Decode predictions back to original labels
     final_prediction_decoded = le.inverse_transform(final_prediction_encoded)
-    image_prediction_decoded = le.inverse_transform(torch.argmax(image_prob, dim=1).cpu().numpy())
-    text_prediction_decoded = le.inverse_transform(torch.argmax(text_prob, dim=1).cpu().numpy())
+    image_prediction_decoded = le.inverse_transform(
+        torch.argmax(image_prob, dim=1).cpu().numpy()
+    )
+    text_prediction_decoded = le.inverse_transform(
+        torch.argmax(text_prob, dim=1).cpu().numpy()
+    )
 
-    return final_prediction_decoded, image_prediction_decoded, text_prediction_decoded, avg_prob
+    return (
+        final_prediction_decoded,
+        image_prediction_decoded,
+        text_prediction_decoded,
+        avg_prob,
+    )
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Run predictions on a sample or calculate F1 score.')
-    parser.add_argument('--run_type', type=str, default='sample', choices=['sample', 'f1'],
-                        help='Specify run type: "sample" for random sample, "f1" for F1 score calculation.')
-    parser.add_argument('--sample_size', type=int, default=60,
-                        help='Size of the random sample (only applicable when run_type is "sample").')
-    parser.add_argument('--batch_size', type=int, default=100,
-                        help='Batch size for DataLoader.')
+    parser = argparse.ArgumentParser(
+        description="Run predictions on a sample or calculate F1 score."
+    )
+    parser.add_argument(
+        "--run_type",
+        type=str,
+        default="sample",
+        choices=["sample", "f1"],
+        help='Specify run type: "sample" for random sample, "f1" for F1 score calculation.',
+    )
+    parser.add_argument(
+        "--sample_size",
+        type=int,
+        default=1,
+        help='Size of the random sample (only applicable when run_type is "sample").',
+    )
+    parser.add_argument(
+        "--batch_size", type=int, default=100, help="Batch size for DataLoader."
+    )
     args = parser.parse_args()
 
     # Constants
     # Adjust paths as necessary if not running in the same Colab environment
-    image_dir = 'images/image_train'
-    df_path = 'language_analysis/df_localization.csv'
+    image_dir = "images/image_train"
+    df_path = "language_analysis/df_localization.csv"
     camembert_model_path = "models/bert"
-    vgg16_model_path = 'models/vgg16_transfer_model.pth'
-
+    vgg16_model_path = "models/vgg16_transfer_model.pth"
 
     # Use GPU if available
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -120,20 +144,32 @@ def main():
     # Load the dataset
     df = pd.read_csv(df_path)
     # create a text column with translations where necessary
-    df["text"] = np.where(df["deepL_translation"].notna(), df["deepL_translation"],
-                          np.where(df["lang"] == "fr", df["merged_text"], np.nan))
+    df["text"] = np.where(
+        df["deepL_translation"].notna(),
+        df["deepL_translation"],
+        np.where(df["lang"] == "fr", df["merged_text"], np.nan),
+    )
 
-    df = df[['prdtypecode', 'productid', 'imageid', 'text']]
-    df['image_name'] = 'image_' + df['imageid'].astype(str) + '_product_' + df['productid'].astype(str) + '.jpg'
-    df.drop(['productid', 'imageid'], axis=1, inplace=True)
+    df = df[["prdtypecode", "productid", "imageid", "text"]]
+    df["image_name"] = (
+        "image_"
+        + df["imageid"].astype(str)
+        + "_product_"
+        + df["productid"].astype(str)
+        + ".jpg"
+    )
+    df.drop(["productid", "imageid"], axis=1, inplace=True)
 
-    # The Camanbert model used LabelEncoder()
+    # The camemBERT model used LabelEncoder()
     le = LabelEncoder()
     # Fit and transform the prdtypecode column
-    df['prdtypecode_encoded'] = le.fit_transform(df['prdtypecode'])
+    df["prdtypecode_encoded"] = le.fit_transform(df["prdtypecode"])
 
-    df_train, df_test = train_test_split(df, random_state=42, stratify=df['prdtypecode_encoded'], test_size=0.2)
+    df_train, df_test = train_test_split(
+        df, random_state=42, stratify=df["prdtypecode_encoded"], test_size=0.2
+    )
     df_test.head()
+
     # Define a function that checks if the image file exists
     def image_exists(row, image_dir):
         image_path = os.path.join(image_dir, f"{row['image_name']}")
@@ -141,17 +177,18 @@ def main():
 
     # Apply the function and filter the DataFrame
     # Note: This filtering might take time depending on the number of images and drive speed
-    #print("Filtering df_test to include only existing images...")
-    #df_test = df_test[df_test.apply(image_exists, axis=1, args=(image_dir,))]
+    # print("Filtering df_test to include only existing images...")
+    # df_test = df_test[df_test.apply(image_exists, axis=1, args=(image_dir,))]
     print(f"Filtered df_test size: {df.shape[0]}")
 
     df_test.dropna(inplace=True)
 
-
     # Load Camembert model
     from transformers import CamembertForSequenceClassification, CamembertTokenizer
 
-    model_bert = CamembertForSequenceClassification.from_pretrained(camembert_model_path)
+    model_bert = CamembertForSequenceClassification.from_pretrained(
+        camembert_model_path
+    )
     tokenizer = CamembertTokenizer.from_pretrained(camembert_model_path)
 
     # Move BERT model to the specified device
@@ -160,38 +197,51 @@ def main():
     # Load VGG16 model
     model_vgg16 = models.vgg16(pretrained=True)
     model_vgg16.classifier[6] = torch.nn.Linear(in_features=4096, out_features=27)
-    model_vgg16.load_state_dict(torch.load(vgg16_model_path, map_location=device)) # Add map_location
+    model_vgg16.load_state_dict(
+        torch.load(vgg16_model_path, map_location=device)
+    )  # Add map_location
     model_vgg16.eval()  # Set to evaluation mode
 
     # Move VGG16 model to the specified device
     model_vgg16.to(device)
 
     # Image Transformation (for VGG16)
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),  # VGG16 specific normalization
-    ])
+    transform = transforms.Compose(
+        [
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+            ),  # VGG16 specific normalization
+        ]
+    )
 
     # Set Up the Dataset
     dataset = CustomImageTextDataset(df_test, image_dir, tokenizer, transform=transform)
 
-
-    if args.run_type == 'sample':
+    if args.run_type == "sample":
         if args.sample_size > len(dataset):
-            print(f"Warning: Sample size ({args.sample_size}) is larger than the dataset size ({len(dataset)}). Using the entire dataset size as sample size.")
+            print(
+                f"Warning: Sample size ({args.sample_size}) is larger than the dataset size ({len(dataset)}). Using the entire dataset size as sample size."
+            )
             sample_size = len(dataset)
         else:
             sample_size = args.sample_size
 
         # Take a random sample of indices from the test set
         sample_indices = np.random.choice(len(dataset), size=sample_size, replace=False)
-        sample_dataset = torch.utils.data.Subset(dataset, sample_indices) # Use Subset for sampling
+        sample_dataset = torch.utils.data.Subset(
+            dataset, sample_indices
+        )  # Use Subset for sampling
 
         # Create a DataLoader for the sample
-        sample_data_loader = DataLoader(sample_dataset, batch_size=args.batch_size, shuffle=False)
+        sample_data_loader = DataLoader(
+            sample_dataset, batch_size=args.batch_size, shuffle=False
+        )
 
-        print(f"Running predictions on a random sample of {sample_size} items in batches of {args.batch_size}:")
+        print(
+            f"Running predictions on a random sample of {sample_size} items in batches of {args.batch_size}:"
+        )
 
         # Iterate through the sample data loader
         for images, texts, labels_encoded in sample_data_loader:
@@ -199,8 +249,8 @@ def main():
             actual_labels_decoded = le.inverse_transform(labels_encoded.cpu().numpy())
 
             # Get predictions from the voting classifier and individual models
-            final_pred_decoded, image_pred_decoded, text_pred_decoded, avg_prob = predict_voting(
-                images, texts, model_vgg16, model_bert, le, device
+            final_pred_decoded, image_pred_decoded, text_pred_decoded, avg_prob = (
+                predict_voting(images, texts, model_vgg16, model_bert, le, device)
             )
 
             # Print the results for each item in the sample
@@ -215,39 +265,50 @@ def main():
                 # print(f"  Voting Probabilities: {avg_prob[i].tolist()}")
             print("---------------------------------")
 
-    elif args.run_type == 'f1':
+    elif args.run_type == "f1":
         from tqdm import tqdm
+
         # Create a DataLoader for the entire test set
-        full_test_data_loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False)
+        full_test_data_loader = DataLoader(
+            dataset, batch_size=args.batch_size, shuffle=False
+        )
 
         all_actual_labels = []
         all_voting_predictions = []
 
-        print(f"Running predictions on the entire df_test dataset ({len(dataset)} items) to calculate F1 score with batch size {args.batch_size}...")
+        print(
+            f"Running predictions on the entire df_test dataset ({len(dataset)} items) to calculate F1 score with batch size {args.batch_size}..."
+        )
 
         # Iterate through the full test data loader
-        for images, texts, labels_encoded in tqdm(full_test_data_loader, desc="Predicting", unit="batch"):
+        for images, texts, labels_encoded in tqdm(
+            full_test_data_loader, desc="Predicting", unit="batch"
+        ):
             # Get predictions from the voting classifier
             final_pred_decoded, _, _, _ = predict_voting(
                 images, texts, model_vgg16, model_bert, le, device
             )
 
             # Store actual labels and voting predictions
-            all_actual_labels.extend(labels_encoded.cpu().numpy()) # Store encoded labels for f1_score
-            all_voting_predictions.extend(le.transform(final_pred_decoded)) # Store encoded predictions
+            all_actual_labels.extend(
+                labels_encoded.cpu().numpy()
+            )  # Store encoded labels for f1_score
+            all_voting_predictions.extend(
+                le.transform(final_pred_decoded)
+            )  # Store encoded predictions
 
         print("Finished making predictions.")
 
         # Calculate the F1 score
-        f1 = f1_score(all_actual_labels, all_voting_predictions, average='weighted')
+        f1 = f1_score(all_actual_labels, all_voting_predictions, average="weighted")
 
         print(f"\nWeighted F1 Score on df_test: {f1}")
+
 
 if __name__ == "__main__":
     # If you are running this script in a non-Colab environment,
     # you might need to adjust how you access files from Google Drive.
     # One common approach is to download them first.
     # If running in Colab, the drive.mount() at the top will handle this.
-
 
     main()
