@@ -2,6 +2,7 @@ import os
 import io
 import requests
 import tempfile
+import json
 
 import streamlit as st
 import pandas as pd
@@ -28,6 +29,37 @@ PAGE_SEQUENCE = [
     {"name": "5. Modelling", "path": "pages/5_Modelling.py"},
     {"name": "6. Prediction", "path": "pages/6_Prediction.py"},
     {"name": "7. Thank you", "path": "pages/7_Thank_you.py"},
+]
+
+# List of product type codes necessary for function load_category_mapping
+INDEX_TO_PRDTYPECODE = [
+    "10",
+    "2280",
+    "2705",
+    "2522",
+    "2403",
+    "50",
+    "1140",
+    "1180",
+    "2462",
+    "1160",
+    "40",
+    "60",
+    "2905",
+    "1280",
+    "1300",
+    "1320",
+    "1302",
+    "1301",
+    "1281",
+    "2582",
+    "2583",
+    "2585",
+    "1560",
+    "1920",
+    "2060",
+    "1940",
+    "2220",
 ]
 
 
@@ -103,7 +135,7 @@ def load_vgg16():
         return None
 
 
-def predict_vgg16(vgg16, image_path):
+def predict_vgg16(vgg16, image_path, radio_pred_class):
     """
     Predict the category of a product image using a pretrained VGG16 model.
 
@@ -161,7 +193,37 @@ def predict_vgg16(vgg16, image_path):
 
     # Get the predicted category
     _, predicted_idx = torch.max(output, 1)
-    return predicted_idx.item()
+    index = predicted_idx.item()
+
+    # Convert the index to a product type code
+    prdtypecode = INDEX_TO_PRDTYPECODE[index]
+
+    # Convert the product type code to a category name
+    category_mapping = load_category_mapping(language="en")
+    category_name = category_mapping.get(
+        prdtypecode, f"Unknown Category ({prdtypecode})"
+    )
+
+    if radio_pred_class == "Primary Category":
+        return category_name.split(" > ")[0]
+    elif radio_pred_class == "Subcategory":
+        return category_name.split(" > ")[-1]
+
+
+@st.cache_data
+def load_category_mapping(language="en"):
+    """
+    Load the mapping from product type codes to category names.
+
+    Parameters:
+    - language: The language for the category names (default: "en").
+
+    Returns:
+    - dict: The mapping from product type codes to category names.
+    """
+    with open("data/prdtypecode_to_category_name.json", "r") as f:
+        mapping = json.load(f)
+    return mapping[language]
 
 
 def add_pagination(current_page_path):

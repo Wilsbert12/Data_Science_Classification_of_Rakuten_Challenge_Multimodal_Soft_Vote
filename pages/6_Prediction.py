@@ -66,6 +66,16 @@ prediction_tab1, prediction_tab2, prediction_tab3 = st.tabs(
 
 with prediction_tab1:
     with st.expander("**Options** for test data preview"):
+
+        radio_pred_class = st.radio(
+            "Show **predicted class** as...",
+            (
+                "Primary Category",
+                "Subcategory",
+            ),
+            horizontal=True,
+        )
+
         product_teaser_selected = st.selectbox(
             "Select specific product", product_teasers
         )
@@ -112,7 +122,7 @@ with prediction_tab1:
     with prediction_col:
         st.write("**Predicted category**")
         img_cpr_path = get_img_path(product_id, image_id, option="cpr")
-        st.write(f"{predict_vgg16(vgg16, img_cpr_path)}")
+        st.write(f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class)}")
 
     # ### Create a layout with columns for the original data
     image_org_col, title_col, description_col, pid_col, iid_col = st.columns(

@@ -86,6 +86,11 @@ st.title("Data Visploration")
 st.sidebar.header(":material/search: Data Visploration")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
+st.markdown(
+    """
+Data Exploration and Data Visualization of training data for the **Rakuten E-Commerce Product Classification** project.
+    """
+)
 
 with st.expander("**Options** for product category level", expanded=False):
     radio_category = st.radio(
