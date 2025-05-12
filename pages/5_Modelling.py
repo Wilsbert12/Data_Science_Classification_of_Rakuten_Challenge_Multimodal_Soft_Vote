@@ -1,6 +1,7 @@
 # Modelling
 import streamlit as st
 from streamlit_utils import add_pagination
+from streamlit_mermaid import st_mermaid
 
 st.set_page_config(
     page_title="FEB25 BDS // Modelling",
@@ -13,44 +14,10 @@ st.title("Modelling")
 st.sidebar.header(":material/model_training: Modelling")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
-# Add your modelling code here
-st.write("Welcome to the Modelling page!")
+with open("data/methodology.mmd", "r") as file:
+    methodology_mermaid = file.read()
 
-# Example section
-st.header("Section 1")
-st.write("This is a sample section for our modelling content.")
-
-tab_text, tab_image = st.tabs(["Text classification", "Image classification"])
-
-with tab_text:
-
-    # Text model sectionö
-    text_model_option = st.selectbox(
-        "Select a model:",
-        ("Linear Regression", "Random Forest", "Neural Network"),
-    )
-
-    st.write("You selected:", text_model_option)
-
-    # Model parameters section
-    st.header("Model Parameters")
-    st.write("Add model parameter sliders and inputs here")
-
-
-with tab_image:
-
-    # Text model section
-    image_model_option = st.selectbox(
-        "Select a model:",
-        ("VGG16", "ResNet50", "InceptionV3"),
-    )
-
-    st.write("You selected:", image_model_option)
-
-    # Model parameters section
-    st.header("Model Parameters")
-    st.write("Add model parameter sliders and inputs here")
-
+st_mermaid(methodology_mermaid, height="auto", pan=True, zoom=True, show_controls=True)
 
 # Pagination and footer
 st.markdown("---")
