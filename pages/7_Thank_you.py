@@ -117,12 +117,13 @@ with tp_col3:
     st.info("Thomas Borer")
 
     # Display primary contribution information directly
+    # Display primary contribution information directly
     st.write("**Primary Contributions:**")
     st.write("• Text cleaning and localization")
     st.write("• Model Development and Evaluation")
-    st.write("• BERT fine-tuning")
-    st.write("• ?")
-    st.write("• ?")
+    st.write("• Text classification with BERT")
+    st.write("• Voting Classifier")
+    st.write("• LLM workflow integration")
 
     with st.expander("… more info"):
         st.markdown(
@@ -133,14 +134,14 @@ with tp_col3:
         **Former positions:**
         - Principal Speech Scientist
         - Senior Speech Scientist
-        - ?
+        - Teaching Assistant
         
         
         **Skills & Expertise:**
         - Natural Language Processing
-        - ?
-        - ?
-        
+        - Regression Testing
+        - Agile Scrum
+        - CI/CD Pipliens
     
         **Links:**
         - [GitHub Profile](https://github.com/thomas-borer)
