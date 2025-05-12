@@ -117,7 +117,7 @@ with project_tab4:
         ],
         "Recall (weighted)": [
             0.76,
-            0.742,
+            0.74,
             0.65,
             0.55,
             0.58,
@@ -147,11 +147,13 @@ with project_tab4:
     best_model_info_df = pd.DataFrame(best_model_info_data).set_index("Model")
 
     st.dataframe(models_results_df, use_container_width=True)
+
+    st.markdown("**Best Model Parameters**")
     st.dataframe(best_model_info_df, use_container_width=True)
 
     st.markdown(
         """
-        **Key Findings:**
+        **Key Findings**
         - Underrepresented categories achieved high classification performance despite class imbalance
         - Model performance showed high sensitivity to hyperparameter selection, with significant risk of overfitting
         - Computational complexity presented scalability challenges, particularly for ensemble methods
