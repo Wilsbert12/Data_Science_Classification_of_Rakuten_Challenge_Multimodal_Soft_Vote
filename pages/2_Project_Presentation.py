@@ -85,8 +85,8 @@ with project_tab3:
 
 with project_tab4:
 
-    # Example results visualization
-    model_results_data = {
+    # Performance metrics
+    models_results_data = {
         "Type": [
             "Text classifier",
             "Text classifier",
@@ -131,10 +131,23 @@ with project_tab4:
         ],
     }
 
-    model_results_df = pd.DataFrame(model_results_data).set_index("Classifier")
+    # Best model information
+    best_model_info_data = {
+        "Model": ["SVC"],
+        "random_state": [42],
+        "classifier__C": [1],
+        "classifier__kernel": ["linear"],
+        "vectorizer": ["TfidfVectorizer"],
+        "max_features": [5000],
+        "ngram_range": ["(1, 1)"],
+        "Cross-Validation Score": [0.75],
+    }
 
-    # Add a color column for the bar chart
-    st.dataframe(model_results_df, use_container_width=True)
+    models_results_df = pd.DataFrame(models_results_data).set_index("Classifier")
+    best_model_info_df = pd.DataFrame(best_model_info_data).set_index("Model")
+
+    st.dataframe(models_results_df, use_container_width=True)
+    st.dataframe(best_model_info_df, use_container_width=True)
 
     st.markdown(
         """
