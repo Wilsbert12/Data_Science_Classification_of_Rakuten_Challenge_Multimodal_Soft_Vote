@@ -324,6 +324,10 @@ with tab_showcase:
             # Read the uploaded image
             image = Image.open(uploaded_image)
 
+            # Convert to RGB mode if it's not already (handles grayscale images)
+            if image.mode != "RGB":
+                image = image.convert("RGB")
+
             # Convert to numpy array for OpenCV processing
             image_array = np.array(image)
 

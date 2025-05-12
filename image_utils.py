@@ -906,7 +906,7 @@ def preprocess_image(image_array):
     # Draw bounding box on the image
     img_with_bb = image_array.copy()
     img_with_bb = cv2.cvtColor(img_with_bb, cv2.COLOR_RGB2BGR)
-    img_with_bb = cv2.rectangle(img_with_bb, (x, y), (x + w, y + h), (0, 0, 255), 2)
+    img_with_bb = cv2.rectangle(img_with_bb, (x, y), (x + w, y + h), (0, 0, 255), 16)
     img_with_bb = cv2.cvtColor(img_with_bb, cv2.COLOR_BGR2RGB)
 
     # 2. Crop, pad and resize
