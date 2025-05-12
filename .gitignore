@@ -34,7 +34,8 @@ vectorized_data/*.pkl
 # Ignore checkpoints
 checkpoints/*.pkl
 
-# Ignore model weights
+# Ignore models and model weights
+/models/*
 *.pth
 
 # Ignore Cross Origin Resource Sharing (CORS) files
