@@ -1,20 +1,20 @@
-# Project presentation
+# Project Outline
 import streamlit as st
 import pandas as pd
 from streamlit_utils import add_pagination_and_footer
 
 st.set_page_config(
-    page_title="FEB25 BDS // Project Presentation",
+    page_title="FEB25 BDS // Project Outline",
     page_icon="images/logos/rakuten-favicon.ico",
     layout="wide",
 )
 
 st.progress(2 / 7)
-st.title("Project Presentation")
-st.sidebar.header(":material/work: Project Presentation")
+st.title("Project Outline")
+st.sidebar.header(":material/work: Project Outline")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
-# Project presentation content
+# Project Outline content
 project_tab1, project_tab2, project_tab3, project_tab4 = st.tabs(
     ["Description", "Methodology", "Models", "Results"]
 )
@@ -162,4 +162,4 @@ with project_tab4:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination_and_footer("pages/2_Project_Presentation.py")
+add_pagination_and_footer("pages/2_Project_Outline.py")

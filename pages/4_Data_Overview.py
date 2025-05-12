@@ -1,10 +1,10 @@
-# Data Visploration
+# Data Overview
 import streamlit as st
 from streamlit_utils import add_pagination_and_footer, load_DataFrame
 import time
 
 st.set_page_config(
-    page_title="FEB25 BDS // Data Visploration",
+    page_title="FEB25 BDS // Data Overview",
     page_icon="images/logos/rakuten-favicon.ico",
     layout="wide",
 )
@@ -82,8 +82,8 @@ with st.spinner(
 
 
 st.progress(4 / 7)
-st.title("Data Visploration")
-st.sidebar.header(":material/search: Data Visploration")
+st.title("Data Overview")
+st.sidebar.header(":material/search: Data Overview")
 st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
 st.markdown(
@@ -103,7 +103,7 @@ with st.expander("**Options** for product category level", expanded=False):
     )
 
 
-# Distribute data visploration content over self-explanatory tabs
+# Distribute Data Overview content over self-explanatory tabs
 tab_basic_info, tab_miss_values, tab_dupl_values = st.tabs(
     ["Basic information", "Missing values", "Duplicate values"]
 )
@@ -384,4 +384,4 @@ with tab_dupl_values:
 
 # Pagination and footer
 st.markdown("---")
-add_pagination_and_footer("pages/4_Data_Visploration.py")
+add_pagination_and_footer("pages/4_Data_Overview.py")
