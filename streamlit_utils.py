@@ -103,7 +103,7 @@ def load_vgg16():
     model = model.to(device)
 
     # Create a local path for downloading model weights
-    vgg16_url = f"{GCP_PROJECT_URL}/vgg16_transfer_model.pth"
+    vgg16_url = f"{GCP_PROJECT_URL}/model/vgg16_transfer_model.pth"
     local_path = os.path.join(tempfile.gettempdir(), "vgg16_transfer_model.pth")
 
     # Download file with model weights if it doesn't exist
