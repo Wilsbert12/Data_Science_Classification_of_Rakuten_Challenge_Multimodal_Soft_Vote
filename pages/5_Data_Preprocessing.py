@@ -158,8 +158,7 @@ with tab_text:
         )
 
     elif (
-        text_preprocessing_option
-        == "5. Remove parentheses and quotes, e.g. (), [], \{\}"
+        text_preprocessing_option == "5. Remove parentheses and quotes, e.g. (), [], {}"
     ):
         mask_dashes = (
             (df_text_train_clean["description_parentheses"] == 1)
