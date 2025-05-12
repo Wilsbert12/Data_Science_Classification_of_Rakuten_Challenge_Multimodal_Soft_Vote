@@ -203,7 +203,7 @@ with prediction_tab2:
     with prediction_col:
         st.write("**Predicted category**")
         img_cpr_path = get_img_path(product_id, image_id, option="cpr")
-        st.write(f"{predict_vgg16(vgg16, img_cpr_path)}")
+        st.write(f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class)}")
 
     # ### Create a layout with columns for the original data
     image_org_col, title_col, description_col, pid_col, iid_col = st.columns(
@@ -325,7 +325,7 @@ with prediction_tab3:
 
             if uploaded_image is not None:
                 st.write("**Predicted Category**")
-                st.write(f"{predict_vgg16(vgg16, img_cpr_path)}")
+                st.write(f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class)}")
             else:
                 st.write("**Predicted Category**")
                 st.write("*Placeholder*")
