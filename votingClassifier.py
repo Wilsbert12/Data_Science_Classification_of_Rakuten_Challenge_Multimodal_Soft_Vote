@@ -67,45 +67,42 @@ class CustomImageTextDataset(Dataset):
     def __len__(self):
         return len(self.df)
 
-
-def predict_voting(image, text, model_vgg16, model_bert, le, device):
-    # Image prediction
+def predict_voting(image, text, raw_texts, model_vgg16, model_bert, svm_model, vectorizer, le, device):
+    # ----- Image prediction -----
     with torch.no_grad():
         image = image.to(device)
         image_output = model_vgg16(image)  # Get output for the image (logits)
         image_prob = F.softmax(image_output, dim=1)  # Convert logits to probabilities
 
-    # Text prediction
+    # ----- Text prediction (BERT) -----
     with torch.no_grad():
         texts = {key: val.to(device) for key, val in text.items()}
         text_output = model_bert(**texts)  # Get output for the text (logits)
-        text_prob = F.softmax(
-            text_output.logits, dim=1
-        )  # Convert logits to probabilities
+        text_prob = F.softmax(text_output.logits, dim=1)  # Convert logits to probabilities
+        
+    # ----- Text prediction (SVM) -----
+    with torch.no_grad():
+        # raw_texts is a list of strings
+        text_features = vectorizer.transform(raw_texts)  # Use saved vectorizer
+        svm_text_prob_np = svm_model.predict_proba(text_features)  # shape: (batch_size, num_classes)
 
-    # Combine the probabilities (soft voting)
-    avg_prob = (image_prob + text_prob) / 2.0  # You can adjust the weights if needed
+        # Convert to torch tensor for voting
+        svm_text_prob = torch.tensor(svm_text_prob_np, dtype=torch.float32).to(device)
 
-    # Final prediction (class with the highest average probability)
-    final_prediction_encoded = (
-        torch.argmax(avg_prob, dim=1).cpu().numpy()
-    )  # Move to CPU for inverse_transform
+    # ----- Combine the probabilities -----
+    avg_prob = (image_prob + text_prob + svm_text_prob) / 3.0
 
-    # Decode predictions back to original labels
+    # Final prediction
+    final_prediction_encoded = torch.argmax(avg_prob, dim=1).cpu().numpy()
     final_prediction_decoded = le.inverse_transform(final_prediction_encoded)
-    image_prediction_decoded = le.inverse_transform(
-        torch.argmax(image_prob, dim=1).cpu().numpy()
-    )
-    text_prediction_decoded = le.inverse_transform(
-        torch.argmax(text_prob, dim=1).cpu().numpy()
-    )
 
-    return (
-        final_prediction_decoded,
-        image_prediction_decoded,
-        text_prediction_decoded,
-        avg_prob,
-    )
+    # Individual predictions
+    image_prediction_decoded = le.inverse_transform(torch.argmax(image_prob, dim=1).cpu().numpy())
+    text_prediction_decoded = le.inverse_transform(torch.argmax(text_prob, dim=1).cpu().numpy())
+    svc_text_prediction_decoded = le.inverse_transform(torch.argmax(svm_text_prob, dim=1).cpu().numpy())
+
+    return final_prediction_decoded, image_prediction_decoded, text_prediction_decoded, svc_text_prediction_decoded, avg_prob
+
 
 
 def main():
@@ -122,7 +119,7 @@ def main():
     parser.add_argument(
         "--sample_size",
         type=int,
-        default=1,
+        default=30,
         help='Size of the random sample (only applicable when run_type is "sample").',
     )
     parser.add_argument(
@@ -191,8 +188,15 @@ def main():
     )
     tokenizer = CamembertTokenizer.from_pretrained(camembert_model_path)
 
+
     # Move BERT model to the specified device
     model_bert.to(device)
+
+    # Load Classical Text Model
+
+    import joblib
+    vectorizer = joblib.load('models/svc_vectorizer.pkl')  # CPU-based model
+    svm_model = joblib.load('models/svm_classifier.pkl')  # CPU-based model
 
     # Load VGG16 model
     model_vgg16 = models.vgg16(pretrained=True)
@@ -244,13 +248,15 @@ def main():
         )
 
         # Iterate through the sample data loader
-        for images, texts, labels_encoded in sample_data_loader:
+        for batch_idx, (images, texts, labels_encoded) in enumerate(sample_data_loader):
+            # Extract raw texts for this batch from tokenizer input
+            raw_texts = [tokenizer.decode(texts['input_ids'][i], skip_special_tokens=True) for i in range(len(images))]
+            
             # Decode the actual labels
             actual_labels_decoded = le.inverse_transform(labels_encoded.cpu().numpy())
-
             # Get predictions from the voting classifier and individual models
-            final_pred_decoded, image_pred_decoded, text_pred_decoded, avg_prob = (
-                predict_voting(images, texts, model_vgg16, model_bert, le, device)
+            final_pred_decoded, image_pred_decoded, text_pred_decoded,svm_pred_decoded, avg_prob = (
+                predict_voting(images, texts, raw_texts, model_vgg16, model_bert, svm_model, vectorizer, le, device)
             )
 
             # Print the results for each item in the sample
@@ -260,6 +266,7 @@ def main():
                 print(f"  Actual Label: {actual_labels_decoded[i]}")
                 print(f"  VGG16 Prediction: {image_pred_decoded[i]}")
                 print(f"  BERT Prediction: {text_pred_decoded[i]}")
+                print(f"  SVC Prediction: {svm_pred_decoded[i]}")
                 print(f"  Voting Prediction: {final_pred_decoded[i]}")
                 # Optional: Print probabilities for the voting prediction
                 # print(f"  Voting Probabilities: {avg_prob[i].tolist()}")
@@ -286,7 +293,7 @@ def main():
         ):
             # Get predictions from the voting classifier
             final_pred_decoded, _, _, _ = predict_voting(
-                images, texts, model_vgg16, model_bert, le, device
+                images, texts, raw_texts, model_vgg16, model_bert, svm_model, vectorizer, le, device
             )
 
             # Store actual labels and voting predictions
