@@ -65,9 +65,10 @@ with project_tab3:
         st.markdown(
             """
         - **TF-IDF with Classical ML:**
-          - Random Forest
-          - SVM
           - Gradient Boosting
+          - Logistic Regression
+          - Random Forest
+          - Support Vector Machine
         - **BERT-based models:**
           - Fine-tuned camemBERT
         """
