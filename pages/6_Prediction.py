@@ -67,13 +67,14 @@ prediction_tab1, prediction_tab2, prediction_tab3 = st.tabs(
 with prediction_tab1:
     with st.expander("**Options** for test data preview"):
 
-        radio_pred_class = st.radio(
+        radio_pred_class_tab1 = st.radio(
             "Show **predicted class** as...",
             (
                 "Primary Category",
                 "Subcategory",
             ),
             horizontal=True,
+            key="radio_pred_class_tab1",
         )
 
         product_teaser_selected = st.selectbox(
@@ -120,9 +121,13 @@ with prediction_tab1:
         st.write(merged_text)
 
     with prediction_col:
-        st.write("**Predicted category**")
         img_cpr_path = get_img_path(product_id, image_id, option="cpr")
-        st.write(f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class)}")
+        if radio_pred_class_tab1 == "Primary Category":
+            st.write("**Predicted Primary Category**")
+            st.write(f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class_tab1)}")
+        elif radio_pred_class_tab1 == "Subcategory":
+            st.write("**Predicted Subcategory**")
+            st.write(f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class_tab1)}")
 
     # ### Create a layout with columns for the original data
     image_org_col, title_col, description_col, pid_col, iid_col = st.columns(
@@ -163,6 +168,17 @@ with prediction_tab1:
         st.dataframe(pd.DataFrame(df_text_test_specific))
 
 with prediction_tab2:
+    with st.expander("**Options** for test data preview"):
+
+        radio_pred_class_tab2 = st.radio(
+            "Show **predicted class** as...",
+            (
+                "Primary Category",
+                "Subcategory",
+            ),
+            horizontal=True,
+            key="radio_pred_class_tab2",
+        )
 
     df_text_test_sample = df_text_test.sample(1)
     row = df_text_test_sample.iloc[0]
@@ -201,9 +217,13 @@ with prediction_tab2:
         st.write(f"{merged_text}")
 
     with prediction_col:
-        st.write("**Predicted category**")
         img_cpr_path = get_img_path(product_id, image_id, option="cpr")
-        st.write(f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class)}")
+        if radio_pred_class_tab2 == "Primary Category":
+            st.write("**Predicted Primary Category**")
+            st.write(f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class_tab2)}")
+        elif radio_pred_class_tab2 == "Subcategory":
+            st.write("**Predicted Subcategory**")
+            st.write(f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class_tab2)}")
 
     # ### Create a layout with columns for the original data
     image_org_col, title_col, description_col, pid_col, iid_col = st.columns(
@@ -252,6 +272,17 @@ with prediction_tab2:
 
 
 with prediction_tab3:
+    with st.expander("**Options** for test data preview"):
+
+        radio_pred_class_tab3 = st.radio(
+            "Show **predicted class** as...",
+            (
+                "Primary Category",
+                "Subcategory",
+            ),
+            horizontal=True,
+            key="radio_pred_class_tab3",
+        )
     # Insert title
     user_product_title = st.text_input(
         "**Product title**",
@@ -324,8 +355,16 @@ with prediction_tab3:
         with pred_cat_col:
 
             if uploaded_image is not None:
-                st.write("**Predicted Category**")
-                st.write(f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class)}")
+                if radio_pred_class_tab3 == "Primary Category":
+                    st.write("**Predicted Primary Category**")
+                    st.write(
+                        f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class_tab3)}"
+                    )
+                elif radio_pred_class_tab3 == "Subcategory":
+                    st.write("**Predicted Subcategory**")
+                    st.write(
+                        f"{predict_vgg16(vgg16, img_cpr_path, radio_pred_class_tab3)}"
+                    )
             else:
                 st.write("**Predicted Category**")
                 st.write("*Placeholder*")
