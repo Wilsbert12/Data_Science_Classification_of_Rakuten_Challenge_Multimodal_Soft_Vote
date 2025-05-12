@@ -112,7 +112,7 @@ with project_tab4:
             0.74,
             0.65,
             0.55,
-            '-',
+            "-",
             0.58,
         ],
         "Precision (weighted)": [
@@ -158,7 +158,7 @@ with project_tab4:
 
     st.dataframe(models_results_df, use_container_width=True)
 
-    st.markdown("**SVC // Best performing hyperparameters**")
+    st.markdown("**1. SVC // Best performing hyperparameters**")
     st.dataframe(best_model_info_df, use_container_width=True)
 
     st.markdown(
@@ -171,7 +171,7 @@ with project_tab4:
         """
     )
 
-    st.markdown("**CamemBERT**")
+    st.markdown("**2. CamemBERT**")
 
     st.markdown(
         """
@@ -181,7 +181,18 @@ with project_tab4:
             * tokenizer max length - 256
             * class weight - balanced
             * training epochs 10 - training and validation loss starting to move opposite directions
-        * potential next step - Use LLM to generate more data
+        * Potential next step: Use LLM to generate more data
+        """
+    )
+
+    st.markdown("**3. VGG16**")
+
+    st.markdown(
+        """
+        _Key Findings_
+        * Overfitting: 64.35% validation accuracy with 15.44% gap between training and validation performance
+        * Underperformance: 0.58 accuracy and 0.61 precision compared to superior metrics of text-based classifiers
+        * GPU acceleration in Google Colab Pro reduced training time from 286 minutes to 3-4 minutes per epoch
         """
     )
 
