@@ -86,15 +86,36 @@ with project_tab4:
 
     # Example results visualization
     model_results_data = {
-        "Classifier": ["RandomForestClassifier", "LogisticRegression", "XGBClassifier"],
-        "Accuracy": [0.5545545545545546, 0.7426249779190955, 0.652593770240829],
-        "Precision-Weighted": [
-            0.7343207487442237,
-            0.752480857130038,
-            0.7234522507687201,
+        "Classifier": [
+            "RandomForestClassifier",
+            "LogisticRegression",
+            "XGBClassifier",
+            "VGG16",
         ],
-        "Recall-Weighted": [0.5545545545545546, 0.7426249779190955, 0.652593770240829],
-        "F1-Weighted": [None, 0.7434, 0.6644],
+        "Accuracy": [
+            0.55455,
+            0.7426,
+            0.6525,
+            0.5883,
+        ],
+        "Precision-Weighted": [
+            0.7343,
+            0.7524,
+            0.7234,
+            0.6153,
+        ],
+        "Recall-Weighted": [
+            0.5545,
+            0.74262,
+            0.6525,
+            0.5883,
+        ],
+        "F1-Weighted": [
+            None,
+            0.7434,
+            0.6644,
+            0.5825,
+        ],
     }
 
     model_results_df = pd.DataFrame(model_results_data)
