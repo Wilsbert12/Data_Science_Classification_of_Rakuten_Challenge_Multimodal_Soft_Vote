@@ -85,26 +85,30 @@ with project_tab3:
 with project_tab4:
 
     # Example results visualization
-    results_data = {
-        "Model": ["TF-IDF + RF", "TF-IDF + SVM", "BERT", "VGG16", "Combined"],
-        "Accuracy": ["?", "?", "?", "?", "?"],
-        "Precision": ["?", "?", "?", "?", "?"],
-        "Recall": ["?", "?", "?", "?", "?"],
-        "F1-Score": ["?", "?", "?", "?", "?"],
+    model_results_data = {
+        "Classifier": ["RandomForestClassifier", "LogisticRegression", "XGBClassifier"],
+        "Accuracy": [0.5545545545545546, 0.7426249779190955, 0.652593770240829],
+        "Precision-Weighted": [
+            0.7343207487442237,
+            0.752480857130038,
+            0.7234522507687201,
+        ],
+        "Recall-Weighted": [0.5545545545545546, 0.7426249779190955, 0.652593770240829],
+        "F1-Weighted": [None, 0.7434, 0.6644],
     }
 
-    results_df = pd.DataFrame(results_data)
+    model_results_df = pd.DataFrame(model_results_data)
 
     # Add a color column for the bar chart
-    st.dataframe(results_df, use_container_width=True)
+    st.dataframe(model_results_df, use_container_width=True)
 
     st.markdown(
         """
         **Key Findings:**
-        - BERT-based models performed best for text classification
-        - VGG16 showed strong performance for image classification
-        - The combined multi-modal approach achieved the highest overall accuracy
-        - Certain product categories benefited more from text data, while others from image data
+        - Underrepresented categories achieved high classification performance despite class imbalance
+        - Model performance showed high sensitivity to hyperparameter selection, with significant risk of overfitting
+        - Computational complexity presented scalability challenges, particularly for ensemble methods
+        - Text vector representations exhibited high dimensionality but demonstrated linear separability, eliminating the need for kernel transformations
         """
     )
 
