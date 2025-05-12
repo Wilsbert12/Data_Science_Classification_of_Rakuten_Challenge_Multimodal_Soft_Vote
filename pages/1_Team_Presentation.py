@@ -113,7 +113,7 @@ with tp_col3:
         - Natural Language Processing
         - Regression Testing
         - CI/CD Pipelines
-        - Agile Scrum
+        
     
         **Links:**
         - [GitHub Profile](https://github.com/thomas-borer)
