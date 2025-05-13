@@ -37,6 +37,22 @@ DF_TEXT_TRAIN_DESCR_SUBCAT_FN = "data/df_text_train_descr_subcat.parquet"
 DF_TEXT_TRAIN_MISS_DESCR_SUBCAT_FN = "data/df_text_train_miss_descr_subcat.parquet"
 DF_TEXT_TRAIN_DUPL_DESCR_SUBCAT_FN = "data/df_text_train_dupl_descr_subcat.parquet"
 
+DF_TEXT_TRAIN_DESCR_PRIM_CAT_FN_FR = "data/df_text_train_descr_prim_cat_fr.parquet"
+DF_TEXT_TRAIN_MISS_DESCR_PRIM_CAT_FN_FR = (
+    "data/df_text_train_miss_descr_prim_cat_fr.parquet"
+)
+DF_TEXT_TRAIN_DUPL_DESCR_PRIM_CAT_FN_FR = (
+    "data/df_text_train_dupl_descr_prim_cat_fr.parquet"
+)
+
+DF_TEXT_TRAIN_DESCR_SUBCAT_FN_FR = "data/df_text_train_descr_subcat_fr.parquet"
+DF_TEXT_TRAIN_MISS_DESCR_SUBCAT_FN_FR = (
+    "data/df_text_train_miss_descr_subcat_fr.parquet"
+)
+DF_TEXT_TRAIN_DUPL_DESCR_SUBCAT_FN_FR = (
+    "data/df_text_train_dupl_descr_subcat_fr.parquet"
+)
+
 DF_TEXT_TRAIN_DUPL_DES_TOP5_FN = "data/df_text_train_clean_dupl_des_top5.parquet"
 DF_TEXT_TRAIN_DUPL_DESCR_TOP5_FN = "data/df_text_train_clean_dupl_descr_top5.parquet"
 
@@ -57,6 +73,7 @@ with st.spinner(
     df_text_train_duplicates = load_DataFrame(DF_TEXT_TRAIN_CLEAN_DUPLICATES_FN)
     df_text_train_cleaned = load_DataFrame(DF_TEXT_TRAIN_CLEANED_FN)
 
+    # Load DataFrames with English category names
     df_text_train_clean_descr_prim_cat = load_DataFrame(DF_TEXT_TRAIN_DESCR_PRIM_CAT_FN)
     df_text_train_clean_descr_subcat = load_DataFrame(DF_TEXT_TRAIN_DESCR_SUBCAT_FN)
 
@@ -72,6 +89,28 @@ with st.spinner(
     )
     df_text_train_clean_dupl_descr_subcat = load_DataFrame(
         DF_TEXT_TRAIN_DUPL_DESCR_SUBCAT_FN
+    )
+
+    # Load DataFrames with French category names
+    df_text_train_clean_descr_prim_cat_fr = load_DataFrame(
+        DF_TEXT_TRAIN_DESCR_PRIM_CAT_FN_FR
+    )
+    df_text_train_clean_descr_subcat_fr = load_DataFrame(
+        DF_TEXT_TRAIN_DESCR_SUBCAT_FN_FR
+    )
+
+    df_text_train_clean_miss_descr_prim_cat_fr = load_DataFrame(
+        DF_TEXT_TRAIN_MISS_DESCR_PRIM_CAT_FN_FR
+    )
+    df_text_train_clean_miss_descr_subcat_fr = load_DataFrame(
+        DF_TEXT_TRAIN_MISS_DESCR_SUBCAT_FN_FR
+    )
+
+    df_text_train_clean_dupl_descr_prim_cat_fr = load_DataFrame(
+        DF_TEXT_TRAIN_DUPL_DESCR_PRIM_CAT_FN_FR
+    )
+    df_text_train_clean_dupl_descr_subcat_fr = load_DataFrame(
+        DF_TEXT_TRAIN_DUPL_DESCR_SUBCAT_FN_FR
     )
 
     df_text_clean_dupl_des_top5 = load_DataFrame(DF_TEXT_TRAIN_DUPL_DES_TOP5_FN)
@@ -93,14 +132,25 @@ Data Exploration and Data Visualization of training data for the **Rakuten E-Com
 )
 
 with st.expander("**Options** for product category level", expanded=False):
-    radio_category = st.radio(
-        "Show **DataFrames and charts** grouped by...",
-        (
-            "Primary Category",
-            "Subcategory",
-        ),
-        horizontal=True,
-    )
+    cat_col, lang_col = st.columns(2)
+    with cat_col:
+        radio_category = st.radio(
+            "Show **DataFrames and charts** grouped by...",
+            (
+                "Primary Category",
+                "Subcategory",
+            ),
+            horizontal=True,
+        )
+    with lang_col:
+        radio_language = st.radio(
+            "Show **category names** in...",
+            (
+                "English",
+                "French",
+            ),
+            horizontal=True,
+        )
 
 
 # Distribute Data Overview content over self-explanatory tabs
@@ -131,31 +181,57 @@ with tab_basic_info:
         with st.expander(
             "Show **DataFrame** with product count for primary category", expanded=False
         ):
-            st.dataframe(df_text_train_clean_descr_prim_cat, use_container_width=True)
+            if radio_language == "English":
+                st.dataframe(
+                    df_text_train_clean_descr_prim_cat, use_container_width=True
+                )
+            elif radio_language == "French":
+                st.dataframe(
+                    df_text_train_clean_descr_prim_cat_fr, use_container_width=True
+                )
 
         with st.expander(
             "Show **bar chart** with product count for primary category", expanded=False
         ):
-            st.bar_chart(
-                df_text_train_clean_descr_prim_cat,
-                horizontal=True,
-                use_container_width=True,
-            )
+            if radio_language == "English":
+                st.bar_chart(
+                    df_text_train_clean_descr_prim_cat,
+                    horizontal=True,
+                    use_container_width=True,
+                )
+            elif radio_language == "French":
+                st.bar_chart(
+                    df_text_train_clean_descr_prim_cat_fr,
+                    horizontal=True,
+                    use_container_width=True,
+                )
 
     elif radio_category == "Subcategory":
         with st.expander(
             "Show **DataFrame** with product count for subcategory", expanded=False
         ):
-            st.dataframe(df_text_train_clean_descr_subcat, use_container_width=True)
+            if radio_language == "English":
+                st.dataframe(df_text_train_clean_descr_subcat, use_container_width=True)
+            elif radio_language == "French":
+                st.dataframe(
+                    df_text_train_clean_descr_subcat_fr, use_container_width=True
+                )
 
         with st.expander(
             "Show **bar chart** with product count for subcategory", expanded=False
         ):
-            st.bar_chart(
-                df_text_train_clean_descr_subcat,
-                horizontal=True,
-                use_container_width=True,
-            )
+            if radio_language == "English":
+                st.bar_chart(
+                    df_text_train_clean_descr_subcat,
+                    horizontal=True,
+                    use_container_width=True,
+                )
+            elif radio_language == "French":
+                st.bar_chart(
+                    df_text_train_clean_descr_subcat_fr,
+                    horizontal=True,
+                    use_container_width=True,
+                )
 
 
 with tab_miss_values:
@@ -181,35 +257,59 @@ with tab_miss_values:
         with st.expander(
             "Show **DataFrame** with product count for primary category", expanded=False
         ):
-            st.dataframe(
-                df_text_train_clean_miss_descr_prim_cat, use_container_width=True
-            )
+            if radio_language == "English":
+                st.dataframe(
+                    df_text_train_clean_miss_descr_prim_cat, use_container_width=True
+                )
+            elif radio_language == "French":
+                st.dataframe(
+                    df_text_train_clean_miss_descr_prim_cat_fr, use_container_width=True
+                )
 
         with st.expander(
             "Show **bar chart** with product count for primary category", expanded=False
         ):
-            st.bar_chart(
-                df_text_train_clean_miss_descr_prim_cat,
-                horizontal=True,
-                use_container_width=True,
-            )
+            if radio_language == "English":
+                st.bar_chart(
+                    df_text_train_clean_miss_descr_prim_cat,
+                    horizontal=True,
+                    use_container_width=True,
+                )
+            elif radio_language == "French":
+                st.bar_chart(
+                    df_text_train_clean_miss_descr_prim_cat_fr,
+                    horizontal=True,
+                    use_container_width=True,
+                )
 
     elif radio_category == "Subcategory":
         with st.expander(
             "Show **DataFrame** with product count for subcategory", expanded=False
         ):
-            st.dataframe(
-                df_text_train_clean_miss_descr_subcat, use_container_width=True
-            )
+            if radio_language == "English":
+                st.dataframe(
+                    df_text_train_clean_miss_descr_subcat, use_container_width=True
+                )
+            elif radio_language == "French":
+                st.dataframe(
+                    df_text_train_clean_miss_descr_subcat_fr, use_container_width=True
+                )
 
         with st.expander(
             "Show **bar chart** with product count for subcategory", expanded=False
         ):
-            st.bar_chart(
-                df_text_train_clean_miss_descr_subcat,
-                horizontal=True,
-                use_container_width=True,
-            )
+            if radio_language == "English":
+                st.bar_chart(
+                    df_text_train_clean_miss_descr_subcat,
+                    horizontal=True,
+                    use_container_width=True,
+                )
+            elif radio_language == "French":
+                st.bar_chart(
+                    df_text_train_clean_miss_descr_subcat_fr,
+                    horizontal=True,
+                    use_container_width=True,
+                )
 
 with tab_dupl_values:
     st.markdown(
@@ -241,36 +341,63 @@ with tab_dupl_values:
                 "Show **DataFrame** with product count for primary category",
                 expanded=False,
             ):
-                st.dataframe(
-                    df_text_train_clean_dupl_descr_prim_cat, use_container_width=True
-                )
+                if radio_language == "English":
+                    st.dataframe(
+                        df_text_train_clean_dupl_descr_prim_cat,
+                        use_container_width=True,
+                    )
+                elif radio_language == "French":
+                    st.dataframe(
+                        df_text_train_clean_dupl_descr_prim_cat_fr,
+                        use_container_width=True,
+                    )
 
             with st.expander(
                 "Show **bar chart** with product count for primary category",
                 expanded=False,
             ):
-                st.bar_chart(
-                    df_text_train_clean_dupl_descr_prim_cat,
-                    horizontal=True,
-                    use_container_width=True,
-                )
+                if radio_language == "English":
+                    st.bar_chart(
+                        df_text_train_clean_dupl_descr_prim_cat,
+                        horizontal=True,
+                        use_container_width=True,
+                    )
+                elif radio_language == "French":
+                    st.bar_chart(
+                        df_text_train_clean_dupl_descr_prim_cat_fr,
+                        horizontal=True,
+                        use_container_width=True,
+                    )
 
         elif radio_category == "Subcategory":
             with st.expander(
                 "Show **DataFrame** with product count for subcategory", expanded=False
             ):
-                st.dataframe(
-                    df_text_train_clean_dupl_descr_subcat, use_container_width=True
-                )
+                if radio_language == "English":
+                    st.dataframe(
+                        df_text_train_clean_dupl_descr_subcat, use_container_width=True
+                    )
+                elif radio_language == "French":
+                    st.dataframe(
+                        df_text_train_clean_dupl_descr_subcat_fr,
+                        use_container_width=True,
+                    )
 
             with st.expander(
                 "Show **bar chart** with product count for subcategory", expanded=False
             ):
-                st.bar_chart(
-                    df_text_train_clean_dupl_descr_subcat,
-                    horizontal=True,
-                    use_container_width=True,
-                )
+                if radio_language == "English":
+                    st.bar_chart(
+                        df_text_train_clean_dupl_descr_subcat,
+                        horizontal=True,
+                        use_container_width=True,
+                    )
+                elif radio_language == "French":
+                    st.bar_chart(
+                        df_text_train_clean_dupl_descr_subcat_fr,
+                        horizontal=True,
+                        use_container_width=True,
+                    )
 
     elif dupl_value_opt == "1. Duplicate values: Titles":
 
