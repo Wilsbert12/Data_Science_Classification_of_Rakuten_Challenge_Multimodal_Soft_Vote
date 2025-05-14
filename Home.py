@@ -19,9 +19,11 @@ st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=T
 st.write("## eCommerce Products Classification Project")
 st.markdown(
     """
-    This Streamlit app is part of final project of DataScientist's training "Data Science".
+    This Streamlit app is part of final project of DataScientist's bootcamp training "Data Science" of the cohort FEB25 BDS.
     
-    The project addresses **Rakuten**'s challenge of categorizing marketplace listings through **multimodal machine learning** combining text and image data.
+    The project addresses **Rakuten**'s challenge of accurately categorizing marketplace listings.
+    
+    One solution could be automation via **multimodal machine learning** combining text and image data.
     
     The approach aims to leverage the company's competitive advantage by...
     * automating the **marketplace**'s product categorization, reducing operational costs and errors while simultaneously 
