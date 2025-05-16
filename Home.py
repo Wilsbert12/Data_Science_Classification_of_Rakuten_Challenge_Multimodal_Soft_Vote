@@ -8,6 +8,17 @@ st.set_page_config(
     layout="wide",
 )
 
+# Add Open Graph meta tags
+st.markdown(
+    """
+    <head>
+        <meta property="og:description" content="This Streamlit app is part of the final project for DataScientist's training in **Data Science** of the cohort **FEB25 BDS**. The project addresses Rakuten's challenge of accurately **categorizing products** in the marketplace listings. One solution could be an automation via multimodal machine learning combining text and image data." />
+    </head>
+""",
+    unsafe_allow_html=True,
+)
+
+
 st.progress(0 / 7)
 st.title("FEB25 BDS // Rakuten")
 
@@ -19,18 +30,18 @@ st.sidebar.image("images/logos/rakuten-logo-red-wide.svg", use_container_width=T
 st.write("## eCommerce Products Classification Project")
 st.markdown(
     """
-    This Streamlit app is part of final project of DataScientist's bootcamp training "Data Science" of the cohort FEB25 BDS.
+    This Streamlit app is part of the final project for **_DataScientist_**'s training in **Data Science** of the cohort **FEB25 BDS**.
     
-    The project addresses **Rakuten**'s challenge of accurately categorizing marketplace listings.
+    The project addresses **_Rakuten_**'s challenge of accurately **categorizing products** in the marketplace listings.
     
-    One solution could be automation via **multimodal machine learning** combining text and image data.
+    One solution could be an automation via **multimodal machine learning** combining text and image data.
     
-    The approach aims to leverage the company's competitive advantage by...
+    Our approach aims to leverage the company's competitive advantage by...
     * automating the **marketplace**'s product categorization, reducing operational costs and errors while simultaneously 
-    * enhancing **user experience** and consumer product discovery as well as 
-    * helping **vendors** reach their target customers more effectively.
+    * improving **user experience** thanks to a more efficient consumer product discovery as well as 
+    * helping **vendors** reach their respective target audience more effectively.
     
-    Use the sidebar or pagination to browse through presentations of the project and team, the data's exploration, visualization and preprocessing as well as pages regarding modelling and prediction.
+    Use the sidebar or pagination to browse through the presentation of the project and the team, the data's exploration, visualization and preprocessing as well as pages regarding modelling and prediction.
     
     **:material/folder_code: GitHub Repository:** [feb25_bds_classification-of-rakuten-e-commerce-products](https://github.com/PeterStieg/feb25_bds_classification-of-rakuten-e-commerce-products)
     
