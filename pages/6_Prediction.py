@@ -319,7 +319,7 @@ with prediction_tab3:
 
     if prediction_button:
 
-        st.markdown("---")
+        st.divider()
 
         # Create a layout to display the processed image and predictions
         pred_img_col, pred_txt_col, pred_cat_col = st.columns([1, 2, 1])
@@ -370,5 +370,5 @@ with prediction_tab3:
                 st.write("*Placeholder*")
 
 # Pagination and footer
-st.markdown("---")
+st.divider()
 add_pagination_and_footer("pages/6_Prediction.py")

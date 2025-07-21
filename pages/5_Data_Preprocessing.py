@@ -355,5 +355,5 @@ with tab_showcase:
             st.dataframe(df_uploaded_image, use_container_width=True)
 
 # Pagination and footer
-st.markdown("---")
+st.divider()
 add_pagination_and_footer("pages/5_Data_Preprocessing.py")

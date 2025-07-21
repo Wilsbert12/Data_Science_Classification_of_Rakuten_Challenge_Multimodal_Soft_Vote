@@ -150,5 +150,5 @@ with tp_col3:
 
 
 # Pagination and footer
-st.markdown("---")
+st.divider()
 add_pagination_and_footer("pages/7_Thank_you.py")

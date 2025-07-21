@@ -49,5 +49,5 @@ st.markdown(
 )
 
 # Pagination and footer
-st.markdown("---")
+st.divider()
 add_pagination_and_footer("pages/Home.py")
