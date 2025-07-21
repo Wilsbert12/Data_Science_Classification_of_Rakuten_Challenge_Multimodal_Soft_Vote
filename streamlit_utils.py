@@ -237,6 +237,9 @@ def add_pagination_and_footer(current_page_path):
         0,
     )
 
+    # Horizontal line
+    st.divider()
+
     # Create columns for previous, current page indicator, next
     prev_butt, next_butt = st.columns(
         2

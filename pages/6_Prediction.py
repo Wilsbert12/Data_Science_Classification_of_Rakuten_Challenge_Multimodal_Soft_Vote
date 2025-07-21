@@ -370,5 +370,4 @@ with prediction_tab3:
                 st.write("*Placeholder*")
 
 # Pagination and footer
-st.divider()
 add_pagination_and_footer("pages/6_Prediction.py")

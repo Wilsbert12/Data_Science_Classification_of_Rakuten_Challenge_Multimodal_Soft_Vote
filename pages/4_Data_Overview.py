@@ -510,5 +510,4 @@ with tab_dupl_values:
         )
 
 # Pagination and footer
-st.divider()
 add_pagination_and_footer("pages/4_Data_Overview.py")

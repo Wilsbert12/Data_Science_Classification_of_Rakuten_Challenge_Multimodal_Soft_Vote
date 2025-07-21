@@ -20,5 +20,4 @@ with open("data/methodology.mmd", "r") as file:
 st_mermaid(methodology_mermaid, height="auto", pan=True, zoom=True, show_controls=True)
 
 # Pagination and footer
-st.divider()
 add_pagination_and_footer("pages/3_Modelling.py")

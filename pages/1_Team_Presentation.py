@@ -123,5 +123,4 @@ with tp_col3:
 
 
 # Pagination and footer
-st.divider()
 add_pagination_and_footer("pages/1_Team_Presentation.py")

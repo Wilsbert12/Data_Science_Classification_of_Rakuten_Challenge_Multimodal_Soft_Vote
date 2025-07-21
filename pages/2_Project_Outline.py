@@ -199,5 +199,4 @@ with project_tab4:
 
 
 # Pagination and footer
-st.divider()
 add_pagination_and_footer("pages/2_Project_Outline.py")
