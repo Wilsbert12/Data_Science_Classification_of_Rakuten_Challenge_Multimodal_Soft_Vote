@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 
-from streamlit_utils import (
+from Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote.streamlit_utils import (
     add_pagination_and_footer,
     load_DataFrame,
     display_image,
@@ -13,8 +13,8 @@ from streamlit_utils import (
     predict_vgg16,
 )
 
-from image_utils import preprocess_image
-from text_utils import text_cleaner, text_merger
+from utils.image_utils import preprocess_image
+from utils.text_utils import text_cleaner, text_merger
 
 st.set_page_config(
     page_title="FEB25 BDS // Prediction",

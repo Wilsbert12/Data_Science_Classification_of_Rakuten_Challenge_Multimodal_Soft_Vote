@@ -1,7 +1,7 @@
 # Project Outline
 import streamlit as st
 import pandas as pd
-from streamlit_utils import add_pagination_and_footer
+from Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote.streamlit_utils import add_pagination_and_footer
 
 st.set_page_config(
     page_title="FEB25 BDS // Project Outline",

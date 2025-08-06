@@ -1,6 +1,6 @@
 # Home.py
 import streamlit as st
-from streamlit_utils import add_pagination_and_footer
+from Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote.streamlit_utils import add_pagination_and_footer
 
 st.set_page_config(
     page_title="FEB25 BDS // Rakuten: Classification of eCommmerce products",

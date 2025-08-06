@@ -29,7 +29,7 @@
 /.ipynb_checkpoints/checkpoints/*.pkl
 
 # Ingore vectorized data files
-vectorized_data/*.pkl
+data/vectorized_data/*.pkl
 
 # Ignore checkpoints
 checkpoints/*.pkl
@@ -39,4 +39,4 @@ checkpoints/*.pkl
 *.pth
 
 # Ignore Cross Origin Resource Sharing (CORS) files
-cors-config.json
+cors-config.jsonrakuten-env/

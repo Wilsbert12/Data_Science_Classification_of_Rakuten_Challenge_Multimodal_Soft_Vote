@@ -1,6 +1,6 @@
 # Data Overview
 import streamlit as st
-from streamlit_utils import add_pagination_and_footer, load_DataFrame
+from Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote.streamlit_utils import add_pagination_and_footer, load_DataFrame
 import time
 
 st.set_page_config(
