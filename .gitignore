@@ -39,4 +39,9 @@ checkpoints/*.pkl
 *.pth
 
 # Ignore Cross Origin Resource Sharing (CORS) files
-cors-config.jsonrakuten-env/
+cors-config.json
+
+# Virtual environments
+rakuten-env/
+venv/
+env/
