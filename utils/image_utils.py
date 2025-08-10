@@ -1,11 +1,11 @@
 import os
-import cv2
 import re
-import imagehash
 import shutil
 
-import numpy as np
+import numpy as np  # Move numpy before cv2
 import pandas as pd
+import cv2           # Move cv2 after numpy
+import imagehash
 
 from PIL import Image
 from PIL.ExifTags import TAGS
@@ -13,308 +13,210 @@ from concurrent.futures import ProcessPoolExecutor
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 
-"""
-Image utility functions for extracting data from images.
 
-This module provides functions for tasks such as:
-- Data extraction, e. g. size, format, metadata
-
-Planned features:
-- Image processing
-- Image classification
-
-These functions are designed to prepare image data for machine learning.
-"""
-
-
-def image_data_extractor(df, base_path="./images/image_train/"):
+def image_data_extractor(df, base_path="../data/raw/images/image_train/"):
     """
     Extract data from product images in given DataFrame with columns 'productid' and 'imageid'.
     Return a new DataFrame with the extracted information.
-
+    
     Parameters:
     -----------
     df : pandas.DataFrame
         DataFrame containing 'productid' and 'imageid' columns
-    base_path : str, optional
-        The base directory path where images are stored, e.g. './images/image_train/'
-        Default is './images/image_train/'.
-
+    base_path : str
+        Path to the folder containing the images
+        
     Returns:
     --------
     pandas.DataFrame
-        A new DataFrame with 'productid', 'imageid', and columns for each extracted data point
+        Enhanced DataFrame with image metadata
     """
-
-    # List to store extracted data for each image
-    extracted_data = []
-
-    # Process each row in the input DataFrame
-    for idx, row in df.iterrows():
-        # Get productid and imageid from the DataFrame
-        product_id = idx
+    
+    def process_single_image(row):
+        """Process a single image and extract metadata"""
+        # Start with ALL the original columns from the input row
+        image_data = row.to_dict()  # Copy everything: productid, imageid, prdtypecode
+        
+        product_id = row["productid"]
         image_id = row["imageid"]
-
-        # Initialize a dictionary to store data for this image
-        image_data = {"productid": product_id, "imageid": image_id}
-
-        # Construct the file path
-        file_path = f"{base_path}image_{image_id}_product_{product_id}.jpg"
-
+        
+        # Construct file path with int conversion to avoid .0 in filename
+        file_path = os.path.join(base_path, f"image_{int(image_id)}_product_{int(product_id)}.jpg")
+        
         # Check if file exists
         if not os.path.exists(file_path):
-            image_data["error"] = "File not found"  # f"File not found": {file_path}"
-            extracted_data.append(image_data)
-            continue
-
+            image_data["error"] = "File not found"
+            return image_data
+            
         try:
             # Open the image
             img = Image.open(file_path)
-
-            # Extract basic image properties
-            # image_data["width"] = img.size[0]
-            # image_data["height"] = img.size[1]
-            # image_data["format"] = img.format
-            image_data["mode"] = img.mode  # RGB, L, etc.
+            
+            # Extract basic file properties only (skip RGB analysis as discussed)
             image_data["file_size_kb"] = os.path.getsize(file_path) / 1024
-            """
-            image_data["aspect_ratio"] = (
-                img.size[0] / img.size[1] if img.size[1] > 0 else None
-            )
-            """
-
-            """
-            # Extract metadata from image
-            for key, value in img.info.items():
-                # Handle binary data and complex objects
-                if isinstance(value, (bytes, bytearray)):
-                    continue  # Skip binary data
-                if isinstance(value, (str, int, float, bool)) or value is None:
-                    # Only include simple data types in the DataFrame
-                    image_data[f"meta_{key}"] = value
-
-            # Extract EXIF data
-            if hasattr(img, "_getexif") and img._getexif():
-                for tag_id, value in img._getexif().items():
-                    tag_name = TAGS.get(tag_id, f"tag_{tag_id}")
-                    # Skip binary data and complex objects
-                    if isinstance(value, (bytes, bytearray)):
-                        continue
-                    if isinstance(value, (str, int, float, bool)) or value is None:
-                        image_data[f"exif_{tag_name}"] = value
-            """
-
-            # Color analysis if the image is in RGB mode
-            if img.mode == "RGB":
-                img_array = np.array(img)
-
-                # Calculate mean RGB values
-                mean_rgb = img_array.mean(axis=(0, 1))
-                image_data["mean_r"] = mean_rgb[0]
-                image_data["mean_g"] = mean_rgb[1]
-                image_data["mean_b"] = mean_rgb[2]
-
-                """
-                # Calculate dominant brightness
-                brightness = (
-                    0.299 * img_array[:, :, 0]
-                    + 0.587 * img_array[:, :, 1]
-                    + 0.114 * img_array[:, :, 2]
-                )
-                image_data["mean_brightness"] = brightness.mean()
-
-                # Calculate color variance as a simple measure of image complexity
-                std_rgb = img_array.std(axis=(0, 1))
-                image_data["std_r"] = std_rgb[0]
-                image_data["std_g"] = std_rgb[1]
-                image_data["std_b"] = std_rgb[2]
-                """
-
+            
         except Exception as e:
             image_data["error"] = str(e)
-
-        finally:
-            # Ensure we close the image file
-            if "img" in locals() and hasattr(img, "close"):
-                img.close()
-
-        # Add this image's data to our list
-        extracted_data.append(image_data)
-
-    # Convert the list of dictionaries to a DataFrame
-    df_image_data_extractor = pd.DataFrame(extracted_data)
-
-    return df_image_data_extractor
+            
+        return image_data
+    
+    # Process all images
+    print(f"Processing {len(df)} images for metadata extraction...")
+    results = []
+    
+    for idx, row in tqdm(df.iterrows(), total=len(df), desc="Extracting metadata"):
+        result = process_single_image(row)
+        results.append(result)
+    
+    # Create result DataFrame
+    result_df = pd.DataFrame(results)
+    
+    return result_df
 
 
 def detect_bounding_box_worker(args):
     """
     Worker function to process a single image for bounding box detection using OpenCV.
-
+    
     Parameters:
     -----------
-        args : tuple
-        (product_id, image_id, input_folder, output_folder) tuple
-
+    args : tuple
+        (product_id, image_id, input_folder, output_folder, save_images) tuple
+        
     Returns:
     --------
-    tuple
-        (product_id, x, y, w, h, ar) coordinates and aspect ratio of bounding box
+    tuple or None
+        (product_id, x, y, w, h, ar) if successful, None if failed
     """
-
-    product_id, image_id, input_folder, output_folder = args
-
+    product_id, image_id, input_folder, output_folder, save_images = args
+    
+    # Construct input path with int conversion
+    input_path = os.path.join(
+        input_folder, f"image_{int(image_id)}_product_{int(product_id)}.jpg"
+    )
+    
+    # Check if input file exists
+    if not os.path.exists(input_path):
+        print(f"File not found: {input_path}")
+        return None
+    
     try:
-        # Construct the file paths
-        input_path = os.path.join(
-            input_folder, f"image_{image_id}_product_{product_id}.jpg"
-        )
-        output_path = os.path.join(
-            output_folder, f"image_{image_id}_product_{product_id}_bb.jpg"
-        )
-
-        # Check if the input file exists
-        if not os.path.exists(input_path):
-            print(f"File not found: {input_path}")
-            return product_id, None, None, None, None, None
-
-        # Load the image
+        # Read image
         img = cv2.imread(input_path)
-
-        # Convert to grayscale
+        if img is None:
+            return None
+        
+        # Convert to grayscale for contour detection
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-        # Apply Gaussian blur to reduce noise
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-
-        # Binary Inverse with adjusted threshold
-        _, thresh = cv2.threshold(blurred, 247, 255, cv2.THRESH_BINARY_INV)
-
-        # Try to find contours
-        contours, _ = cv2.findContours(
-            thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-        )
-
-        # If contours found proceed
-        if len(contours) > 0:
-            # Find the largest contour
+        
+        # Apply threshold to get binary image
+        _, thresh = cv2.threshold(gray, 240, 255, cv2.THRESH_BINARY_INV)
+        
+        # Find contours
+        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        if contours:
+            # Find the largest contour (main object)
             largest_contour = max(contours, key=cv2.contourArea)
-
-            # Get the bounding box
             x, y, w, h = cv2.boundingRect(largest_contour)
-
-            # Calculate aspect ratio of bounding box
-            ar = w / h
-
-            # Draw the bounding box on the original image
-            result = cv2.rectangle(img.copy(), (x, y), (x + w, y + h), (0, 0, 255), 2)
-
-            # Save the result
-            cv2.imwrite(output_path, result)
-
-            # Return coordinates, width, height and aspect ratio of bounding box
-            return product_id, x, y, w, h, ar
-
-        else:
-            # If no contours found, use entire product image as bounding box
-            h, w = img.shape[:2]
-
-            # Calculate aspect ratio with zero check
             ar = w / h if h > 0 else 0
-
-            # Save the original image since we couldn't find a bounding box
-            cv2.imwrite(output_path, img)
-
-            print(
-                f"No contours found product {product_id} with 'imageid' {image_id}: using full image dimensions"
-            )
-
-            # Return coordinates, width, height and aspect ratio of image
+            
+            # Save bounding box image if requested
+            if save_images and output_folder:
+                os.makedirs(output_folder, exist_ok=True)
+                output_path = os.path.join(
+                    output_folder, f"image_{int(image_id)}_product_{int(product_id)}_bbox.jpg"
+                )
+                
+                # Draw bounding box on image
+                bbox_img = img.copy()
+                cv2.rectangle(bbox_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.imwrite(output_path, bbox_img)
+            
+            return product_id, x, y, w, h, ar
+        else:
+            # No contours found, use entire image as bounding box
+            print(f"No contours found product {product_id} with 'imageid' {image_id}: using full image dimensions")
+            h, w = img.shape[:2]
+            ar = w / h if h > 0 else 0
             return product_id, 0, 0, w, h, ar
-
+            
     except Exception as e:
-        print(f"Error processing product {product_id} with 'imageid' {image_id}: {e}")
-        return product_id, None, None, None, None, None
+        print(f"Error processing {input_path}: {e}")
+        return None
 
 
-def detect_bounding_box_parallel(df, base_path="./images/image_train/", n_workers=None):
+def detect_bounding_box_parallel(df, base_path="../data/raw/images/image_train/", save_images=False, n_workers=4):
     """
-    Detect bounding boxes of images listed in a DataFrame using OpenCV in parallel
-
+    Detect bounding boxes for all images in parallel using OpenCV.
+    
     Parameters:
     -----------
     df : pandas.DataFrame
-        DataFrame containing 'productid' in index and column for 'imageid'
-    base_path : str, optional
-        Directory where images are stored, default is './images/image_train/'
-    n_workers : int, optional
-        Number of worker processes to use. If None, uses all available CPU cores.
-
+        DataFrame with 'productid' and 'imageid' columns
+    base_path : str
+        Path to input images
+    save_images : bool
+        Whether to save bounding box images
+    n_workers : int
+        Number of parallel workers
+        
     Returns:
     --------
-    df : pandas.DataFrame
-        DataFrame with additional columns for bounding box coordinates
+    pandas.DataFrame
+        DataFrame with added bounding box columns
     """
-
-    # Determine number of workers if not specified
-    if n_workers is None:
-        n_workers = os.cpu_count()
-
-    # Add suffix _bb to the base path as in "_bounding_box"
-    input_folder = base_path
-    output_folder = re.sub(r"\/([^\/]*)$", r"_bb/\1", input_folder)
-
-    # Create output folder if it doesn't exist
-    os.makedirs(output_folder, exist_ok=True)
-
+    
     # Prepare columns for bounding box coordinates if they don't exist
     for col in ["bb_x", "bb_y", "bb_w", "bb_h", "bb_ar"]:
         if col not in df.columns:
-            df[col] = None
-
-    # Create a list of tasks for ProcessPoolExecutor
+            df[col] = pd.Series(dtype='float64')  # Don't use None - preserves data types
+    
+    # Ensure productid and imageid remain as integers - CRITICAL FIX
+    if 'productid' in df.columns:
+        df['productid'] = df['productid'].astype('int64')
+    if 'imageid' in df.columns:
+        df['imageid'] = df['imageid'].astype('int64')
+    
+    input_folder = base_path
+    output_folder = base_path.replace("image_train", "image_train_bbox") if save_images else None
+    
+    # Create tasks list with int conversion to avoid float issues
     tasks = []
-
     for idx, row in df.iterrows():
-        product_id = idx
+        product_id = row["productid"]
         image_id = row["imageid"]
-        tasks.append((product_id, image_id, input_folder, output_folder))
-
+        tasks.append((int(product_id), int(image_id), input_folder, output_folder, save_images))
+    
     print(
         f"\033[1mdetect_bounding_box_parallel()\033[0m: Found {len(tasks):,} images to process."
     )
-
-    # Process bounding box detection in parallel
-
-    results = []
-
+    if save_images:
+        print(f"Bounding box images will be saved to: {output_folder}")
+    else:
+        print("Bounding box images will NOT be saved (coordinates only).")
+    
+    # Process in parallel
     with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        # Map the worker function to all tasks (more efficient than submit)
-        future_results = list(executor.map(detect_bounding_box_worker, tasks))
-
-        # Process results with a progress bar
-        for result in tqdm(
-            future_results, total=len(tasks), desc="Detecting bounding boxes"
-        ):
-            results.append(result)
-
-    # Update DataFrame with results
-    successful = 0
+        results = list(tqdm(
+            executor.map(detect_bounding_box_worker, tasks),
+            total=len(tasks),
+            desc="Detecting bounding boxes"
+        ))
+    
+    # Update DataFrame with results using mask-based updates (CRITICAL FIX)
+    successful_count = 0
     for result in results:
-        if result is not None:  # Check if result exists
+        if result is not None:
             product_id, x, y, w, h, ar = result
-            if x is not None:  # Check if processing was successful
-                df.loc[product_id, ["bb_x", "bb_y", "bb_w", "bb_h", "bb_ar"]] = [
-                    x,
-                    y,
-                    w,
-                    h,
-                    ar,
-                ]
-                successful += 1
-
-    print(f"Successfully processed {successful} of {len(tasks)} images")
-
+            if x is not None:
+                # Use mask instead of product_id as index to avoid row duplication
+                mask = df['productid'] == product_id
+                df.loc[mask, ["bb_x", "bb_y", "bb_w", "bb_h", "bb_ar"]] = [x, y, w, h, ar]
+                successful_count += 1
+    
+    print(f"Successfully processed {successful_count} of {len(tasks)} images")
+    
     return df
 
 
@@ -327,818 +229,407 @@ def crop_pad_and_resize_image_worker(
     Parameters:
     -----------
     input_path : str
-        Path to the input image file.
+        Path to the input image file
     output_path : str
-        Path where the processed image will be saved.
-    bbox : tuple, optional
-        Bounding box coordinates as (x, y, width, height). If None, uses full image.
-    target_size : tuple, optional
-        Target size for resizing, default is (299, 299).
-    min_length : int, optional
-        Minimum acceptable dimension size for quality filtering, default is 75.
+        Path to save the processed image
+    bbox : tuple
+        (x, y, w, h) bounding box coordinates
+    target_size : tuple
+        (width, height) for final image size
+    min_length : int
+        Minimum dimension threshold for exclusion
 
     Returns:
-    -------
+    --------
     tuple
-        (downscaled_flag, upscaled_flag, exclude_flag, success_flag) where:
-        - downscaled_flag: 1 if image was downscaled, 0 otherwise
-        - upscaled_flag: 1 if image was upscaled, 0 otherwise
-        - exclude_flag: 1 if image should be excluded due to small size, 0 otherwise
-        - success_flag: True if processing succeeded, False otherwise
+        (product_id, downscale_flag, upscale_flag, exclude_flag)
     """
 
-    # Set image processing flags to zero
-    downscaled = 0
-    upscaled = 0
-    exclude = 0
+    downscale_flag = 0
+    upscale_flag = 0
+    exclude_flag = 0
+
+    # Extract product_id from filename for return value
+    filename = os.path.basename(input_path)
+    product_id_match = re.search(r"product_(\d+)", filename)
+    product_id = int(product_id_match.group(1)) if product_id_match else 0
 
     try:
-        # Read the image
+        # Load image
         img = cv2.imread(input_path)
-
-        # Check if the image was loaded successfully
         if img is None:
-            print(f"Error: Could not read image {input_path}")
-            return downscaled, upscaled, exclude, False
+            return product_id, downscale_flag, upscale_flag, 1  # exclude
 
         # Crop to bounding box if provided
-        if bbox and all(v is not None for v in bbox):
+        if bbox and bbox[0] is not None:
             x, y, w, h = bbox
-
-            # Convert NumPy float64 to integers for slicing
             x, y, w, h = int(x), int(y), int(w), int(h)
 
+            # Ensure bounding box is within image bounds
+            img_h, img_w = img.shape[:2]
+            x = max(0, min(x, img_w - 1))
+            y = max(0, min(y, img_h - 1))
+            w = min(w, img_w - x)
+            h = min(h, img_h - y)
+
+            # Crop the image
             img = img[y : y + h, x : x + w]
 
-        # Get current dimensions
-        h, w = img.shape[:2]
-        min_dim = min(h, w)
-        max_dim = max(h, w)
-        aspect_ratio = w / h if h > 0 else 1
+        # Check if image is too small
+        current_h, current_w = img.shape[:2]
+        if min(current_w, current_h) < min_length:
+            exclude_flag = 1
+            return product_id, downscale_flag, upscale_flag, exclude_flag
 
-        # Determine if we need to upscale or downscale
-        # We'll use the smallest dimension for comparison since we'll be preserving
-        if min_dim > min(target_size):
-            # Downscaling - use INTER_AREA for better quality
-            interpolation = cv2.INTER_AREA
-            downscaled = 1
-
-        elif min_dim < min(target_size):
-            # Upscaling - use INTER_CUBIC for better quality
-            interpolation = cv2.INTER_CUBIC
-            upscaled = 1
-
-            # Set flag if image's shortest side is smaller than min_length
-            if min_dim < min_length:
-                exclude = 1
-        else:
-            # Edge case: Already the right size in at least one dimension
-            interpolation = cv2.INTER_LINEAR  # Compromise for mixed cases
-
-        # Calculate new dimensions while preserving aspect ratio
+        # Calculate scaling needed
         target_w, target_h = target_size
+        scale_w = target_w / current_w
+        scale_h = target_h / current_h
+        scale = min(scale_w, scale_h)  # Maintain aspect ratio
 
-        # Resize based on the smaller dimension to preserve aspect ratio
-        if w >= h:  # Wider than tall
-            new_w = round(target_h * aspect_ratio)
-            new_h = target_h
-        else:  # Taller than wide
-            new_w = target_w
-            new_h = round(target_w / aspect_ratio)
+        # Determine if upscaling or downscaling
+        if scale > 1:
+            upscale_flag = 1
+        elif scale < 1:
+            downscale_flag = 1
 
-        # Ensure the longer side doesn't exceed the target size
-        if new_w > target_w:
-            new_w = target_w
-            new_h = round(target_w / aspect_ratio)
-        if new_h > target_h:
-            new_h = target_h
-            new_w = round(target_h * aspect_ratio)
+        # Resize image maintaining aspect ratio
+        new_w = int(current_w * scale)
+        new_h = int(current_h * scale)
+        img_resized = cv2.resize(
+            img,
+            (new_w, new_h),
+            interpolation=cv2.INTER_AREA if scale < 1 else cv2.INTER_CUBIC,
+        )
 
-        # Resize the image while maintaining aspect ratio
-        resized_img = cv2.resize(img, (new_w, new_h), interpolation=interpolation)
+        # Create final image with padding to exact target size
+        final_img = np.full(
+            (target_h, target_w, 3), 255, dtype=np.uint8
+        )  # White background
 
-        # Create a blank white canvas of the target size
-        canvas = np.ones((target_h, target_w, 3), dtype=np.uint8) * 255
-
-        # Calculate positioning to center the image
+        # Center the resized image
         y_offset = (target_h - new_h) // 2
         x_offset = (target_w - new_w) // 2
+        final_img[y_offset : y_offset + new_h, x_offset : x_offset + new_w] = img_resized
 
-        # Place the resized image onto the canvas
-        canvas[y_offset : y_offset + new_h, x_offset : x_offset + new_w] = resized_img
+        # Save processed image
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        cv2.imwrite(output_path, final_img)
 
-        # Save the processed image
-        cv2.imwrite(output_path, canvas)
-
-        return downscaled, upscaled, exclude, True  # Note: Success flag is True here
+        return product_id, downscale_flag, upscale_flag, exclude_flag
 
     except Exception as e:
         print(f"Error processing {input_path}: {e}")
-        return downscaled, upscaled, exclude, False
+        return product_id, downscale_flag, upscale_flag, 1  # exclude on error
 
 
-def worker_wrapper_cpr(args):
+def crop_pad_and_resize_image_parallel(df, base_path="../data/raw/images/image_train/", target_size=(299, 299), min_length=75, n_workers=4):
     """
-    Wrapper function that unpacks arguments for parallel image cropping and resizing tasks.
-
-    Parameters:
-    -----------
-    args : tuple
-        A tuple containing (input_path, output_path, bbox, target_size, min_length)
-
-    Returns:
-    --------
-    tuple
-        (downscale_flag, upscale_flag, exclude_flag, success_flag) from the crop_pad_and_resize_image_worker function
-    """
-    input_path, output_path, bbox, target_size, min_length = args
-    return crop_pad_and_resize_image_worker(
-        input_path, output_path, bbox, target_size, min_length
-    )
-
-
-def crop_pad_and_resize_image_parallel(
-    df,
-    base_path="./images/image_train/",
-    target_size=(299, 299),
-    min_length=75,
-    n_workers=None,
-):
-    """
-    Crop and resize images contained in a DataFrame according to bounding box dimensions.
-    Add columns 'downscaled', 'upscaled' and 'exclude' to DataFrame
-
+    Crop, pad, and resize all images in parallel.
+    
     Parameters:
     -----------
     df : pandas.DataFrame
-        DataFrame containing 'productid' in index and columns for 'imageid', 'bb_x', 'bb_y', 'bb_w', 'bb_h'
-    base_path : str, optional
-        Directory where images are stored
-        Default is './images/image_train/'
-    target_size : tuple, optional
-        Target size for resized images
-        Default is (299, 299)
-    min_length : int, optional
-        Minimum acceptable dimension size for quality filtering
-        Default is 75
-    n_workers : int, optional
-        Number of worker processes to use.
-        If None, uses all available CPU cores.
-
+        DataFrame with image data and bounding box information
+    base_path : str
+        Path to input images
+    target_size : tuple
+        Target size for processed images
+    min_length : int
+        Minimum dimension for exclusion threshold
+    n_workers : int
+        Number of parallel workers
+        
     Returns:
     --------
-    df : pandas.DataFrame
-        DataFrame with the new 'downscaled', 'upscaled', and 'exclude' columns
+    pandas.DataFrame
+        DataFrame with added processing flags
     """
-
-    # Determine number of workers if not specified
-    if n_workers is None:
-        n_workers = os.cpu_count()
-
-    # Add suffix _cpr to the base path for "crop, pad and resize"
+    
     input_folder = base_path
-    output_folder = re.sub(r"\/([^\/]*)$", r"_cpr/\1", input_folder)
-
-    # Create output directory if it doesn't exist
-    os.makedirs(output_folder, exist_ok=True)
-
-    # Create a list of tasks for ProcessPoolExecutor
-    worker_args = []
-
-    # Prepare to track type of image processing in the DataFrame
+    output_folder = "../data/processed/images/image_train_cpr/"
+    
+    # Prepare processing flag columns with proper data types (FIXED)
     columns_cpr = ["downscaled", "upscaled", "exclude"]
-
     for c_cpr in columns_cpr:
         if c_cpr not in df.columns:
-            df[c_cpr] = 0
-
-    # Check if bounding box columns exist in DataFrame
-    has_bbox = all(col in df.columns for col in ["bb_x", "bb_y", "bb_w", "bb_h"])
-
-    # Track images that couldn't be found
-    missing_images = 0
-
-    # Create a mapping from task index to product ID for later reference
-    task_to_product = {}
-
-    # Process each row in the input DataFrame
-    task_idx = 0
+            df[c_cpr] = pd.Series(0, index=df.index, dtype='int64')  # Use pd.Series instead of just 0
+    
+    # Preserve ALL existing column data types - CRITICAL FIX we added
+    if 'productid' in df.columns:
+        df['productid'] = df['productid'].astype('int64')
+    if 'imageid' in df.columns:
+        df['imageid'] = df['imageid'].astype('int64')
+    if 'prdtypecode' in df.columns:
+        df['prdtypecode'] = df['prdtypecode'].astype('int64')
+    if 'file_size_kb' in df.columns:
+        df['file_size_kb'] = df['file_size_kb'].astype('float64')
+    # Bounding box columns should remain float64 for NaN compatibility
+    for col in ['bb_x', 'bb_y', 'bb_w', 'bb_h', 'bb_ar']:
+        if col in df.columns:
+            df[col] = df[col].astype('float64')
+    
+    # Create tasks list
+    tasks = []
     for idx, row in df.iterrows():
-        # Get productid and imageid from the DataFrame
-        product_id = idx
-        image_id = int(row["imageid"])
-
-        # Construct the file paths
+        # Get productid and imageid from the DataFrame (FIXED: convert to int immediately)
+        product_id = row["productid"]
+        image_id = row["imageid"]
+        
+        # Construct the file paths with int conversion (FIXED: added int() to avoid .0 in filename)
         input_path = os.path.join(
-            input_folder, f"image_{image_id}_product_{product_id}.jpg"
+            input_folder, f"image_{int(image_id)}_product_{int(product_id)}.jpg"
         )
-
         output_path = os.path.join(
-            output_folder, f"image_{image_id}_product_{product_id}_cpr.jpg"
+            output_folder, f"image_{int(image_id)}_product_{int(product_id)}_cpr.jpg"
         )
-
+        
         # Get bounding box if available
         bbox = None
-        if has_bbox:
-            bbox = (row.get("bb_x"), row.get("bb_y"), row.get("bb_w"), row.get("bb_h"))
-
-        # Only add if the input file exists
+        if 'bb_x' in df.columns and pd.notna(row['bb_x']):
+            bbox = (row['bb_x'], row['bb_y'], row['bb_w'], row['bb_h'])
+        
         if os.path.exists(input_path):
-            worker_args.append((input_path, output_path, bbox, target_size, min_length))
-            task_to_product[task_idx] = product_id
-            task_idx += 1
-        else:
-            missing_images += 1
-
-    print(
-        f"\033[1mcrop_pad_and_resize_image_parallel()\033[0m: Found {len(worker_args):,} images to process."
-    )
-
-    if missing_images > 0:
-        print(
-            f"Warning: {missing_images} images referenced in DataFrame were not found on disk."
-        )
-
-    # Process images in parallel
-    downscale_flags = []
-    upscale_flags = []
-    exclude_flags = []
-    success_flags = []
-
+            tasks.append((input_path, output_path, bbox, target_size, min_length))
+    
+    print(f"\033[1mcrop_pad_and_resize_image_parallel()\033[0m: Found {len(tasks):,} images to process.")
+    if len(df) - len(tasks) > 0:
+        print(f"Warning: {len(df) - len(tasks)} images referenced in DataFrame were not found on disk.")
+    
+    # Process in parallel
     with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        # Process results with a progress bar
-        results = list(
-            tqdm(
-                executor.map(worker_wrapper_cpr, worker_args),
-                total=len(worker_args),
-                desc="Cropping & resizing images",
-            )
-        )
-
-        # Process the results and update DataFrame
-        for i, (downscale_flag, upscale_flag, exclude_flag, success_flag) in enumerate(
-            results
-        ):
-            downscale_flags.append(downscale_flag)
-            upscale_flags.append(upscale_flag)
-            exclude_flags.append(exclude_flag)
-            success_flags.append(success_flag)
-
-            # Only update the DataFrame if processing was successful
-            if success_flag:
-                product_id = task_to_product[i]
-
-                # Update all flags independently (not mutually exclusive)
-                if downscale_flag == 1:
-                    df.loc[product_id, "downscaled"] = 1
-
-                if upscale_flag == 1:
-                    df.loc[product_id, "upscaled"] = 1
-
-                if exclude_flag == 1:
-                    df.loc[product_id, "exclude"] = 1
-
-    # Count successful operations and categorized images
-    successful = sum(success_flags)
-    downscaled = sum(downscale_flags)
-    upscaled = sum(upscale_flags)
-    excluded = sum(exclude_flags)
-
-    print(f"Successfully processed {successful} of {len(worker_args)} images:")
-    print(f"\t- Downscaled {downscaled} images")
-    print(f"\t- Upscaled {upscaled} images")
-    print(f"\t- Flagged {excluded} images for potential exclusion due to small size")
-
-    # Return the DataFrame with the new columns
-    return df
-
-
-def hash_worker(args):
-    """
-    Worker function to compute perceptual hash for a single image.
-
-    Parameters:
-    -----------
-    args : tuple
-        (product_id, image_id, input_folder, hash_size) tuple
-
-    Returns:
-    --------
-    tuple
-        (product_id, image_id, hash_value) where hash_value is the computed perceptual hash
-    """
-
-    product_id, image_id, input_folder, hash_size = args
-
-    try:
-        # Construct the file path
-        input_path = os.path.join(
-            input_folder, f"image_{image_id}_product_{product_id}.jpg"
-        )
-
-        # Check if file exists
-        if not os.path.exists(input_path):
-            return product_id, image_id, None
-
-        # Open the image and compute perceptual hash
-
-        with Image.open(input_path) as img:
-            # Using perceptual hash as it's best for product images
-            hash_value = str(imagehash.phash(img, hash_size=hash_size))
-
-        return product_id, image_id, hash_value
-
-    except Exception as e:
-        print(f"Error processing product {product_id}, image {image_id}: {e}")
-        return product_id, image_id, None
-
-
-def hash_parallel(df, base_path="./images/image_train/", hash_size=8, n_workers=None):
-    """
-    Compute perceptual hashes for images in DataFrame using parallel processing.
-
-    Parameters:
-    -----------
-    df : pandas.DataFrame
-        DataFrame containing 'productid' in index and column for 'imageid'
-    base_path : str, optional
-        Directory where images are stored, default is './images/image_train/'
-    hash_size : int, optional
-        Size of the hash (8 creates a 64-bit hash, 16 creates a 256-bit hash)
-        Default is 8
-    n_workers : int, optional
-        Number of worker processes to use. If None, uses all available CPU cores.
-
-    Returns:
-    --------
-    df : pandas.DataFrame
-        DataFrame with additional column 'phash' for images' perceptual hash values
-    """
-
-    # Set up workers and hash column
-    n_workers = os.cpu_count() if n_workers is None else n_workers
-    if "phash" not in df.columns:
-        df["phash"] = None
-
-    # Create tasks list
-    tasks = [(idx, row["imageid"], base_path, hash_size) for idx, row in df.iterrows()]
-
-    print(
-        f"\033[1mhash_parallel()\033[0m: Computing perceptual hashes for {len(tasks):,} images."
-    )
-
-    # Process hashing in parallel
-    successful = 0
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        # Process with progress bar
-        for product_id, image_id, hash_value in tqdm(
-            executor.map(hash_worker, tasks),
+        results = list(tqdm(
+            [crop_pad_and_resize_image_worker(*task) for task in tasks],
             total=len(tasks),
-            desc="Computing perceptual hashes",
-        ):
-            # Update DataFrame if hash was computed successfully
-            if hash_value is not None:
-                df.loc[product_id, "phash"] = hash_value
-                successful += 1
-
-    print(f"Successfully computed hashes for {successful} of {len(tasks)} images")
-
+            desc="Cropping & resizing images"
+        ))
+    
+    # Update DataFrame with results using mask-based updates (CRITICAL FIX we added)
+    downscaled_count = 0
+    upscaled_count = 0
+    excluded_count = 0
+    
+    for result in results:
+        product_id, downscale_flag, upscale_flag, exclude_flag = result
+        
+        # FIXED: Use mask instead of product_id as index to avoid row duplication
+        mask = df['productid'] == product_id
+        
+        if downscale_flag == 1:
+            df.loc[mask, "downscaled"] = 1
+            downscaled_count += 1
+            
+        if upscale_flag == 1:
+            df.loc[mask, "upscaled"] = 1
+            upscaled_count += 1
+            
+        if exclude_flag == 1:
+            df.loc[mask, "exclude"] = 1
+            excluded_count += 1
+    
+    print(f"Successfully processed {len(results)} of {len(tasks)} images:")
+    print(f"    - Downscaled {downscaled_count} images")
+    print(f"    - Upscaled {upscaled_count} images")
+    print(f"    - Flagged {excluded_count} images for potential exclusion due to small size")
+    
     return df
 
 
-def process_hash_chunk(chunk_data):
+def copy_image_to_class_folders(df_image_train, input_folder="../data/processed/images/image_train_cpr/", 
+                               output_folder="../data/processed/images/image_train_vgg16/", cleanup_intermediate=False):
     """
-    Process a chunk of product IDs to find duplicates.
-
-    Parameters:
-    -----------
-    chunk_data : tuple
-        (product_id_chunk, hash_dict, threshold) where:
-        - product_id_chunk is a list of product IDs to process
-        - hash_dict is a dictionary mapping product IDs to hash objects
-        - threshold is the maximum bit difference to consider as duplicate
-
-    Returns:
-    --------
-    tuple
-        (local_duplicates, local_duplicate_flags) where:
-        - local_duplicates is a list of (id1, id2, distance) tuples
-        - local_duplicate_flags is a dict mapping duplicate IDs to 1
-    """
-    product_id_chunk, hash_dict, threshold = chunk_data
-    local_duplicates = []
-    local_duplicate_flags = {}
-
-    # For each product in this chunk
-    for idx in product_id_chunk:
-        hash_obj = hash_dict[idx]
-
-        # Compare against all other products
-        for other_idx, other_hash in hash_dict.items():
-            # Skip self-comparison
-            if idx == other_idx:
-                continue
-
-            # Calculate hash difference
-            distance = hash_obj - other_hash
-
-            # If distance is within threshold, mark as duplicate
-            if distance <= threshold:
-                local_duplicates.append((idx, other_idx, distance))
-                local_duplicate_flags[other_idx] = 1
-
-    return local_duplicates, local_duplicate_flags
-
-
-def find_duplicates_parallel(df, threshold=5, n_workers=None):
-    """
-    Find duplicate images based on perceptual hash similarity in parallel.
-
-    Parameters:
-    -----------
-    df : pandas.DataFrame
-        DataFrame containing 'phash' column with perceptual hash values
-    threshold : int, optional
-        Maximum bit difference to consider as duplicate, default is 5
-    n_workers : int, optional
-        Number of worker processes to use. If None, uses all available CPU cores.
-
-    Returns:
-    --------
-    pandas.DataFrame
-        The input DataFrame with an additional 'phash_duplicate' column
-    list
-        List of tuples containing (product_id1, product_id2, distance) for duplicate pairs
-    """
-    # Set number of workers
-    n_workers = os.cpu_count() if n_workers is None else n_workers
-
-    # Create 'phash_duplicate' column if it doesn't exist
-    if "phash_duplicate" not in df.columns:
-        df["phash_duplicate"] = 0
-
-    # Filter out rows without hash values
-    df_with_hash = df.dropna(subset=["phash"]).copy()
-
-    # Convert hash strings to hash objects (do this once)
-    hash_dict = {}
-    for idx, row in df_with_hash.iterrows():
-        hash_dict[idx] = imagehash.hex_to_hash(row["phash"])
-
-    # Get all product IDs with valid hashes
-    all_product_ids = list(hash_dict.keys())
-
-    # Split product IDs into chunks for parallel processing
-    # Use smaller chunks to ensure even distribution of work
-    chunk_size = max(1, len(all_product_ids) // (n_workers * 10))
-    chunks = [
-        all_product_ids[i : i + chunk_size]
-        for i in range(0, len(all_product_ids), chunk_size)
-    ]
-
-    print(
-        f"Processing {len(all_product_ids):,} images in {len(chunks)} chunks using {n_workers} workers"
-    )
-
-    # Prepare chunk data for workers
-    chunk_data = [(chunk, hash_dict, threshold) for chunk in chunks]
-
-    # Process chunks in parallel
-    all_duplicates = []
-    all_duplicate_flags = {}
-
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        # Process results with progress bar
-        results = list(
-            tqdm(
-                executor.map(process_hash_chunk, chunk_data),
-                total=len(chunks),
-                desc="Finding duplicate hashes",
-            )
-        )
-
-        # Merge results
-        for local_duplicates, local_duplicate_flags in results:
-            all_duplicates.extend(local_duplicates)
-            all_duplicate_flags.update(local_duplicate_flags)
-
-    # Update the DataFrame with duplicate flags
-    for idx in all_duplicate_flags:
-        df.loc[idx, "phash_duplicate"] = 1
-
-    # Remove any duplicate pairs (can happen with chunked processing)
-    # We sort the tuple elements to ensure consistent ordering
-    seen_pairs = set()
-    unique_duplicates = []
-
-    for a, b, c in all_duplicates:
-        # Ensure consistent ordering to detect duplicates
-        pair = (min(a, b), max(a, b))
-        if pair not in seen_pairs:
-            seen_pairs.add(pair)
-            unique_duplicates.append((pair[0], pair[1], c))
-
-    print(
-        f"Found {len(unique_duplicates)} unique duplicate pairs with threshold {threshold}"
-    )
-    print(f"Marked {len(all_duplicate_flags)} images as duplicates in the DataFrame")
-
-    return df, unique_duplicates
-
-
-def create_duplicates_dataframe(unique_duplicates):
-    """
-    Convert a list of duplicate image pairs into a structured DataFrame.
-
-    Parameters:
-    -----------
-    unique_duplicates : list
-        List of tuples containing (product_id1, product_id2, distance)
-        where product_id1 and product_id2 are the IDs of similar images
-        and distance is their perceptual hash difference
-
-    Returns:
-    --------
-    pandas.DataFrame
-        DataFrame with columns for original_id, duplicate_id, and distance
-    """
-    # Create a dictionary with meaningful column names
-    data = {
-        "Original ID": [pair[0] for pair in unique_duplicates],
-        "Duplicate ID": [pair[1] for pair in unique_duplicates],
-        "hash distance": [pair[2] for pair in unique_duplicates],
-    }
-
-    # Create the DataFrame
-    duplicates_df = pd.DataFrame(data)
-
-    # Sort by hash distance (most similar pairs first)
-    duplicates_df = duplicates_df.sort_values("hash distance")
-
-    # Add a similarity percentage column (100% - normalized distance)
-    # Assuming 64-bit hash (hash_size=8), max possible distance is 64
-    duplicates_df["Similarity, pct"] = 100 * (1 - duplicates_df["hash distance"] / 64)
-
-    return duplicates_df
-
-
-def preprocess_image(image_array):
-
-    # Process the image through all preprocessing steps
-    # 1. Create a copy for bounding box detection
-    img_bb = image_array.copy()
-
-    # Apply bounding box detection
-    gray = cv2.cvtColor(img_bb, cv2.COLOR_RGB2BGR)
-    gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-    _, thresh = cv2.threshold(blurred, 247, 255, cv2.THRESH_BINARY_INV)
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    # Initialize coordinates
-    x, y, w, h = 0, 0, image_array.shape[1], image_array.shape[0]
-
-    # If contours found, get the largest one
-    if len(contours) > 0:
-        largest_contour = max(contours, key=cv2.contourArea)
-        x, y, w, h = cv2.boundingRect(largest_contour)
-
-    # Draw bounding box on the image
-    img_with_bb = image_array.copy()
-    img_with_bb = cv2.cvtColor(img_with_bb, cv2.COLOR_RGB2BGR)
-    img_with_bb = cv2.rectangle(img_with_bb, (x, y), (x + w, y + h), (0, 0, 255), 16)
-    img_with_bb = cv2.cvtColor(img_with_bb, cv2.COLOR_BGR2RGB)
-
-    # 2. Crop, pad and resize
-    # Calculate aspect ratio
-    ar = w / h if h > 0 else 1
-
-    # Crop to bounding box
-    img_cropped = image_array[y : y + h, x : x + w]
-
-    # Define target size
-    target_size = (224, 224)  # VGG16: 224
-
-    # Calculate new dimensions while preserving aspect ratio
-    target_w, target_h = target_size
-
-    # Resize based on the smaller dimension to preserve aspect ratio
-    if w >= h:  # Wider than tall
-        new_w = round(target_h * ar)
-        new_h = target_h
-    else:  # Taller than wide
-        new_w = target_w
-        new_h = round(target_w / ar)
-
-    # Ensure the longer side doesn't exceed the target size
-    if new_w > target_w:
-        new_w = target_w
-        new_h = round(target_w / ar)
-    if new_h > target_h:
-        new_h = target_h
-        new_w = round(target_h * ar)
-
-    # Determine interpolation method
-    min_dim = min(h, w)
-    downscaled = 1 if min_dim > min(target_size) else 0
-    upscaled = 1 if min_dim < min(target_size) else 0
-    exclude = 1 if min_dim < 75 else 0
-
-    interpolation = (
-        cv2.INTER_AREA
-        if downscaled
-        else cv2.INTER_CUBIC if upscaled else cv2.INTER_LINEAR
-    )
-
-    # Resize the image while maintaining aspect ratio
-    resized_img = cv2.resize(img_cropped, (new_w, new_h), interpolation=interpolation)
-
-    # Create a blank white canvas of the target size
-    canvas = np.ones((target_h, target_w, 3), dtype=np.uint8) * 255
-
-    # Calculate positioning to center the image
-    y_offset = (target_h - new_h) // 2
-    x_offset = (target_w - new_w) // 2
-
-    # Place the resized image onto the canvas
-    canvas[y_offset : y_offset + new_h, x_offset : x_offset + new_w] = resized_img
-
-    # 3. Calculate perceptual hash
-    img_pil = Image.fromarray(image_array)
-    hash_value = str(imagehash.phash(img_pil, hash_size=8))
-
-    # Generate hash visualization
-    phash_img = display_phash(hash_value, size=8, scale=32)
-
-    # Create a dataframe with metadata
-    image_data = {
-        "name": "Uploaded image",
-        "file_size_kb": [len(image_array) / 1024],
-        "mean_r": [np.mean(image_array[:, :, 0])],
-        "mean_g": [np.mean(image_array[:, :, 1])],
-        "mean_b": [np.mean(image_array[:, :, 2])],
-        "bb_x": [x],
-        "bb_y": [y],
-        "bb_w": [w],
-        "bb_h": [h],
-        "bb_ar": [ar],
-        "downscale": [downscaled],
-        "upscale": [upscaled],
-        "exclude": [exclude],
-        "phash": [hash_value],
-    }
-
-    df_image_data = pd.DataFrame(image_data, index=["name"])
-
-    return img_with_bb, canvas, phash_img, df_image_data
-
-
-def display_phash(hash_hex, size=8, scale=32):
-    """
-    Visualize a product image's perceptual hash as a black and white image similar to a QR code.
-
-    Parameters:
-    - hash_hex: The perceptual hash value as a hexadecimal string
-    - size: Width/height of the hash visualization (default 8 for 64-bit hash)
-    - scale: Scaling factor to make the visualization larger
-
-    Returns:
-    - PIL Image object
-    """
-    # Convert hex hash to binary
-    binary = bin(int(hash_hex, 16))[2:].zfill(size * size)
-
-    # Create a new blank image (mode '1' is 1-bit pixels, black and white)
-    img = Image.new("1", (size, size))
-
-    # Fill the image based on the hash bits
-    for i in range(size):
-        for j in range(size):
-            pixel_index = i * size + j
-            if pixel_index < len(binary):
-                # Set pixel to white (1) if the hash bit is 1
-                img.putpixel((j, i), int(binary[pixel_index]))
-
-    # Scale it up for better visibility
-    img = img.resize((size * scale, size * scale), Image.NEAREST)
-
-    return img
-
-
-def copy_image_to_class_folders(
-    df_image_train,
-    input_folder="images/image_train_cpr/",
-    output_folder="images/image_train_vgg16/",
-):
-    """
-    Organize processed images into class-specific directories for model training.
-
-    This function takes preprocessed images and copies them into a structured directory
-    hierarchy suitable for training image classification models. It performs a train/validation
-    split (80/20 by default) and organizes images by their product type code into separate
-    class folders.
-
+    Copy processed images into class-specific folders for PyTorch training.
+    
     Parameters:
     -----------
     df_image_train : pandas.DataFrame
-        DataFrame containing product information with at least 'imageid' and 'prdtypecode' columns.
-        The DataFrame index should contain the product IDs.
-
-    input_folder : str, optional
-        Path to the directory containing preprocessed images (cropped, padded, and resized).
-        Images should follow the naming convention: "image_{imageid}_product_{productid}_cpr.jpg".
-        Default is "images/image_train_cpr/".
-
-    output_folder : str, optional
-        Base directory where the class-organized train/validation directories will be created.
-        This will contain two subdirectories: "image_train_vgg16" and "image_val_vgg16".
-        Default is "image/images_train_vgg16/".
-
-    Returns:
-    --------
-    None
-        The function creates directories and copies files but doesn't return any values.
+        DataFrame with image metadata and category information
+    input_folder : str
+        Path to processed images (_cpr folder)
+    output_folder : str
+        Path to create class folder structure
+    cleanup_intermediate : bool
+        Whether to delete intermediate _cpr folder after completion
     """
-    # Define paths
-    train_path = os.path.join(output_folder, "image_train_vgg16")
-    val_path = os.path.join(output_folder, "image_val_vgg16")
-
-    # Create directory structure
-    os.makedirs(output_folder, exist_ok=True)
-    os.makedirs(train_path, exist_ok=True)
-    os.makedirs(val_path, exist_ok=True)
-
-    # Create class directories and perform train/val split
-    val_size = 0.2  # 80% training, 20% validation
-
+    
+    # Ensure proper data types - CRITICAL FIX for proper folder naming
+    if 'prdtypecode' in df_image_train.columns:
+        df_image_train['prdtypecode'] = df_image_train['prdtypecode'].astype('int64')
+    if 'productid' in df_image_train.columns:
+        df_image_train['productid'] = df_image_train['productid'].astype('int64')
+    if 'imageid' in df_image_train.columns:
+        df_image_train['imageid'] = df_image_train['imageid'].astype('int64')
+    
+    # Create train and validation directories
+    train_dir = os.path.join(output_folder, "train")
+    val_dir = os.path.join(output_folder, "val")
+    os.makedirs(train_dir, exist_ok=True)
+    os.makedirs(val_dir, exist_ok=True)
+    
     # Get unique classes
-    classes = df_image_train["prdtypecode"].unique()
-
+    classes = df_image_train['prdtypecode'].unique()
+    
     for class_id in classes:
-        # Create directories for this class
-        train_class_folder = os.path.join(train_path, str(class_id))
-        val_class_folder = os.path.join(val_path, str(class_id))
-
-        os.makedirs(train_class_folder, exist_ok=True)
-        os.makedirs(val_class_folder, exist_ok=True)
-
-        # Get all images for this class
-        class_images = df_image_train[df_image_train["prdtypecode"] == class_id]
-
-        # Split into train and validation
-        train_images, val_images = train_test_split(
-            class_images, test_size=val_size, random_state=42  # For reproducibility
-        )
-
+        # Filter images for this class
+        class_images = df_image_train[df_image_train['prdtypecode'] == class_id]
+        
+        # Skip classes with too few samples for train/test split
+        if len(class_images) < 2:
+            print(f"Skipping class {class_id}: only {len(class_images)} sample(s)")
+            continue
+        
+        # Create class directories
+        class_train_dir = os.path.join(train_dir, str(int(class_id)))  # Ensure integer folder names
+        class_val_dir = os.path.join(val_dir, str(int(class_id)))
+        os.makedirs(class_train_dir, exist_ok=True)
+        os.makedirs(class_val_dir, exist_ok=True)
+        
+        # Split into train/validation (80/20)
+        if len(class_images) == 1:
+            # Only one image, put in training
+            train_images = class_images
+            val_images = pd.DataFrame()
+        else:
+            train_images, val_images = train_test_split(
+                class_images, test_size=0.2, random_state=42
+            )
+        
         # Copy training images
         for idx, row in train_images.iterrows():
-            # Get productid and imageid from the DataFrame
-            product_id = idx
-            image_id = int(row["imageid"])
-
-            # Construct the file paths
-            input_path = os.path.join(
-                input_folder, f"image_{image_id}_product_{product_id}_cpr.jpg"
-            )
-
-            # Construct the filename for the output path
-            output_filename = f"image_{image_id}_product_{product_id}_vgg16.jpg"
-            output_path = os.path.join(train_class_folder, output_filename)
-
-            if os.path.exists(input_path):
-                shutil.copy2(input_path, output_path)
-            else:
-                print(f"Warning: {input_path} not found")
-
-        # Copy validation images - THIS PART WAS MISSING
+            product_id = int(row["productid"])  # Ensure int conversion
+            image_id = int(row["imageid"])      # Ensure int conversion
+            
+            source_path = os.path.join(input_folder, f"image_{image_id}_product_{product_id}_cpr.jpg")
+            dest_path = os.path.join(class_train_dir, f"image_{image_id}_product_{product_id}_cpr.jpg")
+            
+            if os.path.exists(source_path):
+                shutil.copy2(source_path, dest_path)
+        
+        # Copy validation images
         for idx, row in val_images.iterrows():
-            # Get productid and imageid from the DataFrame
-            product_id = idx
-            image_id = int(row["imageid"])
-
-            # Construct the file paths
-            input_path = os.path.join(
-                input_folder, f"image_{image_id}_product_{product_id}_cpr.jpg"
-            )
-
-            # Construct the filename for the output path
-            output_filename = f"image_{image_id}_product_{product_id}_vgg16.jpg"
-            output_path = os.path.join(val_class_folder, output_filename)
-
-            if os.path.exists(input_path):
-                shutil.copy2(input_path, output_path)
-            else:
-                print(f"Warning: {input_path} not found")
-
-        print(
-            f"Processed class {class_id}: \n\t{len(train_images):,} training images \n\t{len(val_images):,} validation images",
-            end="\n\n",
-        )
+            product_id = int(row["productid"])  # Ensure int conversion
+            image_id = int(row["imageid"])      # Ensure int conversion
+            
+            source_path = os.path.join(input_folder, f"image_{image_id}_product_{product_id}_cpr.jpg")
+            dest_path = os.path.join(class_val_dir, f"image_{image_id}_product_{product_id}_cpr.jpg")
+            
+            if os.path.exists(source_path):
+                shutil.copy2(source_path, dest_path)
+        
+        print(f"Processed class {int(class_id)}: ")
+        print(f"    {len(train_images)} training images ")
+        print(f"    {len(val_images)} validation images")
+    
+    # Cleanup intermediate folder if requested
+    if cleanup_intermediate and os.path.exists(input_folder):
+        print(f"Cleaning up intermediate folder: {input_folder}")
+        shutil.rmtree(input_folder)
+    
+    print("Class folder organization completed!")
 
 
-def hw():
-    """Test function to print "Hello, world!".
-
-    This function serves as a placeholder to demonstrate the module's structure.
+def hash_parallel(df, base_path="../data/processed/images/image_train_cpr/", hash_size=8, n_workers=4):
     """
-    print("Hello, world!")
+    Generate perceptual hashes for all images in parallel.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame with image data
+    base_path : str
+        Path to images
+    hash_size : int
+        Size of perceptual hash
+    n_workers : int
+        Number of parallel workers
+        
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame with added hash column
+    """
+    
+    def hash_worker(args):
+        """Worker function for hashing"""
+        product_id, image_id, folder_path, hash_size = args
+        
+        image_path = os.path.join(folder_path, f"image_{int(image_id)}_product_{int(product_id)}_cpr.jpg")
+        
+        try:
+            if os.path.exists(image_path):
+                img = Image.open(image_path)
+                phash = str(imagehash.phash(img, hash_size=hash_size))
+                return product_id, phash
+            else:
+                return product_id, None
+        except Exception as e:
+            print(f"Error hashing {image_path}: {e}")
+            return product_id, None
+    
+    # Add hash column if it doesn't exist
+    if 'phash' not in df.columns:
+        df['phash'] = pd.Series(dtype='object')
+    
+    # Create tasks list
+    tasks = [(row["productid"], row["imageid"], base_path, hash_size) for idx, row in df.iterrows()]
+    
+    print(f"Generating perceptual hashes for {len(tasks):,} images...")
+    
+    # Process in parallel
+    with ProcessPoolExecutor(max_workers=n_workers) as executor:
+        results = list(tqdm(
+            executor.map(hash_worker, tasks),
+            total=len(tasks),
+            desc="Generating hashes"
+        ))
+    
+    # Update DataFrame with results
+    for result in results:
+        product_id, phash = result
+        if phash is not None:
+            mask = df['productid'] == product_id
+            df.loc[mask, 'phash'] = phash
+    
+    return df
+
+
+def find_duplicates_parallel(df, threshold=0):
+    """
+    Find duplicate images based on perceptual hash comparison.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame with 'phash' column
+    threshold : int
+        Hamming distance threshold for duplicates (0 = exact match)
+        
+    Returns:
+    --------
+    tuple
+        (updated_dataframe, unique_duplicates_dataframe)
+    """
+    
+    print(f"Finding duplicates with threshold {threshold}...")
+    
+    # Add duplicate flag column
+    if 'phash_duplicate' not in df.columns:
+        df['phash_duplicate'] = 0
+    
+    # Find duplicates
+    duplicates = []
+    phash_groups = df.dropna(subset=['phash']).groupby('phash')
+    
+    for phash, group in phash_groups:
+        if len(group) > 1:
+            # Mark all but the first as duplicates
+            duplicate_indices = group.index[1:]
+            df.loc[duplicate_indices, 'phash_duplicate'] = 1
+            duplicates.extend(duplicate_indices.tolist())
+    
+    print(f"Found {len(duplicates)} duplicate images")
+    
+    # Create unique duplicates DataFrame
+    unique_duplicates = df.loc[duplicates].copy()
+    
+    return df, unique_duplicates

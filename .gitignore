@@ -1,6 +1,8 @@
 # Ignore directories containing images
 /images/*
 /Images/*
+data/raw/images/
+data/processed/images/
 
 # Re-include directories with logos and profile pictures
 !/images/logos/
@@ -42,6 +44,7 @@ checkpoints/*.pkl
 cors-config.json
 
 # Virtual environments
+rakuten-env*/
 rakuten-env/
 venv/
 env/
