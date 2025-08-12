@@ -36,9 +36,10 @@ data/vectorized_data/*.pkl
 # Ignore checkpoints
 checkpoints/*.pkl
 
-# Ignore models and model weights
+# Ignore models and model weights except for SVC classifier
 /models/*
 *.pth
+!models/svc_classifier.pkl
 
 # Ignore Cross Origin Resource Sharing (CORS) files
 cors-config.json
