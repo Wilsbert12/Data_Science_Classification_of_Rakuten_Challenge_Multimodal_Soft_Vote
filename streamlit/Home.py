@@ -141,4 +141,4 @@ st.markdown("""
 """)
 
 # Pagination and footer
-add_pagination_and_footer("Home.py")
+add_pagination_and_footer("Home.py")# Updated Tue Aug 12 02:46:28 CEST 2025
