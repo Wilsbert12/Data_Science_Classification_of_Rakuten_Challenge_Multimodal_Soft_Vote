@@ -32,7 +32,7 @@ try:
         methodology_mermaid = file.read()
     
     st.markdown("### 🔄 Complete Pipeline Architecture")
-    st_mermaid(methodology_mermaid, height="auto", show_controls=True)
+    st_mermaid(methodology_mermaid, height="auto")
 except FileNotFoundError:
     st.warning("Methodology diagram not found. Please ensure methodology.mmd is in streamlit/assets/")
 

@@ -40,6 +40,7 @@ checkpoints/*.pkl
 /models/*
 *.pth
 !models/svc_classifier.pkl
+!models/tfidfvectorizer_vectorizer.pkl
 
 # Ignore Cross Origin Resource Sharing (CORS) files
 cors-config.json
