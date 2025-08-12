@@ -38,3 +38,6 @@ ipykernel>=6.0.0
 
 # Mermaid for diagram rendering in Streamlit
 streamlit-mermaid
+
+# Additional utilities
+sentencepiece
