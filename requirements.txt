@@ -40,4 +40,4 @@ ipykernel>=6.0.0
 streamlit-mermaid
 
 # Additional utilities
-sentencepiece
+sentencepiece==0.1.99
