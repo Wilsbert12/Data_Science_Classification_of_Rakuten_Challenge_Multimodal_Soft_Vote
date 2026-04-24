@@ -2,10 +2,10 @@
 
 An AI-powered product classification system that combines text analysis and computer vision to automatically categorize e-commerce products, achieving state-of-the-art performance on the Rakuten France dataset.
 
-## 🏆 Key Achievement
+## Key Achievement
 
 **Multimodal Ensemble F1-Score: 0.8727** - Exceeds official benchmark by **7.6%** (+6.14 points)
-- **[🚀 Live Demo](https://classification-rakuten-challenge-multimodal-soft-vote.streamlit.app/)** - Interactive prediction interface
+- **[Live Demo](https://classification-rakuten-challenge-multimodal-softvote.streamlit.app/)** - Interactive prediction interface
 - **27 product categories** classified using text + image data from 99K+ product listings
 
 ## Project Overview
@@ -27,9 +27,9 @@ An AI-powered product classification system that combines text analysis and comp
 E-commerce platforms like Rakuten (1.3B+ users) face massive-scale product categorization challenges with diverse merchant data, multilingual content, and inconsistent labeling across international marketplaces.
 
 ### Impact Areas
-- **🎯 Enhanced Customer Experience:** Faster product discovery, improved search, personalized recommendations
-- **⚙️ Operational Excellence:** Automated categorization, faster onboarding, scalable operations
-- **📈 Financial Performance:** Revenue growth through better discoverability, cost reduction via automation, optimized inventory management
+- **Enhanced Customer Experience:** Faster product discovery, improved search, personalized recommendations
+- **Operational Excellence:** Automated categorization, faster onboarding, scalable operations
+- **Financial Performance:** Revenue growth through better discoverability, cost reduction via automation, optimized inventory management
 
 ### Strategic Value
 Automated classification solution that substantially reduces manual overhead while improving accuracy for 27 distinct product categories with real-world data complexity (35% missing descriptions, multilingual content).
@@ -77,7 +77,7 @@ flowchart TD
 
 ### Ensemble Method: Soft Voting Classifier
 
-**🏆 Multimodal Ensemble** - F1 Score: **0.8727** (exceeds benchmark by 7.6%)
+**Multimodal Ensemble** - F1 Score: **0.8727** (exceeds benchmark by 7.6%)
 - Optimized weights: SVM (40%), BERT (40%), VGG16 (20%)
 - Clean validation on 3,191 samples with rigorous methodology
 
@@ -91,16 +91,16 @@ flowchart TD
 ### Performance vs. Official Benchmarks
 | Model | F1-Score | Modality | Benchmark | Performance | Status |
 |-------|----------|----------|-----------|-------------|---------|
-| **🏆 Ensemble** | **0.8727** | **Multimodal** | **0.8113** | **+7.6% ✅** | **EXCEEDS** |
-| CamemBERT | 0.863 | Text | 0.8113 | +6% ✅ | Potential leakage |
+| **Ensemble** | **0.8727** | **Multimodal** | **0.8113** | **+7.6%** | **EXCEEDS** |
+| CamemBERT | 0.863 | Text | 0.8113 | +6% | Potential leakage |
 | SVM | 0.763 | Text | 0.8113 | -6% | Clean evaluation |
 | VGG16 | 0.518 | Image | 0.5534 | -6% | Clean evaluation |
 
 ### Key Achievements
-- ✅ **7.6% improvement** over official text benchmark
-- ✅ **10.97 point gain** over best individual clean model
-- ✅ **Production-ready** ensemble with validated performance
-- ✅ **Multimodal value proven** through rigorous validation
+- **7.6% improvement** over official text benchmark
+- **10.97 point gain** over best individual clean model
+- **Production-ready** ensemble with validated performance
+- **Multimodal value proven** through rigorous validation
 
 ### Hypothesis Validation Results
 | Hypothesis | Status | Key Finding |
@@ -111,7 +111,7 @@ flowchart TD
 | **H4: Single-subcategory easier** | 🔄 SUGGESTIVE | Framework established, limited data |
 | **H5: Complexity affects performance** | 🔄 SUGGESTIVE | Moderate correlation (r=-0.454, p=0.306) |
 | **H6: Large categories perform better** | ❌ REJECTED | Performance driven by intrinsic characteristics |
-| **H7: Visual characteristics vs quantity** | 🔬 FRAMEWORK READY | VGG16-specific analysis framework established |
+| **H7: Visual characteristics vs quantity** | ✅ FRAMEWORK READY | VGG16-specific analysis framework established |
 
 ## Repository Structure
 ```
@@ -154,8 +154,8 @@ streamlit run streamlit/Home.py
 ```
 
 ### Dataset Setup
-- **Text data:** ✅ Included (`data/raw/X_train.csv`, `y_train.csv`)
-- **Images:** 📥 Download separately from [Rakuten Challenge](https://challengedata.ens.fr/challenges/35) (~3-5GB)
+- **Text data:** Included (`data/raw/X_train.csv`, `y_train.csv`)
+- **Images:** Download separately from [Rakuten Challenge](https://challengedata.ens.fr/challenges/35) (~3-5GB)
 
 ### API-Ready Service
 ```python
@@ -220,7 +220,7 @@ Direct model loading with lazy initialization for optimal performance
 
 Capstone project for Data Science program, demonstrating real-world multimodal classification in e-commerce.
 
-**🎯 Achievement:** Production-ready ensemble system exceeding official benchmarks with comprehensive business impact analysis and live deployment.
+**Achievement:** Production-ready ensemble system exceeding official benchmarks with comprehensive business impact analysis and live deployment.
 
 ---
 *This project showcases end-to-end ML pipeline development from research through production deployment, with emphasis on practical business applications and technical excellence.*
