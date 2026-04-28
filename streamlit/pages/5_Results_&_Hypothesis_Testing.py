@@ -94,7 +94,7 @@ with individual_tab:
         - CamemBERT tokenization (512 max tokens)
         - Fine-tuning with learning rate scheduling
         
-        ** Validation Note:**
+        **Validation Note:**
         Potential data leakage concerns require careful interpretation of this performance level.
         """)
     
@@ -157,10 +157,10 @@ with ensemble_tab:
         st.markdown("""
         ###  Final Ensemble Results
         
-        ** Ensemble F1-Score: 0.8727**
+        **Ensemble F1-Score: 0.8727**
         
         **Key Achievements:**
-        -  **Exceeds official text benchmark** by **7.6%** (+6.14 points vs 0.8113)
+        -  **Exceeds official text benchmark**by **7.6%**(+6.14 points vs 0.8113)
         -  **Multimodal value demonstrated**: +10.97 point improvement over best clean individual model (SVM: 0.763)
         -  **Clean validation methodology**: Rigorous train/val split on 3,191 samples
         -  **Production-ready system**: Optimized weights and systematic evaluation
@@ -270,18 +270,18 @@ with benchmarks_tab:
         st.markdown("""
         ###  Key Achievements
         
-        ** Primary Success: Multimodal Ensemble**
+        **Primary Success: Multimodal Ensemble**
         - **F1-Score**: 0.8727 vs 0.8113 benchmark
         - **Improvement**: +6.14 points (+7.6%)
         - **Significance**: Clear demonstration of multimodal value
         - **Methodology**: Clean validation without data leakage
         
-        ** Clean Individual Results:**
+        **Clean Individual Results:**
         - **SVM**: 0.763 (robust baseline, interpretable)
         - **VGG16**: 0.518 (complementary visual information)
         - Both provide reliable, validated performance
         
-        ** Research Value:**
+        **Research Value:**
         - Systematic multimodal ensemble methodology
         - Production-ready architecture demonstration
         - Comprehensive preprocessing pipeline validation
@@ -302,7 +302,7 @@ with benchmarks_tab:
         - **Classical ML robustness**: Proven SVM baseline
         - **Ensemble methodology**: Systematic weight optimization
         
-        ** BERT Performance Note:**
+        **BERT Performance Note:**
         - CamemBERT shows exceptional performance (0.863)
         - Potential data leakage requires careful interpretation
         - Conservative approach: Use ensemble result as primary claim
@@ -392,7 +392,7 @@ with hypotheses_tab:
         st.info(" H1 validation visualization will display here")
     
     st.markdown("""
-    **Result**:  **SUPPORTED** (High Confidence)
+    **Result**:  **SUPPORTED**(High Confidence)
     - **Evidence**: Hierarchical classification patterns confirmed
     - **Methodology**: Comparison of inter-parent vs intra-parent error rates
     - **Statistical support**: Clear distinction between broad vs fine-grained categories
@@ -413,7 +413,7 @@ with hypotheses_tab:
         st.info(" H2 validation visualization will display here")
     
     st.markdown("""
-    **Result**:  **SUPPORTED** (Medium Confidence)
+    **Result**:  **SUPPORTED**(Medium Confidence)
     - **Evidence**: Direct logical consequence of H1 validation
     - **Relationship**: H1 and H2 are complementary aspects of hierarchical classification
     - **Statistical support**: If inter-parent classification is easier, intra-parent must be harder
@@ -434,7 +434,7 @@ with hypotheses_tab:
         st.info(" H3 validation visualization will display here")
     
     st.markdown("""
-    **Result**:  **REJECTED** (High Confidence)
+    **Result**:  **REJECTED**(High Confidence)
     - **Evidence**: Text models significantly outperform image model
     - **Performance gap**: BERT (0.863) vs VGG16 (0.518) = +67% relative improvement
     - **Finding**: Text features are superior for product classification
@@ -455,7 +455,7 @@ with hypotheses_tab:
         st.info(" H4 validation visualization will display here")
     
     st.markdown("""
-    **Result**:  **SUGGESTIVE EVIDENCE** (Medium Confidence)
+    **Result**:  **SUGGESTIVE EVIDENCE**(Medium Confidence)
     - **Evidence**: Framework established with limited validation data
     - **Theory**: Single-subcategory structure eliminates intra-parent confusion
     - **Categories**: Wines & Gastronomy, Pet Store (single subcategory each)
@@ -476,7 +476,7 @@ with hypotheses_tab:
         st.info(" H5 validation visualization will display here")
     
     st.markdown("""
-    **Result**:  **SUGGESTIVE EVIDENCE** (Medium Confidence)
+    **Result**:  **SUGGESTIVE EVIDENCE**(Medium Confidence)
     - **Evidence**: Moderate negative correlation detected (r=-0.454, p=0.306)
     - **Trend**: More subcategories tend to reduce average classification performance
     - **Statistical note**: Not significant due to small sample size (7 parent categories)
@@ -497,7 +497,7 @@ with hypotheses_tab:
         st.info(" H6 validation visualization will display here")
     
     st.markdown("""
-    **Result**:  **REJECTED** (High Confidence)
+    **Result**:  **REJECTED**(High Confidence)
     - **Evidence**: Sample size does not predict classification performance
     - **Finding**: No significant correlation between category size and F1-score
     - **Implication**: Performance driven by intrinsic characteristics rather than training quantity
@@ -518,7 +518,7 @@ with hypotheses_tab:
         st.info(" H7 validation visualization will display here")
     
     st.markdown("""
-    **Result**:  **FRAMEWORK ESTABLISHED** (Medium Confidence)
+    **Result**:  **FRAMEWORK ESTABLISHED**(Medium Confidence)
     - **Evidence**: Multi-strategy analysis framework with theoretical visual complexity mapping
     - **Methodology**: VGG16-specific analysis comparing sample size vs visual characteristics
     - **Innovation**: Handles missing data through domain knowledge-based complexity scoring
@@ -529,23 +529,23 @@ with hypotheses_tab:
     st.markdown("""
     ###  Key Validated Findings
     
-    ** Confirmed Hypotheses:**
+    **Confirmed Hypotheses:**
     - **Text dominance**: Text features superior to image features for product classification
     - **Hierarchical patterns**: Inter-parent classification easier than intra-parent
     - **Multimodal value**: Ensemble approach provides clear performance benefits
     
-    ** Emerging Insights:**
+    **Emerging Insights:**
     - **Performance independence**: Success driven by intrinsic characteristics rather than sample quantity
     - **Visual complexity**: Framework established for analyzing visual homogeneity effects
     - **Category structure**: Single-subcategory parents may eliminate confusion effects
     
-    ** Statistical Validation:**
+    **Statistical Validation:**
     - **Rigorous methodology**: 3,191 validation samples with proper train/val separation
     - **Multiple correlation measures**: Pearson, Spearman, and Kendall's tau for robustness
     - **Effect size analysis**: Practical significance assessment beyond p-values
     - **Visualization support**: Comprehensive graphical evidence for each hypothesis
     
-    ** Research Contributions:**
+    **Research Contributions:**
     - **Hypothesis-driven approach**: Systematic scientific validation of multimodal classification
     - **Framework establishment**: Reusable methodology for e-commerce classification analysis
     - **Evidence-based insights**: Clear actionable recommendations for model improvement
@@ -553,13 +553,13 @@ with hypotheses_tab:
     
     # Final validation summary
     st.success("""
-    ** Hypothesis Testing Success**
+    **Hypothesis Testing Success**
     
     Comprehensive validation demonstrates the scientific rigor of our multimodal ensemble approach:
-    - **4/7 hypotheses validated** with statistical evidence
-    - **Clear insights** into factors driving classification performance  
-    - **Actionable recommendations** for future model development
-    - **Reproducible methodology** for continued research
+    - **4/7 hypotheses validated**with statistical evidence
+    - **Clear insights**into factors driving classification performance  
+    - **Actionable recommendations**for future model development
+    - **Reproducible methodology**for continued research
     """)
     
 

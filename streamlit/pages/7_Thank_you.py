@@ -29,12 +29,12 @@ We are excited to share our approach, failures and - of course - findings with y
 
 If you have any questions or would like to discuss the project further, please feel free to reach out to us.
 
-** Project Highlights:**
+**Project Highlights:**
 - **Ensemble F1-Score**: 0.8727 (exceeds challenge benchmark by 7.6%)
 - **Multimodal Classification**: Successfully combined text and image data
 - **Production Ready**: Complete pipeline from preprocessing to deployment
 
-**:material/folder_code: GitHub Repository:** [Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote](https://github.com/Wilsbert12/Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote)
+**:material/folder_code: GitHub Repository:**[Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote](https://github.com/Wilsbert12/Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote)
 """
 )
 

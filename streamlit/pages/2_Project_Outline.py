@@ -34,17 +34,17 @@ with overview_tab:
     
     ### Business Impact Areas
     
-    ** Enhanced Customer Experience**
+    **Enhanced Customer Experience**
     - **Product discoverability**: Customers find relevant products faster through improved search
     - **Search optimization**: Better internal search functionality and SEO performance  
     - **Personalized recommendations**: Accurate categories enable targeted product suggestions
     
-    ** Operational Excellence**
+    **Operational Excellence**
     - **Automated categorization**: Reduces manual effort and eliminates classification errors
     - **Faster product onboarding**: Accelerated time-to-market for new merchant listings
     - **Scalable operations**: Handles catalog growth without proportional staffing increases
     
-    ** Financial Performance**
+    **Financial Performance**
     - **Revenue growth**: Improved discoverability drives higher conversion rates and sales
     - **Cost reduction**: Automation significantly reduces operational overhead and manual processing
     - **Inventory optimization**: Enhanced demand forecasting and stock management capabilities
@@ -53,17 +53,17 @@ with overview_tab:
     ### The Scalability Challenge
     
     Manual and rule-based categorization approaches fail to meet modern e-commerce demands:
-    - **Mixed merchant ecosystem** with professional and non-professional sellers
-    - **Multilingual content** spanning French, German, and international languages
-    - **Product diversity** across hundreds of distinct categories and subcategories
-    - **Real-world data complexity** including missing descriptions and inconsistent labeling
+    - **Mixed merchant ecosystem**with professional and non-professional sellers
+    - **Multilingual content**spanning French, German, and international languages
+    - **Product diversity**across hundreds of distinct categories and subcategories
+    - **Real-world data complexity**including missing descriptions and inconsistent labeling
     
     ### Rakuten France Classification Challenge
     
-    The specific technical challenge involves categorizing products into **27 distinct product type codes** using:
-    - **Product titles** (designation) - merchant-provided short descriptions
-    - **Product descriptions** - detailed information (missing in ~35% of cases)
-    - **Product images** - visual representation requiring computer vision analysis
+    The specific technical challenge involves categorizing products into **27 distinct product type codes**using:
+    - **Product titles**(designation) - merchant-provided short descriptions
+    - **Product descriptions**- detailed information (missing in ~35% of cases)
+    - **Product images**- visual representation requiring computer vision analysis
     
     **Example**: *"Klarstein Présentoir 2 Montres Optique Fibre"* + product image → Category 1500
     
@@ -75,8 +75,8 @@ with challenge_tab:
     ## Technical Challenge Details
     
     ### Dataset Characteristics
-    - **84,916 training products** from Rakuten France catalog
-    - **27 product categories** (prdtypecode classification)
+    - **84,916 training products**from Rakuten France catalog
+    - **27 product categories**(prdtypecode classification)
     - **Multimodal data**: Text (French/German) + Product images
     - **Real-world complexity**: Missing descriptions (~35%), noisy labels, unbalanced distribution
     
@@ -97,20 +97,20 @@ with challenge_tab:
     
     ### Research Challenges
     
-    ** Multimodal Complexity**
+    **Multimodal Complexity**
     - How to effectively combine text and visual information?
     - Different modalities may provide conflicting signals
     
-    ** Data Quality Issues**
+    **Data Quality Issues**
     - Missing descriptions in ~35% of products
     - Noisy, real-world merchant-generated content
     - Multilingual text requiring translation/normalization
     
-    ** Class Imbalance**
+    **Class Imbalance**
     - Uneven distribution across 27 categories
     - Some categories with thousands of samples, others with few
     
-    ** Official Benchmarks to Compare Against**
+    **Official Benchmarks to Compare Against**
     - **Text CNN**: 0.8113 F1-score (weighted)
     - **Image ResNet50**: 0.5534 F1-score (weighted)
     """)
@@ -120,21 +120,21 @@ with approach_tab:
     ## Our Solution Strategy
     
     ### Core Hypothesis
-    **Different model architectures capture complementary aspects of product information** that can be systematically combined for superior classification performance.
+    **Different model architectures capture complementary aspects of product information**that can be systematically combined for superior classification performance.
     
     ### High-Level Approach: Multimodal Ensemble
     
-    We developed a **three-model ensemble system** that combines:
+    We developed a **three-model ensemble system**that combines:
     
-    ** Classical Machine Learning**
+    **Classical Machine Learning**
     - Robust statistical pattern recognition in text
     - TF-IDF vectorization with optimized algorithms
     
-    ** Deep Learning (BERT)**  
+    **Deep Learning (BERT)**
     - Contextual understanding of French product descriptions
     - Pre-trained transformer fine-tuned for classification
     
-    ** Computer Vision**
+    **Computer Vision**
     - Visual product characteristics analysis
     - Transfer learning from pre-trained CNN models
     
@@ -162,7 +162,7 @@ with metrics_tab:
     ## Evaluation Framework
     
     ### Primary Metric
-    **Weighted F1-Score** - Accounts for class imbalance in the 27-category classification
+    **Weighted F1-Score**- Accounts for class imbalance in the 27-category classification
     
     ```python
     from sklearn.metrics import f1_score
@@ -171,29 +171,29 @@ with metrics_tab:
     
     ### Experimental Methodology
     
-    ** Research Focus**: *Training set exploration and methodology development*
+    **Research Focus**: *Training set exploration and methodology development*
     - **Scope**: Comprehensive analysis of 84,916 training samples
     - **Validation**: Rigorous train/validation splits with proper methodology
     - **Comparison**: Individual model performance vs. ensemble effectiveness
     
-    ** Performance Analysis**
+    **Performance Analysis**
     - **Individual model evaluation**: SVM, BERT, VGG16 standalone performance
     - **Ensemble optimization**: Systematic weight tuning and combination strategies
     - **Hypothesis testing**: Validation of H1-H7 research questions
     
     ### Success Criteria
     
-    ** Methodology Validation**
+    **Methodology Validation**
     - Demonstrate multimodal approach effectiveness
     - Show complementary value of different model types
     - Establish reproducible ensemble framework
     
-    ** Research Contributions**
+    **Research Contributions**
     - Comprehensive preprocessing pipeline for e-commerce data
     - Systematic multimodal ensemble methodology
     - Production-ready classification system
     
-    ** Practical Impact**
+    **Practical Impact**
     - End-to-end solution from raw data to predictions
     - Scalable architecture for real-world deployment
     - Interactive demonstration of multimodal classification
@@ -203,7 +203,7 @@ with metrics_tab:
     ### Academic Context
     *This project serves as the capstone for the Data Science module, demonstrating end-to-end machine learning pipeline development from exploratory data analysis through multimodal model deployment.*
     
-    ** GitHub Repository**: [Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote](https://github.com/Wilsbert12/Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote)
+    **GitHub Repository**: [Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote](https://github.com/Wilsbert12/Data_Science_Classification_of_Rakuten_Challenge_Multimodal_Soft_Vote)
     """)
 
 # Pagination and footer

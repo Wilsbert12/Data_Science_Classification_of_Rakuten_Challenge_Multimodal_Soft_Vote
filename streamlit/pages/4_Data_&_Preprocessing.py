@@ -109,9 +109,9 @@ with overview_tab:
     - Wines & Gastronomy: 0.9% (781 products)
     
     **Classification Challenge:**
-    - **27 subcategories** with significant class imbalance (13.4:1 ratio)
+    - **27 subcategories**with significant class imbalance (13.4:1 ratio)
     - **Moderate parent imbalance**: Largest category 25x larger than smallest
-    - **Real-world e-commerce distribution** reflecting actual marketplace patterns
+    - **Real-world e-commerce distribution**reflecting actual marketplace patterns
     """)
 
 with hypotheses_tab:
@@ -171,7 +171,7 @@ with hypotheses_tab:
         """)
     
     st.info("""
-    ** Hypothesis Validation Framework**
+    **Hypothesis Validation Framework**
     
     These hypotheses will be systematically tested using the final model performance results:
     - **H1-H2**: Compare inter-parent vs intra-parent classification accuracy
@@ -362,7 +362,7 @@ with text_tab:
                 width=700)
     except FileNotFoundError:
         st.info("""
-        ** Word Cloud Visualization Missing**
+        **Word Cloud Visualization Missing**
         
         To add the word cloud comparison:
         1. Run your word cloud code in notebook 01 section 10
@@ -380,9 +380,9 @@ with text_tab:
     
     st.markdown("""
     **Key Visual Insights from Word Clouds:**
-    - **Raw text** shows unprocessed product data with formatting artifacts and inconsistent casing
-    - **BERT-ready text** displays cleaned content optimized for transformer models with minimal preprocessing
-    - **Classical ML text** emphasizes content words through comprehensive preprocessing including French stopword removal and accent normalization
+    - **Raw text**shows unprocessed product data with formatting artifacts and inconsistent casing
+    - **BERT-ready text**displays cleaned content optimized for transformer models with minimal preprocessing
+    - **Classical ML text**emphasizes content words through comprehensive preprocessing including French stopword removal and accent normalization
     
     **Model-Specific Optimization:**
     Each preprocessing approach is tailored to its target model architecture - BERT benefits from contextual information preservation, while classical ML models perform better with normalized, filtered text features.
@@ -390,9 +390,9 @@ with text_tab:
     
     st.markdown("""
     **Key Visual Insights from Word Clouds:**
-    - **Raw text** shows unprocessed product data with formatting artifacts and inconsistent casing
-    - **BERT-ready text** displays cleaned content optimized for transformer models with minimal preprocessing
-    - **Classical ML text** emphasizes content words through comprehensive preprocessing including French stopword removal and accent normalization
+    - **Raw text**shows unprocessed product data with formatting artifacts and inconsistent casing
+    - **BERT-ready text**displays cleaned content optimized for transformer models with minimal preprocessing
+    - **Classical ML text**emphasizes content words through comprehensive preprocessing including French stopword removal and accent normalization
     
     **Model-Specific Optimization:**
     Each preprocessing approach is tailored to its target model architecture - BERT benefits from contextual information preservation, while classical ML models perform better with normalized, filtered text features.
@@ -450,8 +450,8 @@ with image_tab:
         
         **2 Intelligent Product Focus Detection**
         - Automated bounding box detection using OpenCV
-        - **90.7% effective object detection rate** (77,021 actual objects detected)
-        - **43.1% pixel reduction** through background removal
+        - **90.7% effective object detection rate**(77,021 actual objects detected)
+        - **43.1% pixel reduction**through background removal
         - Smart cropping to product focus areas
         - Average detected object size: 356×360 pixels
         """)
@@ -460,16 +460,16 @@ with image_tab:
         st.markdown("""
         **3 CNN-Optimized Processing**
         - Two-stage resize: Initial processing to 299×299, final VGG16 resize to 224×224
-        - **58.5% downscaled** (49,654 images from larger bounding boxes)
-        - **41.3% upscaled** (35,044 images from smaller bounding boxes)
-        - **1.7% excluded** (1,412 images below 75px quality threshold)
+        - **58.5% downscaled**(49,654 images from larger bounding boxes)
+        - **41.3% upscaled**(35,044 images from smaller bounding boxes)
+        - **1.7% excluded**(1,412 images below 75px quality threshold)
         - ImageNet normalization statistics applied
         
         **4 Training Organization & Quality Control**
         - PyTorch-compatible class folder structure creation
         - Stratified train/validation splits (80/20, random_state=42)
         - **67,921 training + 16,995 validation images**
-        - **98.3% quality standard compliance** for CNN training
+        - **98.3% quality standard compliance**for CNN training
         """)
     
     st.markdown("""
@@ -495,7 +495,7 @@ with image_tab:
     - **Processing rate**: 546 images/second with parallel processing
     - **Total processing time**: 2 minutes 35 seconds for complete dataset
     - **Success rate**: 100% successful processing (84,916/84,916 images)
-    - **Zero processing failures** across entire pipeline
+    - **Zero processing failures**across entire pipeline
     
     **Bounding Box Detection Analysis:**
     - **Detection accuracy**: 90.7% effective object detection vs. 9.3% full-image boxes

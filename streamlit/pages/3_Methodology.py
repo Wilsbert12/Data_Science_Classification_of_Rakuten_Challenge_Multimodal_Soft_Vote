@@ -23,7 +23,7 @@ st.sidebar.image("streamlit/assets/images/logos/rakuten-logo-red-wide.svg", use_
 st.markdown("""
 ## Multimodal Ensemble Architecture
 
-Our approach leverages the **complementary strengths** of three distinct machine learning paradigms to create a robust multimodal classification system that exceeds official benchmarks.
+Our approach leverages the **complementary strengths**of three distinct machine learning paradigms to create a robust multimodal classification system that exceeds official benchmarks.
 """)
 
 # Load and display methodology diagram
@@ -52,17 +52,17 @@ with strategy_tab:
     
     ### Strategic Advantages
     
-    ** Complementary Information Processing**
+    **Complementary Information Processing**
     - **Classical ML**: Robust statistical pattern recognition, interpretable features
     - **Deep Learning**: Complex contextual understanding, semantic relationships  
     - **Computer Vision**: Visual product characteristics invisible to text-only models
     
-    ** Risk Mitigation Through Diversity**
+    **Risk Mitigation Through Diversity**
     - **Model diversity**: Reduces overfitting to specific data patterns
     - **Failure independence**: Different models fail on different examples
     - **Robust performance**: Ensemble maintains accuracy even when individual models struggle
     
-    ** Handling Real-World E-commerce Challenges**
+    **Handling Real-World E-commerce Challenges**
     - **Missing descriptions**: CV and title-only processing provide backup
     - **Multilingual content**: BERT + translation handles language diversity
     - **Noisy merchant data**: Classical ML provides robust baseline performance
@@ -74,7 +74,7 @@ with strategy_tab:
     - Excellent performance on clean, structured text
     - Computationally efficient for production deployment
     
-    **BERT Context Understanding**  
+    **BERT Context Understanding**
     - Captures semantic meaning and context
     - Handles French language nuances natively
     - Strong performance on complex product descriptions
@@ -197,7 +197,7 @@ with ensemble_tab:
     final_prediction = argmax(ensemble_proba)
     ```
     
-    ** Optimization Framework:**
+    **Optimization Framework:**
     ```python
     weight_optimization = {
         'method': 'Selected configuration testing',
@@ -216,7 +216,7 @@ with ensemble_tab:
     
     ### Validation Framework
     
-    ** Evaluation Strategy:**
+    **Evaluation Strategy:**
     - **Clean train/validation split**: Proper methodology without data leakage
     - **Consistent random state**: All models use identical data partitions
     - **Metric focus**: Weighted F1-score for class imbalance handling

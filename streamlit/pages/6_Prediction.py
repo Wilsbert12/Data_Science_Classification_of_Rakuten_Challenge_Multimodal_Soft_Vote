@@ -179,7 +179,7 @@ def display_prediction_results(result, category_mapping):
                 confidence = probs[idx]
                 
                 if i == 1:
-                    st.success(f" **{i}. {pred_category}** - {confidence:.3f}")
+                    st.success(f" **{i}. {pred_category}**- {confidence:.3f}")
                 elif i == 2:
                     st.info(f" {i}. {pred_category} - {confidence:.3f}")
                 else:
@@ -187,7 +187,7 @@ def display_prediction_results(result, category_mapping):
     
     # Final result
     st.markdown("###  Final Ensemble Prediction")
-    st.success(f"**{category_name}** (Confidence: {result['confidence']:.3f})")
+    st.success(f"**{category_name}**(Confidence: {result['confidence']:.3f})")
 
 st.progress(6 / 7)
 st.title("Multimodal Product Classification")
@@ -195,7 +195,7 @@ st.sidebar.header(":material/category_search: Prediction")
 st.sidebar.image("streamlit/assets/images/logos/rakuten-logo-red-wide.svg", use_container_width=True)
 
 st.markdown("""
-**Ensemble Classification Demo** - Combining SVM, BERT, and VGG16 models for product categorization.
+**Ensemble Classification Demo**- Combining SVM, BERT, and VGG16 models for product categorization.
 
  **Performance**: F1 = 0.8727 (exceeds challenge benchmark by 7.6%)  
  **Weights**: SVM (40%) + BERT (40%) + VGG16 (20%)  
@@ -243,9 +243,9 @@ with tab_sample:
     
     with text_col:
         st.markdown("**Product Information**")
-        st.write(f"**Title:** {current_sample['title']}")
-        st.write(f"**Description:** {current_sample['description'][:200]}...")
-        st.write(f"**True Category:** {current_sample['category']}")
+        st.write(f"**Title:**{current_sample['title']}")
+        st.write(f"**Description:**{current_sample['description'][:200]}...")
+        st.write(f"**True Category:**{current_sample['category']}")
     
     # Prediction button for sample
     if st.button(" Predict Category", key="predict_sample"):
@@ -333,9 +333,9 @@ with tab_upload:
                         st.image(image, caption="Uploaded Image", use_container_width=True)
                     
                     with input_col2:
-                        st.write(f"**Title:** {user_title}")
-                        st.write(f"**Description:** {user_description}")
-                        st.write(f"**Processed Text:** {cleaned_text[:150]}...")
+                        st.write(f"**Title:**{user_title}")
+                        st.write(f"**Description:**{user_description}")
+                        st.write(f"**Processed Text:**{cleaned_text[:150]}...")
                     
                     st.markdown("---")
                     display_prediction_results(result, category_mapping)
